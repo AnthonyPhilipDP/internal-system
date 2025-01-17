@@ -24,11 +24,23 @@ $customer_id = $this->id;
 $equipment_id
 
 
-//git initialization
-git init
+//push to new branch
+git checkout -b (name of your new branch)
+#add and commit first before pushing
 git add .
 git commit -m "your message"
+git push origin (your new branch name)
 
-//link repo to commit
-git remote add origin (your link of repo here HTTPS)
-git push origin HEAD:master
+add a contact person to the equipment
+fields must be:
+contact person
+department
+position
+contact
+email 
+
+
+#for future updates of the System
+add a number of how many customer did the employee add to the System
+add picture of employee in a circular shape
+add soft delete
