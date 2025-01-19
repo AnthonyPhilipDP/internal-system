@@ -21,6 +21,7 @@ use App\Filament\Resources\CustomerResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 use App\Filament\Resources\CustomerResource\RelationManagers;
+use App\Filament\Resources\CustomerResource\RelationManagers\EquipmentRelationManager;
 
 class CustomerResource extends Resource
 {
@@ -43,13 +44,13 @@ class CustomerResource extends Resource
                             ->autosize()
                             ->maxLength(255)    
                             ->required(),
-                        Forms\Components\TextInput::make('QS')
+                        Forms\Components\TextInput::make('qualifyingSystem')
                             ->label('Qualifying System')
                             ->nullable(),
-                        Forms\Components\TextInput::make('certifying_body')
+                        Forms\Components\TextInput::make('certifyingBody')
                             ->label('Certifying Body')
                             ->required(),
-                        Forms\Components\DatePicker::make('date_certified')
+                        Forms\Components\DatePicker::make('dateCertified')
                             ->label('Date Certified')
                             ->required(),
                         Forms\Components\TextArea::make('remarks')
@@ -64,23 +65,23 @@ class CustomerResource extends Resource
                         Forms\Components\TextInput::make('tin')
                             ->label('TIN No.')
                             ->nullable(),
-                        Forms\Components\TextInput::make('SEC')
+                        Forms\Components\TextInput::make('sec')
                             ->label('SEC Reg no.')
                             ->nullable(),
-                        Forms\Components\Select::make('VAT')
+                        Forms\Components\Select::make('vat')
                             ->label('VAT')
                             ->options([
                                 'VAT' => 'VAT',
                                 'Non-VAT' => 'Non-VAT',
                             ])
                             ->required(),
-                        Forms\Components\TextInput::make('WTP')
+                        Forms\Components\TextInput::make('wht')
                             ->label('With Holding Tax')
                             ->nullable(),
-                        Forms\Components\TextInput::make('main_act')
+                        Forms\Components\TextInput::make('businessNature')
                             ->label('Nature of Business')
                             ->required(),
-                        Forms\Components\TextInput::make('business_system')
+                        Forms\Components\TextInput::make('businessStyle')
                             ->label('Business Style')
                             ->required(),
                     ]),
@@ -96,7 +97,7 @@ class CustomerResource extends Resource
                             ->strictMode()
                             ->formatAsYouType(false)
                             ->required(),
-                        PhoneInput::make('fax')
+                        PhoneInput::make('landline')
                             ->nullable()
                             ->showFlags(false)
                             ->disallowDropdown()
@@ -105,7 +106,7 @@ class CustomerResource extends Resource
                             ->placeholder('pmsical@yahoo.com')
                             ->email()
                             ->required(),
-                        Forms\Components\TextInput::make('site')
+                        Forms\Components\TextInput::make('website')
                             ->placeholder('www.pmsi-cal.com')
                             ->label('Website')
                             ->nullable(),
@@ -121,8 +122,8 @@ class CustomerResource extends Resource
                             ->required(),
                         Forms\Components\Select::make('status')
                             ->options([
-                                'active' => 'Active',
-                                'potential' => 'Potential',
+                                'Active' => 'Active',
+                                'Potential' => 'Potential',
                             ])
                             ->default('Active')
                             ->required(),
@@ -146,8 +147,8 @@ class CustomerResource extends Resource
                     // ->wrap()
                     ->words(3)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('address'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                Tables\Columns\TextColumn::make('address')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->icon('heroicon-o-device-phone-mobile')
@@ -167,52 +168,52 @@ class CustomerResource extends Resource
                     ->words(2),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('site')
-                    ->label('Website'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Website')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('SEC')
-                    ->label('SEC Reg No.'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('SEC Reg No.')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('VAT')
                     ->label('VAT'),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('WTP')
-                    ->label('With Holding Tax'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('With Holding Tax')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('main_act')
-                    ->label('Nature of Business'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Nature of Business')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('QS')
-                    ->label('Qualifying System'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Qualifying System')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('certifying_body')
-                    ->label('Certifying Body'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Certifying Body')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('date_certified')
-                    ->label('Date Certified'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Date Certified')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('payment'),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('status'),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('remarks'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                Tables\Columns\TextColumn::make('remarks')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('business_system')
-                    ->label('Business System'),
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Business System')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('tin')
                     ->label('TIN'),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('acct_created')
-                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Date Created')
                     ->date(),
                     // ->searchable(),
@@ -223,15 +224,11 @@ class CustomerResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make()
-                    ->slideOver()
-                    ->form([
-                        TextInput::make('title')
-                            ->required()
-                            ->maxLength(255),
-                        // ...
-                    ]),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    ->slideOver(),
+                    Tables\Actions\EditAction::make()
+                    ->slideOver(),
+                    Tables\Actions\DeleteAction::make()
+                    ->slideOver(),
                 ])
                 ->icon('heroicon-o-cog-6-tooth')
                 ->tooltip('Options')
@@ -247,7 +244,7 @@ class CustomerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            EquipmentRelationManager::class
         ];
     }
 

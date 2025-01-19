@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Equipment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,21 +15,26 @@ class Customer extends Model
         'name',
         'address',
         'phone',
-        'fax',
+        'landline',
         'email',
-        'site',
-        'SEC',
-        'VAT',
-        'WTP',
-        'main_act',
-        'QS',
-        'certifying_body',
-        'date_certified',
+        'website',
+        'sec',
+        'vat',
+        'why',
+        'businessNature',
+        'qualifyingSystem',
+        'certifyingBody',
+        'dateCertified',
         'payment',
         'status',
         'remarks',
-        'business_system',
+        'businessStyle',
         'tin',
         'acct_created',
     ];
+
+    public function equipment() {
+        return $this->hasMany(Equipment::class);
+    } 
+
 }

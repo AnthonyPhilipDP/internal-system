@@ -9,7 +9,7 @@ create and set up brand resrouce with --generate
 create and set up product resrouce with --generate
 create and set up order resoure with --view
 
-//First
+#First
 Created a model with migration
 -php artisan make:model Customer -m
 Set up the database migration
@@ -24,7 +24,7 @@ $customer_id = $this->id;
 $equipment_id
 
 
-//push to new branch
+#push to new branch
 git checkout -b (name of your new branch)
 #add and commit first before pushing
 git add .
