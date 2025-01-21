@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\EquipmentResource\Pages;
 
 use Filament\Actions;
+use Spatie\Color\Rgb;
 use Filament\Forms\Form;
+use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\EditRecord;
@@ -16,7 +18,7 @@ class EditEquipment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->color(Color::hex(Rgb::fromString('rgb('.Color::Red[500].')')->toHex())),
         ];
     }
 

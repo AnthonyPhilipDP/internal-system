@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use Spatie\Color\Rgb;
 use Filament\Forms\Set;
 use App\Models\Customer;
 use Filament\Forms\Form;
@@ -12,6 +13,8 @@ use App\Models\Equipment;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
@@ -50,6 +53,10 @@ class EquipmentResource extends Resource
                         Forms\Components\TextInput::make('description')
                             ->required()
                             ->maxLength(255),
+                    ]),
+                ])->columnSpan(2),
+                Group::make()->schema([
+                    Section::make('Customer Form')->schema([
                         Forms\Components\TextInput::make('inspection')
                             ->required()
                             ->maxLength(255),
@@ -63,19 +70,20 @@ class EquipmentResource extends Resource
                             ->required()
                             ->maxLength(255),
                     ]),
-
+                ])->columnSpan(1),
+                Group::make()->schema([
                     Section::make('Order Items')->schema([
                         Forms\Components\Repeater::make('accessory')
                             ->relationship()
                             ->schema([
                             Forms\Components\TextInput::make('name')
-                            ->required(),
+                                ->required(),
                             Forms\Components\TextInput::make('quantity')
-                            ->required(),
-                        ])
+                                ->required(),
+                        ]),
                     ])
-                ])
-            ]);
+                ])->columnSpan(1)
+            ])->columns(4);
     }
 
     public static function table(Table $table): Table
@@ -101,7 +109,6 @@ class EquipmentResource extends Resource
                     ->alignCenter()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
-
                     ->searchable(),
                 Tables\Columns\TextColumn::make('inspection')
                     ->alignCenter()
@@ -138,7 +145,8 @@ class EquipmentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->color(Color::hex(Rgb::fromString('rgb('.Color::Gray[900].')')->toHex())),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
