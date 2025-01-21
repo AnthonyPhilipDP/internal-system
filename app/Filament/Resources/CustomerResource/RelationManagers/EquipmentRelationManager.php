@@ -7,6 +7,7 @@ use Filament\Tables;
 use App\Models\Customer;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -16,13 +17,16 @@ class EquipmentRelationManager extends RelationManager
 {
     protected static string $relationship = 'equipment';
 
+    // To show automatically in page
+    protected static bool $isLazy = false;
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('customer_id')
                     ->searchable()
-                    ->relationship(name: 'customer', titleAttribute: 'id')
+                    ->relationship('customer', 'name')
                     ->preload(),
                 Forms\Components\TextInput::make('make')
                     ->required()    

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Customer;
+use App\Models\Accessory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -13,10 +14,11 @@ class Equipment extends Model
     protected $fillable = [
         'id',
         'customer_id',
-        'make',
+        'manufacturer',
         'model',
         'serial',
         'description',
+        'inspection',
         'lab',
         'calType',
         'category',
@@ -26,4 +28,8 @@ class Equipment extends Model
     public function customer(){
         return $this->belongsTo(Customer::class);
     }
+
+    public function accessory() {
+        return $this->hasMany(Accessory::class);
+    } 
 }

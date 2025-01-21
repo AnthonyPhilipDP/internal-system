@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('equipment', function (Blueprint $table) {
             $table->id()->from(500);
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
-            $table->string('make');
+            $table->string('manufacturer');
             $table->string('model');
             $table->string('serial');
             $table->string('description');
+            $table->string('inspection');
             $table->string('lab');
             $table->string('calType');
             $table->string('category');
-            $table->string('acce');
             $table->timestamps();
         });
     }

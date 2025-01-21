@@ -154,7 +154,7 @@ class CustomerResource extends Resource
                     ->icon('heroicon-o-device-phone-mobile')
                     ->iconColor('primary'),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('fax')
+                Tables\Columns\TextColumn::make('landline')
                     ->icon('heroicon-o-phone')
                     ->iconColor('primary'),
                     // ->searchable(),
@@ -167,34 +167,34 @@ class CustomerResource extends Resource
                     // ->wrap()
                     ->words(2),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('site')
+                Tables\Columns\TextColumn::make('website')
                     ->label('Website')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('SEC')
+                Tables\Columns\TextColumn::make('sec')
                     ->label('SEC Reg No.')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('VAT')
+                Tables\Columns\TextColumn::make('vat')
                     ->label('VAT'),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('WTP')
+                Tables\Columns\TextColumn::make('wht')
                     ->label('With Holding Tax')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('main_act')
+                Tables\Columns\TextColumn::make('businessNature')
                     ->label('Nature of Business')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('QS')
+                Tables\Columns\TextColumn::make('qualifyingSystem')
                     ->label('Qualifying System')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('certifying_body')
+                Tables\Columns\TextColumn::make('certifyingBody')
                     ->label('Certifying Body')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('date_certified')
+                Tables\Columns\TextColumn::make('dateCertified')
                     ->label('Date Certified')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
@@ -205,7 +205,7 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('remarks')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('business_system')
+                Tables\Columns\TextColumn::make('businessStyle')
                     ->label('Business System')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
