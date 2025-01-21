@@ -34,7 +34,7 @@ class EquipmentResource extends Resource
         return $form
             ->schema([
                 Group::make()->schema([
-                    Section::make('Customer Form')->schema([
+                    Section::make('Equipment Form')->schema([
                         Forms\Components\Select::make('customer_id')
                             ->required()
                             ->searchable()
@@ -56,31 +56,41 @@ class EquipmentResource extends Resource
                     ]),
                 ])->columnSpan(2),
                 Group::make()->schema([
-                    Section::make('Customer Form')->schema([
-                        Forms\Components\TextInput::make('inspection')
-                            ->required()
-                            ->maxLength(255),
+                    Section::make('')->schema([
                         Forms\Components\TextInput::make('lab')
-                            ->required()
-                            ->maxLength(255),
+                        ->required()
+                        ->maxLength(255),
                         Forms\Components\TextInput::make('calType')
-                            ->required()
-                            ->maxLength(255),
+                        ->required()
+                        ->maxLength(255),
                         Forms\Components\TextInput::make('category')
+                        ->required()
+                        ->maxLength(255),
+                        Forms\Components\TextInput::make('inspection')
+                            ->label('Inspection Findings')
                             ->required()
                             ->maxLength(255),
                     ]),
                 ])->columnSpan(1),
                 Group::make()->schema([
-                    Section::make('Order Items')->schema([
+                    Section::make('')->schema([
                         Forms\Components\Repeater::make('accessory')
                             ->relationship()
                             ->schema([
                             Forms\Components\TextInput::make('name')
+                                ->columnSpan(2)
                                 ->required(),
                             Forms\Components\TextInput::make('quantity')
+                                ->numeric()
+                                ->columnSpan(2)
                                 ->required(),
-                        ]),
+                        ])
+                        ->reorderable()
+                        ->reorderableWithButtons()
+                        ->reorderableWithDragAndDrop()
+                        ->collapsible()
+                        ->addActionLabel('Add Another Accessory')
+                        ->columns(4),
                     ])
                 ])->columnSpan(1)
             ])->columns(4);
