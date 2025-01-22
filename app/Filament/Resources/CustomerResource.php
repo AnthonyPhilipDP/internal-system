@@ -64,7 +64,7 @@ class CustomerResource extends Resource
                     Section::make([
                         Forms\Components\TextInput::make('tin')
                             ->label('TIN No.')
-                            ->nullable(),
+                            ->required(),
                         Forms\Components\TextInput::make('sec')
                             ->label('SEC Reg no.')
                             ->nullable(),
@@ -138,7 +138,9 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('ID No.'),
+                    ->label('Customer ID No.')
+                    ->copyable()
+                    ->copyMessage('Customer ID No. copied'),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Customer Name')
@@ -146,17 +148,23 @@ class CustomerResource extends Resource
                     ->color('primary')
                     // ->wrap()
                     ->words(3)
-                    ->searchable(),
+                    ->searchable()
+                    ->copyable()
+                    ->copyMessage('Customer Name copied'),
                 Tables\Columns\TextColumn::make('address')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->icon('heroicon-o-device-phone-mobile')
-                    ->iconColor('primary'),
+                    ->iconColor('primary')
+                    ->copyable()
+                    ->copyMessage('Phone No. copied'),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('landline')
                     ->icon('heroicon-o-phone')
-                    ->iconColor('primary'),
+                    ->iconColor('primary')
+                    ->copyable()
+                    ->copyMessage('Landline No. copied'),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->icon('heroicon-m-envelope')

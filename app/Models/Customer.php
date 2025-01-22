@@ -31,7 +31,7 @@ class Customer extends Model
         'remarks',
         'businessStyle',
         'tin',
-        'acct_created',
+        'createdDate',
     ];
 
     public function equipment() {

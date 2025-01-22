@@ -40,10 +40,12 @@ class EquipmentResource extends Resource
                     Section::make('Equipment Form')->schema([
                         Forms\Components\Select::make('customer_id')
                             ->required()
-                            ->searchable()
+                            ->relationship('customer', 'name')
+                            ->searchable(['name', 'id'])
                             ->preload()
-                            ->relationship('customer', 'name'),
-                        Forms\Components\TextInput::make('manufacturer')
+                            ->prefixIcon('heroicon-o-user')
+                            ->prefixIconColor('info'),
+                            Forms\Components\TextInput::make('manufacturer')
                             ->required()    
                             ->maxLength(255),
                         Forms\Components\TextInput::make('model')
