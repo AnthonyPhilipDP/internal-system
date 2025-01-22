@@ -78,16 +78,26 @@ class EquipmentRelationManager extends RelationManager
                         ->addActionLabel('Add Another Accessory')
                         ->columns(4),
                     ])
-                ])->columnSpan(3)
+                ])->columnSpan(3),
+                Group::make()->schema([
+                    Section::make('Equipment Form')->schema([
+                        Forms\Components\TextInput::make('calibrationProcedure')
+                            ->required()
+                            ->maxLength(255),
+                    ]),
+                ])->columnSpan(3),
             ])->columns(6);
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('make')
+            // ->recordTitleAttribute('make')
             ->columns([
-                Tables\Columns\TextColumn::make('make'),
+                Tables\Columns\TextColumn::make('manufacturer')->alignCenter(),
+                Tables\Columns\TextColumn::make('model')->alignCenter(),
+                Tables\Columns\TextColumn::make('serial')->alignCenter(),
+                Tables\Columns\TextColumn::make('description')->alignCenter(),
             ])
             ->filters([
                 //

@@ -22,6 +22,9 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\EquipmentResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EquipmentResource\RelationManagers;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Tables\Enums\ActionsPosition;
+use Filament\Forms\Components\Button;
 
 class EquipmentResource extends Resource
 {
@@ -69,6 +72,10 @@ class EquipmentResource extends Resource
                             ->label('Inspection Findings')
                             ->required()
                             ->maxLength(255),
+                        Forms\Components\DatePicker::make('inDate')
+                            ->label('Date Received')
+                            ->default(now())
+                            ->required(),
                     ]),
                 ])->columnSpan(1),
                 Group::make()->schema([
@@ -88,8 +95,26 @@ class EquipmentResource extends Resource
                         ->collapsible()
                         ->addActionLabel('Add Another Accessory')
                         ->columns(4),
-                    ])
-                ])->columnSpan(1)
+                    ]),
+                ])->columnSpan(1),
+                //Button working but cant save to database
+                // Forms\Components\Actions::make([
+                //     Forms\Components\Actions\Action::make('saveAsAnotherTransaction')
+                //         ->label('Save as Another Transaction')
+                //         ->action(function ($data) {
+                //             $newEquipment = new Equipment();
+                //                 $newEquipment->customer_id = $data['customer_id']; // Explicitly set customer_id
+                //                 $newEquipment->manufacturer = $data['manufacturer'];
+                //                 $newEquipment->model = $data['model'];
+                //                 $newEquipment->serial = $data['serial'];
+                //                 $newEquipment->description = $data['description'];
+                //                 // Set other fields as needed
+                //                 $newEquipment->create();
+
+                //             return redirect(EquipmentResource::getUrl('index'));
+                //         })
+                //         ->color('info'),
+                // ])
             ])->columns(4);
     }
 
@@ -98,10 +123,12 @@ class EquipmentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
+                    ->label('Transaction ID')
                     ->alignCenter()
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
+                    ->label('Customer Name')
                     ->alignCenter()
                     ->numeric()
                     ->sortable(),
@@ -116,20 +143,27 @@ class EquipmentResource extends Resource
                     ->alignCenter()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
+                    ->alignCenter()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('inspection')
                     ->alignCenter()
                     ->label('Inspection Findings')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('lab')
+                    ->label('Laboratory')
                     ->alignCenter()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('calType')
+                    ->label('Calibration Type')
                     ->alignCenter()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('category')
                     ->alignCenter()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('accessory.name')
                     ->listWithLineBreaks()
                     ->bulleted(),
@@ -147,19 +181,43 @@ class EquipmentResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ])->defaultSort('id', 'desc')
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
                 ->color(Color::hex(Rgb::fromString('rgb('.Color::Gray[900].')')->toHex())),
-            ])
+                Tables\Actions\Action::make('duplicate')
+                    ->label('Duplicate')
+                    ->action(function (Equipment $record) {
+                        // Replicate the Equipment record
+                        $newEquipment = $record->replicate();
+                        $newEquipment->save();
+
+                        // Replicate the related Accessory records
+                        foreach ($record->accessory as $accessory) {
+                            $newAccessory = $accessory->replicate();
+                            $newAccessory->equipment_id = $newEquipment->id;
+                            $newAccessory->save();
+                        }
+                    })
+                    ->icon('heroicon-m-document-duplicate')
+                    ->requiresConfirmation()
+                    ->modalIcon('heroicon-o-document-duplicate')
+                    ->modalHeading('Duplicate Equipment')
+                    ->modalSubheading('Create a copy of this Equipment?')
+                    ->modalButton('Yes')
+                    ->color('info'),
+                ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultPaginationPageOption(5)
+            ->paginated([5, 10, 20, 40, 'all'])
+            ->extremePaginationLinks();
     }
 
     public static function getRelations(): array

@@ -5,6 +5,8 @@ namespace App\Filament\Resources\EquipmentResource\Pages;
 use Filament\Actions;
 use Spatie\Color\Rgb;
 use Filament\Forms\Form;
+use App\Models\Equipment;
+use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -19,6 +21,10 @@ class EditEquipment extends EditRecord
     {
         return [
             Actions\DeleteAction::make()->color(Color::hex(Rgb::fromString('rgb('.Color::Red[500].')')->toHex())),
+       
+            // Action::make('save')
+            // ->label('Save changes')
+            // ->action('save'),
         ];
     }
 

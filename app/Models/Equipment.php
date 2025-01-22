@@ -22,7 +22,8 @@ class Equipment extends Model
         'lab',
         'calType',
         'category',
-        'acce',
+        'inDate',
+        'calibrationProcedure',
     ];
 
     public function customer(){

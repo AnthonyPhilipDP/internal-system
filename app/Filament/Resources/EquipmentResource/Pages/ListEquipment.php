@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\EquipmentResource\Pages;
 
-use App\Filament\Resources\EquipmentResource;
 use Filament\Actions;
+use Filament\Support\Enums\Alignment;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\EquipmentResource;
 
 class ListEquipment extends ListRecords
 {
