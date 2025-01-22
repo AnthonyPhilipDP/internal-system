@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('accessories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('equipment_id')->constrained('equipment')->cascadeOnDelete();
-            $table->string('name');
-            $table->string('quantity');
+            $table->string('name')->nullable()->default('N/A');
+            $table->string('quantity')->nullable()->default('N/A');
             $table->timestamps();
         });
     }

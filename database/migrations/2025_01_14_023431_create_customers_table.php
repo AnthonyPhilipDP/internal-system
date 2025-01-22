@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('remarks')->nullable("N/A");
             $table->string('businessStyle');
             $table->string('tin');
-            $table->string('acct_created')->nullable("N/A");
+            $table->string('createdDate')->nullable("N/A");
             $table->timestamps();
         });
     }

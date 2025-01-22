@@ -21,7 +21,7 @@ class Customer extends Model
         'website',
         'sec',
         'vat',
-        'why',
+        'wht',
         'businessNature',
         'qualifyingSystem',
         'certifyingBody',
@@ -37,5 +37,40 @@ class Customer extends Model
     public function equipment() {
         return $this->hasMany(Equipment::class);
     } 
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            if (is_null($model->landline)) {
+                $model->landline = 'N/A';
+            }
+
+            if (is_null($model->website)) {
+                $model->website = 'N/A';
+            }
+
+            if (is_null($model->sec)) {
+                $model->sec = 'N/A';
+            }
+
+            if (is_null($model->wht)) {
+                $model->wht = 'N/A';
+            }
+
+            if (is_null($model->qualifyingSystem)) {
+                $model->qualifyingSystem = 'N/A';
+            }
+
+            if (is_null($model->remarks)) {
+                $model->remarks = 'N/A';
+            }
+
+            // if (is_null($model->createdDate)) {
+            //     $model->createdDate = 'N/A';
+            // }
+        });
+    }
 
 }

@@ -43,7 +43,6 @@ class EquipmentResource extends Resource
                         Forms\Components\TextInput::make('manufacturer')
                             ->required()    
                             ->maxLength(255),
-
                         Forms\Components\TextInput::make('model')
                             ->required()
                             ->maxLength(255),
@@ -78,12 +77,10 @@ class EquipmentResource extends Resource
                             ->relationship()
                             ->schema([
                             Forms\Components\TextInput::make('name')
-                                ->columnSpan(2)
-                                ->required(),
+                                ->columnSpan(2),
                             Forms\Components\TextInput::make('quantity')
                                 ->numeric()
-                                ->columnSpan(2)
-                                ->required(),
+                                ->columnSpan(2),
                         ])
                         ->reorderable()
                         ->reorderableWithButtons()
@@ -104,7 +101,7 @@ class EquipmentResource extends Resource
                     ->alignCenter()
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('customer_id')
+                Tables\Columns\TextColumn::make('customer.name')
                     ->alignCenter()
                     ->numeric()
                     ->sortable(),

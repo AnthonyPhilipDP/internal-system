@@ -25,4 +25,19 @@ class Accessory extends Model
     {
         return $this->quantity.' '.$this->name;
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            if (is_null($model->name)) {
+                $model->name = 'N/A';
+            }
+
+            if (is_null($model->quantity)) {
+                $model->quantity = 'N/A';
+            }
+        });
+    }
 }

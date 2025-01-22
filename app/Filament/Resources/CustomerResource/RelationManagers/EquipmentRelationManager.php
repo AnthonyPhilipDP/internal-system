@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -24,35 +26,60 @@ class EquipmentRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('customer_id')
-                    ->searchable()
-                    ->relationship('customer', 'name')
-                    ->preload(),
-                Forms\Components\TextInput::make('make')
-                    ->required()    
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('model')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('serial')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('description')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('lab')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('calType')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('category')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('acce')
-                    ->required()
-                    ->maxLength(255),
-            ]);
+                Group::make()->schema([
+                    Section::make('Equipment Form')->schema([
+                        Forms\Components\Select::make('customer_id')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->relationship('customer', 'name'),
+                        Forms\Components\TextInput::make('manufacturer')
+                            ->required()    
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('model')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('serial')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('description')
+                            ->required()
+                            ->maxLength(255),
+                    ]),
+                ])->columnSpan(3),
+                Group::make()->schema([
+                    Section::make('')->schema([
+                        Forms\Components\TextInput::make('lab')
+                        ->required()
+                        ->maxLength(255),
+                        Forms\Components\TextInput::make('calType')
+                        ->required()
+                        ->maxLength(255),
+                        Forms\Components\TextInput::make('category')
+                        ->required()
+                        ->maxLength(255),
+                        Forms\Components\TextInput::make('inspection')
+                            ->label('Inspection Findings')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Repeater::make('accessory')
+                            ->relationship()
+                            ->schema([
+                            Forms\Components\TextInput::make('name')
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('quantity')
+                                ->numeric()
+                                ->columnSpan(2),
+                        ])
+                        ->reorderable()
+                        ->reorderableWithButtons()
+                        ->reorderableWithDragAndDrop()
+                        ->collapsible()
+                        ->addActionLabel('Add Another Accessory')
+                        ->columns(4),
+                    ])
+                ])->columnSpan(3)
+            ])->columns(6);
     }
 
     public function table(Table $table): Table
