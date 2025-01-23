@@ -16,15 +16,16 @@ use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Button;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\ActionsPosition;
+use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\EquipmentResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EquipmentResource\RelationManagers;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Tables\Enums\ActionsPosition;
-use Filament\Forms\Components\Button;
 
 class EquipmentResource extends Resource
 {
@@ -44,7 +45,7 @@ class EquipmentResource extends Resource
                             ->searchable(['name', 'id'])
                             ->preload()
                             ->prefixIcon('heroicon-o-user')
-                            ->prefixIconColor('info'),
+                            ->prefixIconColor('primary'),
                             Forms\Components\TextInput::make('manufacturer')
                             ->required()    
                             ->maxLength(255),
@@ -188,81 +189,49 @@ class EquipmentResource extends Resource
                 //
             ])
             ->actions([
-                // Tables\Actions\EditAction::make()
-                // ->color(Color::hex(Rgb::fromString('rgb('.Color::Gray[900].')')->toHex())),
-                // Tables\Actions\Action::make('duplicate_with_accessories')
-                //     ->label('Duplicate w/ Accessories')
-                //     ->action(function (Equipment $record) {
-                //         // Replicate the Equipment record
-                //         $newEquipment = $record->replicate();
-                //         $newEquipment->save();
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Gray[900].')')->toHex())),
+                    Tables\Actions\Action::make('duplicate')
+                        ->label('Duplicate')
+                        ->action(function (Equipment $record, $data) {
+                            if ($data['with_accessories']) {
+                                // Replicate the Equipment record
+                                $newEquipment = $record->replicate();
+                                $newEquipment->save();
 
-                //         // Replicate the related Accessory records
-                //         foreach ($record->accessory as $accessory) {
-                //             $newAccessory = $accessory->replicate();
-                //             $newAccessory->equipment_id = $newEquipment->id;
-                //             $newAccessory->save();
-                //         }
-                //     })
-                //     ->icon('heroicon-m-document-duplicate')
-                //     ->requiresConfirmation()
-                //     ->modalIcon('heroicon-o-document-duplicate')
-                //     ->modalHeading('Duplicate Equipment with Accessories')
-                //     ->modalSubheading('Create a copy of this Equipment?')
-                //     ->modalButton('Yes')
-                //     ->color('info'),
-                // Tables\Actions\Action::make('duplicate_without_accessories')
-                //     ->label('Duplicate w/out Accessories')
-                //     ->action(function (Equipment $record) {
-                //         // Replicate the Equipment record
-                //         $newEquipment = $record->replicate();
-                //         $newEquipment->save();
-                //     })
-                //     ->icon('heroicon-m-document-duplicate')
-                //     ->requiresConfirmation()
-                //     ->modalIcon('heroicon-o-document-duplicate')
-                //     ->modalHeading('Duplicate Equipment without Accessories')
-                //     ->modalSubheading('Create a copy of this Equipment?')
-                //     ->modalButton('Yes')
-                //     ->color('info'),
-                Tables\Actions\EditAction::make()
-                ->color(Color::hex(Rgb::fromString('rgb('.Color::Gray[900].')')->toHex())),
-                Tables\Actions\Action::make('duplicate')
-                    ->label('Duplicate')
-                    ->action(function (Equipment $record, $data) {
-                        if ($data['with_accessories']) {
-                            // Replicate the Equipment record
-                            $newEquipment = $record->replicate();
-                            $newEquipment->save();
-
-                            // Replicate the related Accessory records
-                            foreach ($record->accessory as $accessory) {
-                                $newAccessory = $accessory->replicate();
-                                $newAccessory->equipment_id = $newEquipment->id;
-                                $newAccessory->save();
+                                // Replicate the related Accessory records
+                                foreach ($record->accessory as $accessory) {
+                                    $newAccessory = $accessory->replicate();
+                                    $newAccessory->equipment_id = $newEquipment->id;
+                                    $newAccessory->save();
+                                }
+                            } else {
+                                // Replicate the Equipment record without accessories
+                                $newEquipment = $record->replicate();
+                                $newEquipment->save();
                             }
-                        } else {
-                            // Replicate the Equipment record without accessories
-                            $newEquipment = $record->replicate();
-                            $newEquipment->save();
-                        }
-                    })
-                    ->form([
-                        Forms\Components\Toggle::make('with_accessories')
-                            ->label('Duplicate with Accessories?')
-                            ->default(true)
-                            ->onIcon('heroicon-m-bolt')
-                            ->offIcon('heroicon-m-bolt-slash')
-                            ->onColor('success')
-                            ->offColor('warning')
-                    ])
-                    ->icon('heroicon-m-document-duplicate')
-                    ->requiresConfirmation()
-                    ->modalIcon('heroicon-o-document-duplicate')
-                    ->modalHeading('Duplicate Equipment')
-                    ->modalSubheading('Do you want to duplicate this equipment with accessories?')
-                    ->modalButton('Duplicate')
-                    ->color('primary'),
+                        })
+                        ->form([
+                            Forms\Components\Toggle::make('with_accessories')
+                                ->label('Duplicate with Accessories?')
+                                ->default(true)
+                                ->onIcon('heroicon-m-bolt')
+                                ->offIcon('heroicon-m-bolt-slash')
+                                ->onColor('success')
+                                ->offColor('warning')
+                        ])
+                        ->icon('heroicon-m-document-duplicate')
+                        ->requiresConfirmation()
+                        ->modalIcon('heroicon-o-document-duplicate')
+                        ->modalHeading('Duplicate Equipment')
+                        ->modalSubheading('Do you want to duplicate this equipment with accessories?')
+                        ->modalButton('Duplicate')
+                        ->color('primary'),
+                ])
+                ->icon('heroicon-o-cog-6-tooth')
+                ->tooltip('Options')
+                ->color('danger')
                 ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

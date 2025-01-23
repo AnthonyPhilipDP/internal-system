@@ -12,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\EquipmentResource;
+use Filament\Support\Enums\MaxWidth;
 
 class EditEquipment extends EditRecord
 {
@@ -26,6 +27,11 @@ class EditEquipment extends EditRecord
             // ->label('Save changes')
             // ->action('save'),
         ];
+    }
+
+    public function getMaxContentWidth(): MaxWidth
+    {
+        return MaxWidth::Full;
     }
 
     // public function form(Form $form): Form

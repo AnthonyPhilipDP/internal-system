@@ -41,6 +41,7 @@ return new class extends Migration
             $table->string('validatedBy')->nullable();
             $table->string('temperature')->nullable();
             $table->string('humidity')->nullable();
+            $table->string('ncfReport')->nullable();
             $table->string('calibrationDate')->nullable();
             $table->string('calibrationInterval')->nullable();
             $table->string('calibrationDue')->nullable();
