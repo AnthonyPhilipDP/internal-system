@@ -38,6 +38,8 @@ class EquipmentResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'id';
 
+    
+
     public static function form(Form $form): Form
     {
         return $form
@@ -191,15 +193,19 @@ class EquipmentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])->defaultSort('id', 'desc')
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(), 
             ])
             ->actions([
                 // ActionGroup::make([
+                    
                     Tables\Actions\EditAction::make()
                     ->label('')
                     ->tooltip('Edit')
                     ->icon('heroicon-m-pencil-square')
                     ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
                     Tables\Actions\Action::make('duplicate')
                         ->label('')
                         ->action(function (Equipment $record, $data) {
@@ -272,5 +278,13 @@ class EquipmentResource extends Resource
             'create' => Pages\CreateEquipment::route('/create'),
             'edit' => Pages\EditEquipment::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

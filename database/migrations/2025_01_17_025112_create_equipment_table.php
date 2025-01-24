@@ -57,6 +57,7 @@ return new class extends Migration
             $table->string('documentReceivedBy')->nullable();
             //Timestamps
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

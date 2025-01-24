@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('tin');
             $table->string('createdDate')->nullable("N/A");
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -22,6 +22,8 @@ class EditEquipment extends EditRecord
     {
         return [
             Actions\DeleteAction::make()->color(Color::hex(Rgb::fromString('rgb('.Color::Red[500].')')->toHex())),
+            Actions\ForceDeleteAction::make(),
+            Actions\RestoreAction::make(),
        
             // Action::make('save')
             // ->label('Save changes')

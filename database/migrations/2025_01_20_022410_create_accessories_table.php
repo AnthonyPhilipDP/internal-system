@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name')->nullable()->default('N/A');
             $table->string('quantity')->nullable()->default('N/A');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
