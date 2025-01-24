@@ -31,6 +31,8 @@ use App\Filament\Resources\EquipmentResource\RelationManagers;
 class EquipmentResource extends Resource
 {
     protected static ?string $model = Equipment::class;
+    
+    protected static ?string $navigationGroup = 'PMSi';
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';
 
@@ -197,7 +199,7 @@ class EquipmentResource extends Resource
                     ->label('')
                     ->tooltip('Edit')
                     ->icon('heroicon-m-pencil-square')
-                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Red[500].')')->toHex())),
+                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
                     Tables\Actions\Action::make('duplicate')
                         ->label('')
                         ->action(function (Equipment $record, $data) {

@@ -4,14 +4,19 @@ namespace App\Filament\Resources\CustomerResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Tables;
+use Spatie\Color\Rgb;
 use App\Models\Customer;
 use Filament\Forms\Form;
+use App\Models\Equipment;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Facades\Filament;
+use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 
@@ -288,7 +293,7 @@ class EquipmentRelationManager extends RelationManager
                 ->alignCenter(),
                 Tables\Columns\TextColumn::make('description')
                 ->alignCenter(),
-            ])
+            ])->defaultSort('id', 'desc')
             ->filters([
                 //
             ])
@@ -297,8 +302,57 @@ class EquipmentRelationManager extends RelationManager
                 // Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('')
+                    ->tooltip('Edit')
+                    ->icon('heroicon-m-pencil-square')
+                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
+                    Tables\Actions\Action::make('duplicate')
+                        ->label('')
+                        ->action(function (Equipment $record, $data) {
+                            if ($data['with_accessories']) {
+                                // Replicate the Equipment record
+                                $newEquipment = $record->replicate();
+                                $newEquipment->save();
+
+                                // Replicate the related Accessory records
+                                foreach ($record->accessory as $accessory) {
+                                    $newAccessory = $accessory->replicate();
+                                    $newAccessory->equipment_id = $newEquipment->id;
+                                    $newAccessory->save();
+                                }
+                            } else {
+                                // Replicate the Equipment record without accessories
+                                $newEquipment = $record->replicate();
+                                $newEquipment->save();
+                            }
+                            // Add notification
+                            Notification::make()
+                                ->title('Duplication Successful')
+                                ->body('The equipment has been successfully duplicated.')
+                                ->success()
+                                ->send();
+                        })
+                        ->form([
+                            Forms\Components\Toggle::make('with_accessories')
+                                ->label('Duplicate with Accessories?')
+                                ->default(true)
+                                ->onIcon('heroicon-m-bolt')
+                                ->offIcon('heroicon-m-bolt-slash')
+                                ->onColor('success')
+                                ->offColor('danger')
+                        ])
+                        ->icon('heroicon-m-document-duplicate')
+                        ->requiresConfirmation()
+                        ->modalIcon('heroicon-o-document-duplicate')
+                        ->modalHeading('Duplicate Equipment')
+                        ->modalSubheading('Do you want to duplicate this equipment with accessories?')
+                        ->modalButton('Duplicate')
+                        ->tooltip('Duplicate')
+                        ->color('primary'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('')
+                    ->tooltip('Delete'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
