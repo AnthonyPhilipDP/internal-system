@@ -38,8 +38,7 @@ class EquipmentRelationManager extends RelationManager
                             ->searchable()
                             ->preload()
                             ->relationship('customer', 'name')
-                            ->default(fn ($record) => $record ? $record->customer_id : null)
-                            ,
+                            ->disabled(),
                         Forms\Components\TextInput::make('manufacturer')
                             ->required()    
                             ->maxLength(255),
@@ -260,6 +259,7 @@ class EquipmentRelationManager extends RelationManager
                         ]),
                         
                         Forms\Components\TextInput::make('ncfReport')
+                            ->label('Non-conformity Report')
                             ->nullable()
                             ->maxLength(255),
                         Forms\Components\TextArea::make('comments')
@@ -277,10 +277,17 @@ class EquipmentRelationManager extends RelationManager
         return $table
             // ->recordTitleAttribute('make')
             ->columns([
-                Tables\Columns\TextColumn::make('manufacturer')->alignCenter(),
-                Tables\Columns\TextColumn::make('model')->alignCenter(),
-                Tables\Columns\TextColumn::make('serial')->alignCenter(),
-                Tables\Columns\TextColumn::make('description')->alignCenter(),
+                Tables\Columns\TextColumn::make('id')
+                ->label('Transaction ID')
+                ->alignCenter(),
+                Tables\Columns\TextColumn::make('manufacturer')
+                ->alignCenter(),
+                Tables\Columns\TextColumn::make('model')
+                ->alignCenter(),
+                Tables\Columns\TextColumn::make('serial')
+                ->alignCenter(),
+                Tables\Columns\TextColumn::make('description')
+                ->alignCenter(),
             ])
             ->filters([
                 //

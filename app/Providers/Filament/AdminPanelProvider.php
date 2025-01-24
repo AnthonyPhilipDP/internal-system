@@ -24,10 +24,15 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->spa(false)
+            ->unsavedChangesAlerts()
             ->id('admin')
             ->path('admin')
             ->login()
             ->darkMode(false)
+            ->globalSearch(false)
+            ->globalSearchKeyBindings(['ctrl+h', 'ctrl+h'])
+            ->globalSearchFieldKeyBindingSuffix()
             ->colors([
                 'primary' => Color::Emerald,
             ])

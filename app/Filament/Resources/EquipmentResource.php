@@ -19,6 +19,7 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Button;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
@@ -32,6 +33,8 @@ class EquipmentResource extends Resource
     protected static ?string $model = Equipment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';
+
+    protected static ?string $recordTitleAttribute = 'id';
 
     public static function form(Form $form): Form
     {
@@ -189,11 +192,14 @@ class EquipmentResource extends Resource
                 //
             ])
             ->actions([
-                ActionGroup::make([
+                // ActionGroup::make([
                     Tables\Actions\EditAction::make()
-                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Gray[900].')')->toHex())),
+                    ->label('')
+                    ->tooltip('Edit')
+                    ->icon('heroicon-m-pencil-square')
+                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Red[500].')')->toHex())),
                     Tables\Actions\Action::make('duplicate')
-                        ->label('Duplicate')
+                        ->label('')
                         ->action(function (Equipment $record, $data) {
                             if ($data['with_accessories']) {
                                 // Replicate the Equipment record
@@ -211,6 +217,12 @@ class EquipmentResource extends Resource
                                 $newEquipment = $record->replicate();
                                 $newEquipment->save();
                             }
+                            // Add notification
+                            Notification::make()
+                                ->title('Duplication Successful')
+                                ->body('The equipment has been successfully duplicated.')
+                                ->success()
+                                ->send();
                         })
                         ->form([
                             Forms\Components\Toggle::make('with_accessories')
@@ -219,7 +231,7 @@ class EquipmentResource extends Resource
                                 ->onIcon('heroicon-m-bolt')
                                 ->offIcon('heroicon-m-bolt-slash')
                                 ->onColor('success')
-                                ->offColor('warning')
+                                ->offColor('danger')
                         ])
                         ->icon('heroicon-m-document-duplicate')
                         ->requiresConfirmation()
@@ -227,11 +239,12 @@ class EquipmentResource extends Resource
                         ->modalHeading('Duplicate Equipment')
                         ->modalSubheading('Do you want to duplicate this equipment with accessories?')
                         ->modalButton('Duplicate')
+                        ->tooltip('Duplicate')
                         ->color('primary'),
-                ])
-                ->icon('heroicon-o-cog-6-tooth')
-                ->tooltip('Options')
-                ->color('danger')
+                // ])
+                // ->icon('heroicon-o-cog-6-tooth')
+                // ->tooltip('Options') 
+                // ->color('danger')
                 ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
