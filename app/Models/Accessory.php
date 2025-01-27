@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Models\Equipment;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Accessory extends Model
@@ -31,6 +33,16 @@ class Accessory extends Model
         parent::boot();
 
         static::saving(function ($model) {
+            if (!is_null($model->name) && is_null($model->quantity)) {
+                $model->name = 'N/A';
+                $model->quantity = 'N/A';
+            }
+
+            if (is_null($model->name) && !is_null($model->quantity)) {
+                $model->name = 'N/A';
+                $model->quantity = 'N/A';
+            }
+            
             if (is_null($model->name)) {
                 $model->name = 'N/A';
             }
