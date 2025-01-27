@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // ->registration()
             ->darkMode(false)
             ->globalSearch(false)
             ->globalSearchKeyBindings(['ctrl+h', 'ctrl+h'])
