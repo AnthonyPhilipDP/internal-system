@@ -15,6 +15,7 @@ Created a model with migration
 Set up the database migration
 Set up filament
 created a customer resource
+php artisan make:filament-resource Worksheet --soft-deletes
 setup customer resource
 created a UserPolicy
 -php artisan make:policy UserPolicy --model="User"

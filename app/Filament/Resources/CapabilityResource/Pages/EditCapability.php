@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\CapabilityResource\Pages;
 
-use App\Filament\Resources\CapabilityResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\CapabilityResource;
 
 class EditCapability extends EditRecord
 {
@@ -14,6 +14,8 @@ class EditCapability extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
+            Actions\ForceDeleteAction::make(),
+            Actions\RestoreAction::make(),
         ];
     }
 }
