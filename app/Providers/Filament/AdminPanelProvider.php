@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             //->sidebarFullyCollapsibleOnDesktop()
             ->spa(false)
-            ->unsavedChangesAlerts()
+            //->unsavedChangesAlerts()
             ->id('admin')
             ->path('admin')
             ->login()

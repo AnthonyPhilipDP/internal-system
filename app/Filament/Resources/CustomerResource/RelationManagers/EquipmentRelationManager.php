@@ -42,9 +42,9 @@ class EquipmentRelationManager extends RelationManager
                             ->required()
                             ->searchable()
                             ->preload()
-                            ->relationship('customer', 'name')
-                            ->disabled(),
+                            ->relationship('customer', 'name'),
                         Forms\Components\TextInput::make('manufacturer')
+                            ->readOnly()
                             ->required()    
                             ->maxLength(255),
                         Forms\Components\TextInput::make('model')
@@ -85,7 +85,7 @@ class EquipmentRelationManager extends RelationManager
                             Forms\Components\TextInput::make('name')
                                 ->columnSpan(2),
                             Forms\Components\TextInput::make('quantity')
-                                ->numeric()
+                                //->numeric()
                                 ->columnSpan(2),
                         ])
                         ->reorderable()
@@ -111,10 +111,10 @@ class EquipmentRelationManager extends RelationManager
                             ->searchable()
                             ->options([
                                 'asFound' => 'As Found',
-                                'good' => 'In Tolerance',
+                                'inTolerance' => 'In Tolerance',
                                 'outOfTolerance' => 'Out of Tolerance',
                                 'active' => 'Active',
-                                'Inactive' => 'Inactive',
+                                'inactive' => 'Inactive',
                                 'damaged' => 'Damaged',
                                 'rejected' => 'Rejected',
                                 'returned' => 'Returned',
@@ -131,9 +131,36 @@ class EquipmentRelationManager extends RelationManager
                                 'referToReport' => 'Refer to Report',
                                 'seeRemarks' => 'See Remarks',
                             ]),
-                        Forms\Components\TextInput::make('Condition Out')
-                            ->label('In Condition')
-                            ->nullable(),
+                        Forms\Components\Select::make('outCondition')
+                            ->label('Condition Out')
+                            ->searchable()
+                            ->options([
+                                'asLeft' => 'As Left',
+                                'limitedCalibration' => 'Limited Calibration',
+                                'inTolerance' => 'In Tolerance',
+                                'outOfTolerance' => 'Out of Tolerance',
+                                'pullOut' => 'Pull Out',
+                                'brokenDisplay' => 'Broken Display',
+                                'calBeforeUse' => 'Calibrated Before Use',
+                                'conditionalCal' => 'Conditional Calibration',
+                                'defective' => 'Defective',
+                                'disposed' => 'Disposed',
+                                'ejected' => 'Ejected',
+                                'evaluation' => 'Evaluation',
+                                'verification' => 'Verification',
+                                'forReference' => 'For Reference',
+                                'forRepair' => 'For Repair',
+                                'forSale' => 'For Sale',
+                                'forSpareParts' => 'For Spare Parts',
+                                'inoperative' => 'Inoperative',
+                                'missing' => 'Missing',
+                                'operational' => 'Operational',
+                                'noCapability' => 'Rejected - No Capability',
+                                'returned' => 'Rejected - Returned',
+                                'disposed' => 'Rejected - Disposed',
+                                'referToReport' => 'Refer to Report',
+                                'seeRemarks' => 'See Remarks',
+                            ]),
                         Forms\Components\TextInput::make('service')
                             ->nullable()
                             ->maxLength(255),

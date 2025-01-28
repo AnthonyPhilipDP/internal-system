@@ -197,13 +197,10 @@ class EquipmentResource extends Resource
                 // ActionGroup::make([
                     
                     Tables\Actions\EditAction::make()
-                    ->label('')
-                    ->tooltip('Edit')
-                    ->icon('heroicon-m-pencil-square')
-                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\ForceDeleteAction::make(),
-                    Tables\Actions\RestoreAction::make(),
+                        ->label('')
+                        ->tooltip('Edit')
+                        ->icon('heroicon-m-pencil-square')
+                        ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
                     Tables\Actions\Action::make('duplicate')
                         ->label('')
                         ->action(function (Equipment $record, $data) {
@@ -247,6 +244,11 @@ class EquipmentResource extends Resource
                         ->modalButton('Duplicate')
                         ->tooltip('Duplicate')
                         ->color('primary'),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('')
+                        ->tooltip('Delete'),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
                 // ])
                 // ->icon('heroicon-o-cog-6-tooth')
                 // ->tooltip('Options') 

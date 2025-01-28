@@ -34,20 +34,11 @@ class Accessory extends Model
 
         static::saving(function ($model) {
             if (!is_null($model->name) && is_null($model->quantity)) {
-                $model->name = 'N/A';
-                $model->quantity = 'N/A';
+                $model->quantity = 1;
             }
 
             if (is_null($model->name) && !is_null($model->quantity)) {
                 $model->name = 'N/A';
-                $model->quantity = 'N/A';
-            }
-            
-            if (is_null($model->name)) {
-                $model->name = 'N/A';
-            }
-
-            if (is_null($model->quantity)) {
                 $model->quantity = 'N/A';
             }
         });
