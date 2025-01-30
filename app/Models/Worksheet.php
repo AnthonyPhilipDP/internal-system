@@ -26,5 +26,14 @@ class Worksheet extends Model
                 Storage::disk('public')->delete($capability->file);
             }
         });
+
+        static::updating(function ($worksheet) {
+            if ($worksheet->isDirty('file')) {
+                $oldFile = $worksheet->getOriginal('file');
+                if ($oldFile) {
+                    Storage::disk('public')->delete($oldFile);
+                }
+            }
+        });
     }
 }
