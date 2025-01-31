@@ -22,6 +22,9 @@ use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 class EquipmentRelationManager extends RelationManager
 {
     protected static string $relationship = 'equipment';
@@ -323,7 +326,8 @@ class EquipmentRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('serial')
                 ->alignCenter()
                 ->searchable(),
-                Tables\Columns\TextColumn::make('worksheet_id')
+                Tables\Columns\TextColumn::make('worksheet.name')
+                ->label('Worksheet')
                 ->alignCenter()
                 ->searchable(),
                 Tables\Columns\TextColumn::make('description')
@@ -385,29 +389,45 @@ class EquipmentRelationManager extends RelationManager
                         ->modalButton('Duplicate')
                         ->tooltip('Duplicate')
                         ->color('primary'),
-                    Tables\Actions\Action::make('download')
-                            ->label('')
-                            ->action(function ($record) {
-                                $worksheetId = $record->worksheet_id; // Get the worksheet_id from the record
-        
-                                // Fetch the worksheet record from the database
-                                $worksheet = Worksheet::find($worksheetId);
-        
-                                if ($record->worksheet_id) {
-                                    $filePath = Storage::disk('public')->path($worksheet->file);
-                                    $fileName = $worksheet->name . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
-                                    return response()->download($filePath, $fileName);
-                                } else {
-                                    Notification::make()
-                                        ->title('No file available')
-                                        ->body('Please include a worksheet file for this equipment first.')
-                                        ->danger()
-                                        ->send();
-                                }
-                            })
-                            ->color('info')
-                            ->tooltip('Download Worksheet')
-                            ->icon('heroicon-m-arrow-down-tray'),
+                    Tables\Actions\Action::make('downloadWorksheet')
+                    ->tooltip('Download Worksheet')
+                    ->label('')
+                    ->icon('heroicon-m-arrow-down-tray')
+                        ->action(function ($record) {
+                            $worksheetId = $record->worksheet_id;
+                            $worksheet = Worksheet::find($worksheetId);
+                            if ($record->worksheet_id) {
+                                $filePath = Storage::disk('public')->path($worksheet->file);
+                                $spreadsheet = IOFactory::load($filePath);
+                        
+                                // Access the first sheet (index 0)
+                                $sheet = $spreadsheet->getSheet(0);
+                        
+                                // Modify cell B3
+                                $sheet->setCellValue('A20', 'make');
+                                $sheet->setCellValue('A21', 'model');
+                                $sheet->setCellValue('b20', $record->manufacturer);
+                                $sheet->setCellValue('b21', $record->model);
+                                $sheet->setCellValue('a22', 'calibration Procedure');
+                                $sheet->setCellValue('b22', $record->calibrationProcedure);
+                        
+                                // Save the modified file
+                                $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                                $fileName = $worksheet->name . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+                                $modifiedFilePath = public_path($fileName);
+                                $writer->save($modifiedFilePath);
+                        
+                                // Optionally, download the modified file
+                                return response()->download($modifiedFilePath)->deleteFileAfterSend(true);
+                            }
+                            else {
+                                Notification::make()
+                                    ->title('No file available')
+                                    ->body('Please include a worksheet file for this equipment first.')
+                                    ->danger()
+                                    ->send();
+                            }
+                }),
                 Tables\Actions\DeleteAction::make()
                     ->label('')
                     ->tooltip('Delete'),
