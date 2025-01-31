@@ -51,7 +51,14 @@ class EquipmentResource extends Resource
                             ->preload()
                             ->prefixIcon('heroicon-o-user')
                             ->prefixIconColor('primary'),
-                            Forms\Components\TextInput::make('manufacturer')
+                        Forms\Components\Select::make('worksheet_id')
+                            ->nullable()
+                            ->relationship('worksheet', 'name')
+                            ->searchable(['name', 'id'])
+                            ->preload()
+                            ->prefixIcon('heroicon-o-user')
+                            ->prefixIconColor('primary'),
+                        Forms\Components\TextInput::make('manufacturer')
                             ->required()    
                             ->maxLength(255),
                         Forms\Components\TextInput::make('model')

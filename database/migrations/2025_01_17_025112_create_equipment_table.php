@@ -15,6 +15,7 @@ return new class extends Migration
             //For Incoming
             $table->id()->from(500);
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
+            $table->unsignedBigInteger('worksheet_id')->nullable();
             $table->string('manufacturer');
             $table->string('model');
             $table->string('serial');
@@ -36,7 +37,6 @@ return new class extends Migration
             $table->string('code_range')->nullable();
             $table->string('reference')->nullable();
             $table->string('standardsUsed')->nullable();
-            $table->string('worksheet')->nullable();
             $table->string('validation')->nullable();
             $table->string('validatedBy')->nullable();
             $table->string('temperature')->nullable();

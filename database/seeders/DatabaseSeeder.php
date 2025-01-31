@@ -4,7 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Customer;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,11 +24,19 @@ class DatabaseSeeder extends Seeder
             'password' => 'admin',
         ]);
 
-        User::factory()->create([
-            'name' => 'Philip',
-            'email' => 'philip@email.com',
-            'level' => 2,
-            'password' => 'philip',
+        DB::table('customers')->insert([
+            'name' => 'Precision Measurement Specialists, Inc.',
+            'address' => 'Carmona, Cavite',
+            'phone' => '+639123123123',
+            'email' => 'admin@email.com',
+            'vat' => 'VAT',
+            'certifyingBody' => 'Sample',
+            'dateCertified' => '2025-01-30',
+            'payment' => 'Cash on Delivery',
+            'status' => 'Active',
+            'businessStyle' => 'Measurement Services',
+            'businessNature' => 'Metrology',
+            'tin' => '123456',
         ]);
     }
 }

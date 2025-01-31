@@ -8,12 +8,14 @@ use Spatie\Color\Rgb;
 use App\Models\Customer;
 use Filament\Forms\Form;
 use App\Models\Equipment;
+use App\Models\Worksheet;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Facades\Filament;
 use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
+use Illuminate\Support\Facades\Storage;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
@@ -209,9 +211,10 @@ class EquipmentRelationManager extends RelationManager
                         Forms\Components\TextInput::make('standardsUsed')
                             ->nullable()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('worksheet')
-                            ->nullable()
-                            ->maxLength(255),
+                        Forms\Components\Select::make('worksheet')
+                            ->label('Worksheet')
+                            ->relationship('worksheet', 'name')
+                            ->required(),
                         Forms\Components\TextInput::make('temperature')
                             ->nullable()
                             ->maxLength(255),
@@ -311,13 +314,18 @@ class EquipmentRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                 ->label('Transaction ID')
-                ->alignCenter(),
+                ->alignCenter()
+                ->searchable(),
                 Tables\Columns\TextColumn::make('manufacturer')
                 ->alignCenter(),
                 Tables\Columns\TextColumn::make('model')
                 ->alignCenter(),
                 Tables\Columns\TextColumn::make('serial')
-                ->alignCenter(),
+                ->alignCenter()
+                ->searchable(),
+                Tables\Columns\TextColumn::make('worksheet_id')
+                ->alignCenter()
+                ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                 ->alignCenter(),
             ])->defaultSort('id', 'desc')
@@ -335,39 +343,39 @@ class EquipmentRelationManager extends RelationManager
                     ->icon('heroicon-m-pencil-square')
                     ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
                     Tables\Actions\Action::make('duplicate')
-                        ->label('')
-                        ->action(function (Equipment $record, $data) {
-                            if ($data['with_accessories']) {
-                                // Replicate the Equipment record
-                                $newEquipment = $record->replicate();
-                                $newEquipment->save();
+                    ->label('')
+                    ->action(function (Equipment $record, $data) {
+                        if ($data['with_accessories']) {
+                            // Replicate the Equipment record
+                            $newEquipment = $record->replicate();
+                            $newEquipment->save();
 
-                                // Replicate the related Accessory records
-                                foreach ($record->accessory as $accessory) {
-                                    $newAccessory = $accessory->replicate();
-                                    $newAccessory->equipment_id = $newEquipment->id;
-                                    $newAccessory->save();
-                                }
-                            } else {
-                                // Replicate the Equipment record without accessories
-                                $newEquipment = $record->replicate();
-                                $newEquipment->save();
+                            // Replicate the related Accessory records
+                            foreach ($record->accessory as $accessory) {
+                                $newAccessory = $accessory->replicate();
+                                $newAccessory->equipment_id = $newEquipment->id;
+                                $newAccessory->save();
                             }
-                            // Add notification
-                            Notification::make()
-                                ->title('Duplication Successful')
-                                ->body('The equipment has been successfully duplicated.')
-                                ->success()
-                                ->send();
-                        })
-                        ->form([
-                            Forms\Components\Toggle::make('with_accessories')
-                                ->label('Duplicate with Accessories?')
-                                ->default(true)
-                                ->onIcon('heroicon-m-bolt')
-                                ->offIcon('heroicon-m-bolt-slash')
-                                ->onColor('success')
-                                ->offColor('danger')
+                        } else {
+                            // Replicate the Equipment record without accessories
+                            $newEquipment = $record->replicate();
+                            $newEquipment->save();
+                        }
+                        // Add notification
+                        Notification::make()
+                        ->title('Duplication Successful')
+                        ->body('The equipment has been successfully duplicated.')
+                        ->success()
+                        ->send();
+                    })
+                    ->form([
+                        Forms\Components\Toggle::make('with_accessories')
+                        ->label('Duplicate with Accessories?')
+                        ->default(true)
+                        ->onIcon('heroicon-m-bolt')
+                        ->offIcon('heroicon-m-bolt-slash')
+                        ->onColor('success')
+                        ->offColor('danger')
                         ])
                         ->icon('heroicon-m-document-duplicate')
                         ->requiresConfirmation()
@@ -377,6 +385,29 @@ class EquipmentRelationManager extends RelationManager
                         ->modalButton('Duplicate')
                         ->tooltip('Duplicate')
                         ->color('primary'),
+                    Tables\Actions\Action::make('download')
+                            ->label('')
+                            ->action(function ($record) {
+                                $worksheetId = $record->worksheet_id; // Get the worksheet_id from the record
+        
+                                // Fetch the worksheet record from the database
+                                $worksheet = Worksheet::find($worksheetId);
+        
+                                if ($record->worksheet_id) {
+                                    $filePath = Storage::disk('public')->path($worksheet->file);
+                                    $fileName = $worksheet->name . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+                                    return response()->download($filePath, $fileName);
+                                } else {
+                                    Notification::make()
+                                        ->title('No file available')
+                                        ->body('Please include a worksheet file for this equipment first.')
+                                        ->danger()
+                                        ->send();
+                                }
+                            })
+                            ->color('info')
+                            ->tooltip('Download Worksheet')
+                            ->icon('heroicon-m-arrow-down-tray'),
                 Tables\Actions\DeleteAction::make()
                     ->label('')
                     ->tooltip('Delete'),

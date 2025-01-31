@@ -36,4 +36,8 @@ class Worksheet extends Model
             }
         });
     }
+
+    public function equipment() {
+        return $this->hasMany(Equipment::class);
+    } 
 }

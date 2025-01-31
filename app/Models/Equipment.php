@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Customer;
 use App\Models\Accessory;
+use App\Models\Worksheet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,12 +12,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Equipment extends Model
 {
     use HasFactory;
-
     use SoftDeletes;
 
     protected $fillable = [
         'id',
         'customer_id',
+        'worksheet_id',
         'manufacturer',
         'model',
         'serial',
@@ -38,7 +39,6 @@ class Equipment extends Model
         'code_range',
         'reference',
         'standardsUsed',
-        'worksheet',
         'validation',
         'validatedBy',
         'temperature',
@@ -61,6 +61,10 @@ class Equipment extends Model
 
     public function customer(){
         return $this->belongsTo(Customer::class);
+    }
+
+    public function worksheet(){
+        return $this->belongsTo(Worksheet::class);
     }
 
     public function accessory() {
