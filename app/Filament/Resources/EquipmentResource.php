@@ -21,6 +21,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Forms\Components\Actions\Action;
@@ -56,7 +57,7 @@ class EquipmentResource extends Resource
                             ->relationship('worksheet', 'name')
                             ->searchable(['name', 'id'])
                             ->preload()
-                            ->prefixIcon('heroicon-o-user')
+                            ->prefixIcon('heroicon-o-document-check')
                             ->prefixIconColor('primary'),
                         Forms\Components\TextInput::make('manufacturer')
                             ->required()    
@@ -112,24 +113,6 @@ class EquipmentResource extends Resource
                         ->columns(4),
                     ]),
                 ])->columnSpan(1),
-                //Button working but cant save to database
-                // Forms\Components\Actions::make([
-                //     Forms\Components\Actions\Action::make('saveAsAnotherTransaction')
-                //         ->label('Save as Another Transaction')
-                //         ->action(function ($data) {
-                //             $newEquipment = new Equipment();
-                //                 $newEquipment->customer_id = $data['customer_id']; // Explicitly set customer_id
-                //                 $newEquipment->manufacturer = $data['manufacturer'];
-                //                 $newEquipment->model = $data['model'];
-                //                 $newEquipment->serial = $data['serial'];
-                //                 $newEquipment->description = $data['description'];
-                //                 // Set other fields as needed
-                //                 $newEquipment->create();
-
-                //             return redirect(EquipmentResource::getUrl('index'));
-                //         })
-                //         ->color('info'),
-                // ])
             ])->columns(4);
     }
 
@@ -141,7 +124,8 @@ class EquipmentResource extends Resource
                     ->label('Transaction ID')
                     ->alignCenter()
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('Customer Name')
                     ->alignCenter()

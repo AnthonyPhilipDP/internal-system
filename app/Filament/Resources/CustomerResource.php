@@ -154,7 +154,7 @@ class CustomerResource extends Resource
                     // ->wrap()
                     ->words(3)
                     ->searchable()
-                    ->copyable()
+                    // ->copyable()
                     ->copyMessage('Customer Name copied'),
                 Tables\Columns\TextColumn::make('address')
                     ->toggleable(isToggledHiddenByDefault: true),

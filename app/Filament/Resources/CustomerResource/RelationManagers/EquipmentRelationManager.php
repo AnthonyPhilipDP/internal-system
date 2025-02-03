@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
+use Illuminate\Http\Request;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -156,7 +157,7 @@ class EquipmentRelationManager extends RelationManager
                                 'forReference' => 'For Reference',
                                 'forRepair' => 'For Repair',
                                 'forSale' => 'For Sale',
-                                'forSpareParts' => 'For Spare Parts',
+                                'forSpareParts' => 'For SpParts',
                                 'inoperative' => 'Inoperative',
                                 'missing' => 'Missing',
                                 'operational' => 'Operational',
@@ -341,12 +342,84 @@ class EquipmentRelationManager extends RelationManager
                 // Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                Tables\Actions\Action::make('uploadExcel')
                     ->label('')
-                    ->tooltip('Edit')
-                    ->icon('heroicon-m-pencil-square')
-                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
-                    Tables\Actions\Action::make('duplicate')
+                    ->tooltip('Upload Data from Worksheet')
+                    ->icon('heroicon-m-arrow-up-tray')
+                    ->form([
+                        Forms\Components\FileUpload::make('excel_file')
+                            ->fetchFileInformation(false)
+                            ->panelAspectRatio('2:1')
+                            ->label('Upload Data from Excel File')
+                            ->required()
+                            ->acceptedFileTypes([
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'application/vnd.ms-excel'
+                            ])
+                            ->disk('public')
+                            ->directory('temp-uploads')
+                    ])
+                    ->action(function (Equipment $record, array $data) {
+                        try {
+                            // Load the uploaded Excel file
+                            $filePath = Storage::disk('public')->path($data['excel_file']);
+                            $spreadsheet = IOFactory::load($filePath);
+                            
+                            // Get the specific worksheet
+                            $sheet = $spreadsheet->getSheetByName('IS update');
+                            
+                            // Extract data from specific cells
+                            $updateData = [
+                                'calibrationProcedure' => $sheet->getCell('B3')->getCalculatedValue(),
+                                'previousCondition' => $sheet->getCell('B4')->getCalculatedValue(),
+                                'inCondition' => $sheet->getCell('B5')->getCalculatedValue(),
+                                'outCondition' => $sheet->getCell('B6')->getCalculatedValue(),
+                                'category' => $sheet->getCell('B7')->getCalculatedValue(),
+                                'service' => $sheet->getCell('B8')->getCalculatedValue(),
+                                'status' => $sheet->getCell('B9')->getCalculatedValue(),
+                                'comments' => $sheet->getCell('B10')->getCalculatedValue(),
+                                'code_range' => $sheet->getCell('B11')->getCalculatedValue(),
+                                'reference' => $sheet->getCell('B12')->getCalculatedValue(),
+                                'standardsUsed' => $sheet->getCell('B13')->getCalculatedValue(),
+                                'validation' => $sheet->getCell('B15')->getCalculatedValue(),
+                                'validatedBy' => $sheet->getCell('D15')->getCalculatedValue(),
+                                'temperature' => $sheet->getCell('B16')->getCalculatedValue(),
+                                'humidity' => $sheet->getCell('B17')->getCalculatedValue(),
+                            ];
+
+                            // Update the equipment record
+                            $record->update($updateData);
+
+                            // Delete the temporary file
+                            Storage::disk('public')->delete($data['excel_file']);
+
+                            Notification::make()
+                                ->title('Worksheet Processed Successfully')
+                                ->body('The worksheet data has been saved as equipment details')
+                                ->success()
+                                ->send();
+
+                        } catch (\Exception $e) {
+                            // Clean up the file in case of error
+                            if (isset($data['excel_file'])) {
+                                Storage::disk('public')->delete($data['excel_file']);
+                            }
+
+                            Notification::make()
+                                ->title('Error Processing Excel')
+                                ->body('There was an error processing the Excel file: ' . $e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    // ->slideOver()
+                    ->requiresConfirmation()
+                    ->modalIcon('heroicon-o-arrow-up-on-square-stack')
+                    ->modalHeading(fn (Equipment $record) => 'Upload Worksheet for Equipment #' . $record->id)
+                    ->modalDescription('Upload worksheet to update equipment details')
+                    ->modalSubmitActionLabel('Upload and Process'),
+
+                Tables\Actions\Action::make('duplicate')
                     ->label('')
                     ->action(function (Equipment $record, $data) {
                         if ($data['with_accessories']) {
@@ -389,7 +462,8 @@ class EquipmentRelationManager extends RelationManager
                         ->modalButton('Duplicate')
                         ->tooltip('Duplicate')
                         ->color('primary'),
-                    Tables\Actions\Action::make('downloadWorksheet')
+                        
+                Tables\Actions\Action::make('downloadWorksheet')
                     ->tooltip('Download Worksheet')
                     ->label('')
                     ->icon('heroicon-m-arrow-down-tray')
@@ -399,17 +473,14 @@ class EquipmentRelationManager extends RelationManager
                             if ($record->worksheet_id) {
                                 $filePath = Storage::disk('public')->path($worksheet->file);
                                 $spreadsheet = IOFactory::load($filePath);
+
+                                $sheet = $spreadsheet->getSheetByName('IS update');
                         
-                                // Access the first sheet (index 0)
-                                $sheet = $spreadsheet->getSheet(0);
-                        
-                                // Modify cell B3
-                                $sheet->setCellValue('A20', 'make');
-                                $sheet->setCellValue('A21', 'model');
                                 $sheet->setCellValue('b20', $record->manufacturer);
                                 $sheet->setCellValue('b21', $record->model);
-                                $sheet->setCellValue('a22', 'calibration Procedure');
-                                $sheet->setCellValue('b22', $record->calibrationProcedure);
+                                $sheet->setCellValue('b22', $record->serial);
+                                $sheet->setCellValue('b23', $record->description);
+                                $sheet->setCellValue('b24', $record->calibrationDate);
                         
                                 // Save the modified file
                                 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -419,6 +490,65 @@ class EquipmentRelationManager extends RelationManager
                         
                                 // Optionally, download the modified file
                                 return response()->download($modifiedFilePath)->deleteFileAfterSend(true);
+                                
+                                //Starting from here, the code did not use a PHPSpreadSheet but working
+                                //It fix the problem of sheet4.xml
+                                //You must put this inside the if else function
+                                // $originalFile = Storage::disk('public')->path($worksheet->file);
+                                // $tempFile = storage_path('app/public/temp_' . $worksheet->name . '.xlsx');
+            
+                                // // Make a copy first
+                                // copy($originalFile, $tempFile);
+                                
+                                // // Use ZipArchive to modify only the sheet1.xml (IS update sheet)
+                                // $zip = new \ZipArchive();
+                                // if ($zip->open($tempFile) === TRUE) {
+                                //     // Read sheet1.xml content
+                                //     $sheet1Content = $zip->getFromName('xl/worksheets/sheet1.xml');
+                                    
+                                //     // Create new cell content
+                                //     $cellUpdates = [
+                                //         'B20' => $record->manufacturer,
+                                //         'B21' => $record->model,
+                                //         'B22' => $record->serial,
+                                //         'B23' => $record->description,
+                                //         'B24' => $record->calibrationDate,
+                                //     ];
+
+                                //     foreach ($cellUpdates as $cell => $value) {
+                                //         // Pattern to match the cell whether it exists or not
+                                //         $pattern = '/<c r="' . $cell . '"[^>]*>.*?<\/c>/';
+                                //         $replacement = '<c r="' . $cell . '" t="s"><v>' . htmlspecialchars($value) . '</v></c>';
+                                        
+                                //         if (preg_match($pattern, $sheet1Content)) {
+                                //             // If cell exists, replace it
+                                //             $sheet1Content = preg_replace($pattern, $replacement, $sheet1Content);
+                                //         } else {
+                                //             // If cell doesn't exist, insert it
+                                //             // Find the row tag
+                                //             $rowNum = substr($cell, 1); // Get row number (20, 21, etc.)
+                                //             $rowPattern = '/<row r="' . $rowNum . '"[^>]*>(.*?)<\/row>/';
+                                            
+                                //             if (preg_match($rowPattern, $sheet1Content, $matches)) {
+                                //                 // Insert new cell into existing row
+                                //                 $newRowContent = $matches[1] . $replacement;
+                                //                 $sheet1Content = preg_replace($rowPattern, '<row r="' . $rowNum . '">' . $newRowContent . '</row>', $sheet1Content);
+                                //             } else {
+                                //                 // Create new row if it doesn't exist
+                                //                 $newRow = '<row r="' . $rowNum . '">' . $replacement . '</row>';
+                                //                 // Insert before the end of sheetData
+                                //                 $sheet1Content = preg_replace('/<\/sheetData>/', $newRow . '</sheetData>', $sheet1Content);
+                                //             }
+                                //         }
+                                //     }
+                                    
+                                //     // Update only sheet1.xml
+                                //     $zip->addFromString('xl/worksheets/sheet1.xml', $sheet1Content);
+                                //     $zip->close();
+                                // }
+                                
+                                // return response()->download($tempFile, $worksheet->name . '.xlsx')
+                                //     ->deleteFileAfterSend(true);
                             }
                             else {
                                 Notification::make()
@@ -428,6 +558,13 @@ class EquipmentRelationManager extends RelationManager
                                     ->send();
                             }
                 }),
+
+                Tables\Actions\EditAction::make()
+                    ->label('')
+                    ->tooltip('Edit')
+                    ->icon('heroicon-m-pencil-square')
+                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
+
                 Tables\Actions\DeleteAction::make()
                     ->label('')
                     ->tooltip('Delete'),
