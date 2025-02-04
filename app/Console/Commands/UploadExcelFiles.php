@@ -25,8 +25,8 @@ class UploadExcelFiles extends Command
         $destinationDirectory = 'worksheets';
 
         // Ensure the destination directory exists
-        if (!Storage::exists($destinationDirectory)) {
-            Storage::makeDirectory($destinationDirectory);
+        if (!Storage::disk('public')->exists($destinationDirectory)) {
+            Storage::disk('public')->makeDirectory($destinationDirectory);
         }
 
         // Get all files from the source directory, excluding '.' and '..'
@@ -44,14 +44,14 @@ class UploadExcelFiles extends Command
                 try {
                     // Check if the file already exists in the destination
                     $newFilePath = $destinationDirectory . '/' . $filename;
-                    if (Storage::exists($newFilePath)) {
+                    if (Storage::disk('public')->exists($newFilePath)) {
                         $this->info("Skipped: $filename (already exists in destination)");
                         $skippedCount++;
                         continue;
                     }
 
                     // Move file to the Laravel storage directory
-                    Storage::put($newFilePath, file_get_contents($filePath));
+                    Storage::disk('public')->put($newFilePath, file_get_contents($filePath));
 
                     // Insert file information into the database
                     DB::table('worksheets')->insert([
@@ -77,6 +77,7 @@ class UploadExcelFiles extends Command
         $this->info("Total files failed: $failedCount");
     }
 }
+
 //To make this file, I use:
 //php artisan make:command UploadExcelFiles
 
