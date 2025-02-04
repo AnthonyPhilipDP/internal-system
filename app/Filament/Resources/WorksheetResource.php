@@ -94,7 +94,11 @@ class WorksheetResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultPaginationPageOption(5)
+            ->paginated([5, 10, 20, 40])
+            // ->paginated([5, 10, 20, 40, 'all'])
+            ->extremePaginationLinks();
     }
 
     public static function getRelations(): array
