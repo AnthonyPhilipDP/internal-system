@@ -42,6 +42,9 @@ class UploadExcelFiles extends Command
 
             if (is_file($filePath) && (Str::endsWith($filename, '.xlsx') || Str::endsWith($filename, '.xls') || Str::endsWith($filename, '.XLS'))) {
                 try {
+                    // Extract the filename without the extension
+                    $filenameWithoutExtension = pathinfo($filename, PATHINFO_FILENAME);
+
                     // Check if the file already exists in the destination
                     $newFilePath = $destinationDirectory . '/' . $filename;
                     if (Storage::disk('public')->exists($newFilePath)) {
@@ -55,7 +58,7 @@ class UploadExcelFiles extends Command
 
                     // Insert file information into the database
                     DB::table('worksheets')->insert([
-                        'name' => $filename,
+                        'name' => $filenameWithoutExtension, // Use the filename without extension
                         'file' => $newFilePath,
                     ]);
 
