@@ -474,7 +474,13 @@ class EquipmentRelationManager extends RelationManager
                                 $filePath = Storage::disk('public')->path($worksheet->file);
                                 $spreadsheet = IOFactory::load($filePath);
 
-                                $sheet = $spreadsheet->getSheetByName('IS update');
+                                // Check if the "IS update" sheet exists
+                            $sheet = $spreadsheet->getSheetByName('IS update');
+                            if (!$sheet) {
+                                // Create the "IS update" sheet if it doesn't exist
+                                $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'IS update');
+                                $spreadsheet->addSheet($sheet);
+                            }
                         
                                 $sheet->setCellValue('b20', $record->manufacturer);
                                 $sheet->setCellValue('b21', $record->model);
@@ -490,65 +496,7 @@ class EquipmentRelationManager extends RelationManager
                         
                                 // Optionally, download the modified file
                                 return response()->download($modifiedFilePath)->deleteFileAfterSend(true);
-                                
-                                //Starting from here, the code did not use a PHPSpreadSheet but working
-                                //It fix the problem of sheet4.xml
-                                //You must put this inside the if else function
-                                // $originalFile = Storage::disk('public')->path($worksheet->file);
-                                // $tempFile = storage_path('app/public/temp_' . $worksheet->name . '.xlsx');
-            
-                                // // Make a copy first
-                                // copy($originalFile, $tempFile);
-                                
-                                // // Use ZipArchive to modify only the sheet1.xml (IS update sheet)
-                                // $zip = new \ZipArchive();
-                                // if ($zip->open($tempFile) === TRUE) {
-                                //     // Read sheet1.xml content
-                                //     $sheet1Content = $zip->getFromName('xl/worksheets/sheet1.xml');
-                                    
-                                //     // Create new cell content
-                                //     $cellUpdates = [
-                                //         'B20' => $record->manufacturer,
-                                //         'B21' => $record->model,
-                                //         'B22' => $record->serial,
-                                //         'B23' => $record->description,
-                                //         'B24' => $record->calibrationDate,
-                                //     ];
-
-                                //     foreach ($cellUpdates as $cell => $value) {
-                                //         // Pattern to match the cell whether it exists or not
-                                //         $pattern = '/<c r="' . $cell . '"[^>]*>.*?<\/c>/';
-                                //         $replacement = '<c r="' . $cell . '" t="s"><v>' . htmlspecialchars($value) . '</v></c>';
-                                        
-                                //         if (preg_match($pattern, $sheet1Content)) {
-                                //             // If cell exists, replace it
-                                //             $sheet1Content = preg_replace($pattern, $replacement, $sheet1Content);
-                                //         } else {
-                                //             // If cell doesn't exist, insert it
-                                //             // Find the row tag
-                                //             $rowNum = substr($cell, 1); // Get row number (20, 21, etc.)
-                                //             $rowPattern = '/<row r="' . $rowNum . '"[^>]*>(.*?)<\/row>/';
-                                            
-                                //             if (preg_match($rowPattern, $sheet1Content, $matches)) {
-                                //                 // Insert new cell into existing row
-                                //                 $newRowContent = $matches[1] . $replacement;
-                                //                 $sheet1Content = preg_replace($rowPattern, '<row r="' . $rowNum . '">' . $newRowContent . '</row>', $sheet1Content);
-                                //             } else {
-                                //                 // Create new row if it doesn't exist
-                                //                 $newRow = '<row r="' . $rowNum . '">' . $replacement . '</row>';
-                                //                 // Insert before the end of sheetData
-                                //                 $sheet1Content = preg_replace('/<\/sheetData>/', $newRow . '</sheetData>', $sheet1Content);
-                                //             }
-                                //         }
-                                //     }
-                                    
-                                //     // Update only sheet1.xml
-                                //     $zip->addFromString('xl/worksheets/sheet1.xml', $sheet1Content);
-                                //     $zip->close();
-                                // }
-                                
-                                // return response()->download($tempFile, $worksheet->name . '.xlsx')
-                                //     ->deleteFileAfterSend(true);
+                              
                             }
                             else {
                                 Notification::make()
