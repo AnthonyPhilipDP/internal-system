@@ -47,7 +47,7 @@ class WorksheetResource extends Resource
                             ->directory('worksheets')
                             ->disk('public')
                             ->preserveFilenames()
-                            ->required()
+                            ->acceptedFileTypes(['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])
                     ]),
                 ]),
             ]);

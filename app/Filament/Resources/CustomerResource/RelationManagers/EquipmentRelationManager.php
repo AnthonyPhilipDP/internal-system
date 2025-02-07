@@ -347,82 +347,82 @@ class EquipmentRelationManager extends RelationManager
                 // Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                // Tables\Actions\Action::make('uploadExcel')
-                //     ->label('')
-                //     ->tooltip('Upload Data from Worksheet')
-                //     ->icon('heroicon-m-arrow-up-tray')
-                //     ->form([
-                //         Forms\Components\FileUpload::make('excel_file')
-                //             ->fetchFileInformation(false)
-                //             ->panelAspectRatio('2:1')
-                //             ->label('Upload Data from Excel File')
-                //             ->required()
-                //             ->acceptedFileTypes([
-                //                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                //                 'application/vnd.ms-excel'
-                //             ])
-                //             ->disk('public')
-                //             ->directory('temp-uploads')
-                //     ])
-                //     ->action(function (Equipment $record, array $data) {
-                //         try {
-                //             // Load the uploaded Excel file
-                //             $filePath = Storage::disk('public')->path($data['excel_file']);
-                //             $spreadsheet = IOFactory::load($filePath);
+                Tables\Actions\Action::make('uploadExcel')
+                    ->label('')
+                    ->tooltip('Upload Data from Worksheet')
+                    ->icon('heroicon-m-arrow-up-tray')
+                    ->form([
+                        Forms\Components\FileUpload::make('excel_file')
+                            ->fetchFileInformation(false)
+                            ->panelAspectRatio('2:1')
+                            ->label('Upload Data from Excel File')
+                            ->required()
+                            ->acceptedFileTypes([
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                'application/vnd.ms-excel'
+                            ])
+                            ->disk('public')
+                            ->directory('temp-uploads')
+                    ])
+                    ->action(function (Equipment $record, array $data) {
+                        try {
+                            // Load the uploaded Excel file
+                            $filePath = Storage::disk('public')->path($data['excel_file']);
+                            $spreadsheet = IOFactory::load($filePath);
                             
-                //             // Get the specific worksheet
-                //             $sheet = $spreadsheet->getSheetByName('IS update');
+                            // Get the specific worksheet
+                            $sheet = $spreadsheet->getSheetByName('IS update');
                             
-                //             // Extract data from specific cells
-                //             $updateData = [
-                //                 'calibrationProcedure' => $sheet->getCell('B3')->getCalculatedValue(),
-                //                 'previousCondition' => $sheet->getCell('B4')->getCalculatedValue(),
-                //                 'inCondition' => $sheet->getCell('B5')->getCalculatedValue(),
-                //                 'outCondition' => $sheet->getCell('B6')->getCalculatedValue(),
-                //                 'category' => $sheet->getCell('B7')->getCalculatedValue(),
-                //                 'service' => $sheet->getCell('B8')->getCalculatedValue(),
-                //                 'status' => $sheet->getCell('B9')->getCalculatedValue(),
-                //                 'comments' => $sheet->getCell('B10')->getCalculatedValue(),
-                //                 'code_range' => $sheet->getCell('B11')->getCalculatedValue(),
-                //                 'reference' => $sheet->getCell('B12')->getCalculatedValue(),
-                //                 'standardsUsed' => $sheet->getCell('B13')->getCalculatedValue(),
-                //                 'validation' => $sheet->getCell('B15')->getCalculatedValue(),
-                //                 'validatedBy' => $sheet->getCell('D15')->getCalculatedValue(),
-                //                 'temperature' => $sheet->getCell('B16')->getCalculatedValue(),
-                //                 'humidity' => $sheet->getCell('B17')->getCalculatedValue(),
-                //             ];
+                            // Extract data from specific cells
+                            $updateData = [
+                                'calibrationProcedure' => $sheet->getCell('B3')->getCalculatedValue(),
+                                'previousCondition' => $sheet->getCell('B4')->getCalculatedValue(),
+                                'inCondition' => $sheet->getCell('B5')->getCalculatedValue(),
+                                'outCondition' => $sheet->getCell('B6')->getCalculatedValue(),
+                                'category' => $sheet->getCell('B7')->getCalculatedValue(),
+                                'service' => $sheet->getCell('B8')->getCalculatedValue(),
+                                'status' => $sheet->getCell('B9')->getCalculatedValue(),
+                                'comments' => $sheet->getCell('B10')->getCalculatedValue(),
+                                'code_range' => $sheet->getCell('B11')->getCalculatedValue(),
+                                'reference' => $sheet->getCell('B12')->getCalculatedValue(),
+                                'standardsUsed' => $sheet->getCell('B13')->getCalculatedValue(),
+                                'validation' => $sheet->getCell('B15')->getCalculatedValue(),
+                                'validatedBy' => $sheet->getCell('D15')->getCalculatedValue(),
+                                'temperature' => $sheet->getCell('B16')->getCalculatedValue(),
+                                'humidity' => $sheet->getCell('B17')->getCalculatedValue(),
+                            ];
 
-                //             // Update the equipment record
-                //             $record->update($updateData);
+                            // Update the equipment record
+                            $record->update($updateData);
 
-                //             // Delete the temporary file
-                //             Storage::disk('public')->delete($data['excel_file']);
+                            // Delete the temporary file
+                            Storage::disk('public')->delete($data['excel_file']);
 
-                //             Notification::make()
-                //                 ->title('Worksheet Processed Successfully')
-                //                 ->body('The worksheet data has been saved as equipment details')
-                //                 ->success()
-                //                 ->send();
+                            Notification::make()
+                                ->title('Worksheet Processed Successfully')
+                                ->body('The worksheet data has been saved as equipment details')
+                                ->success()
+                                ->send();
 
-                //         } catch (\Exception $e) {
-                //             // Clean up the file in case of error
-                //             if (isset($data['excel_file'])) {
-                //                 Storage::disk('public')->delete($data['excel_file']);
-                //             }
+                        } catch (\Exception $e) {
+                            // Clean up the file in case of error
+                            if (isset($data['excel_file'])) {
+                                Storage::disk('public')->delete($data['excel_file']);
+                            }
 
-                //             Notification::make()
-                //                 ->title('Error Processing Excel')
-                //                 ->body('There was an error processing the Excel file: ' . $e->getMessage())
-                //                 ->danger()
-                //                 ->send();
-                //         }
-                //     })
-                //     // ->slideOver()
-                //     ->requiresConfirmation()
-                //     ->modalIcon('heroicon-o-arrow-up-on-square-stack')
-                //     ->modalHeading(fn (Equipment $record) => 'Upload Worksheet for Equipment #' . $record->id)
-                //     ->modalDescription('Upload worksheet to update equipment details')
-                //     ->modalSubmitActionLabel('Upload and Process'),
+                            Notification::make()
+                                ->title('Error Processing Excel')
+                                ->body('There was an error processing the Excel file: ' . $e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    // ->slideOver()
+                    ->requiresConfirmation()
+                    ->modalIcon('heroicon-o-arrow-up-on-square-stack')
+                    ->modalHeading(fn (Equipment $record) => 'Upload Worksheet for Equipment #' . $record->id)
+                    ->modalDescription('Upload worksheet to update equipment details')
+                    ->modalSubmitActionLabel('Upload and Process'),
 
                 Tables\Actions\Action::make('duplicate')
                     ->label('')

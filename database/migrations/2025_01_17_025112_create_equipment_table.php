@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('inspection');
             $table->string('lab');
             $table->string('calType');
-            $table->string('category');
+            $table->string('category')->nullable();
             $table->string('inDate');
             //For Status
             $table->string('calibrationProcedure')->nullable();
