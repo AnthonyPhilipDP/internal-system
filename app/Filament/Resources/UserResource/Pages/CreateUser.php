@@ -5,6 +5,7 @@ namespace App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Notifications\Notification;
 
 class CreateUser extends CreateRecord
 {
@@ -19,5 +20,14 @@ class CreateUser extends CreateRecord
         return $this->getResource()::getUrl('index');
         // Use the following code to redirect to the previous page after creating a record
         // return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->icon('heroicon-o-user-plus')
+            ->title('User Registration Completed')
+            ->body('The user account has been created successfully.');
     }
 }

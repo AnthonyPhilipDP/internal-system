@@ -14,6 +14,7 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
 use Filament\Support\Enums\FontWeight;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
@@ -232,16 +233,49 @@ class CustomerResource extends Resource
                     // ->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
-                    ->slideOver(),
-                    Tables\Actions\EditAction::make()
-                    ->slideOver(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make()
-                    ->slideOver(),
+                        ->modalIcon('heroicon-o-user-minus')
+                        ->modalHeading(fn (Customer $record) => 'Remove ' . $record->name)
+                        ->modalDescription(fn (Customer $record) => 'Are you sure you want to remove ' . $record->name . ' as our customer?')
+                        ->modalSubmitActionLabel('Yes')
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->icon('heroicon-o-user-minus')
+                                ->title('Customer Removed')
+                                ->body('The customer has been removed successfully.'),
+                        ),
+                    Tables\Actions\ForceDeleteAction::make()
+                        ->modalIcon('heroicon-o-user-minus')
+                        ->modalHeading(fn (Customer $record) => 'Remove ' . $record->name . ' permanently')
+                        ->modalDescription(fn (Customer $record) => 'Are you sure you want to remove ' . $record->name . ' permanently as our customer?')
+                        ->modalSubmitActionLabel('Yes')
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->icon('heroicon-o-user-minus')
+                                ->title('Customer Removed Permanently')
+                                ->body('The customer has been permanently removed.'),
+                        ),
+                    Tables\Actions\RestoreAction::make()
+                        ->color('primary')
+                        ->modalIcon('heroicon-o-user-plus')
+                        ->modalHeading(fn (Customer $record) => 'Bring ' . $record->name . ' back')
+                        ->modalDescription(fn (Customer $record) => 'Are you sure you want to bring back ' . $record->name . ' as our customer?')
+                        ->modalSubmitActionLabel('Yes')
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->icon('heroicon-o-user-plus')
+                                ->title('Customer Restored')
+                                ->body('The customer has been restored succesfully.'),
+                        ),
                 ])
                 ->icon('heroicon-o-cog-6-tooth')
                 ->tooltip('Options')
@@ -269,5 +303,13 @@ class CustomerResource extends Resource
             'view' => Pages\ViewCustomer::route('/{record}'),
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

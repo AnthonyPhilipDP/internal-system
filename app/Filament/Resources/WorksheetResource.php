@@ -69,25 +69,59 @@ class WorksheetResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
-                Tables\Actions\Action::make('download')
-                ->label('Download')
-                ->icon('heroicon-o-folder-arrow-down')
-                ->color('info')
-                ->action(function ($record) {
-                    if ($record->file) {
-                        $filePath = Storage::disk('public')->path($record->file);
-                        $fileName = $record->name . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
-                        return response()->download($filePath, $fileName);
-                    } else {
+                Tables\Actions\DeleteAction::make()
+                ->modalIcon('heroicon-o-document-minus')
+                    ->modalHeading(fn (Worksheet $record) => 'Remove ' . $record->name)
+                    ->modalDescription(fn (Worksheet $record) => 'Are you sure you want to remove the worksheet ' . $record->name . '?')
+                    ->modalSubmitActionLabel('Yes')
+                    ->successNotification(
                         Notification::make()
-                            ->title('No file available')
-                            ->danger()
-                            ->send();
-                    }
-                }),
+                            ->success()
+                            ->icon('heroicon-o-document-minus')
+                            ->title('Equipment Removed')
+                            ->body('The equipment has been removed successfully.'),
+                    ),
+                Tables\Actions\Action::make('download')
+                    ->label('Download')
+                    ->icon('heroicon-o-folder-arrow-down')
+                    ->color('info')
+                    ->action(function ($record) {
+                        if ($record->file) {
+                            $filePath = Storage::disk('public')->path($record->file);
+                            $fileName = $record->name . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+                            return response()->download($filePath, $fileName);
+                        } else {
+                            Notification::make()
+                                ->title('No file available')
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->modalIcon('heroicon-o-document-minus')
+                    ->modalHeading(fn (Worksheet $record) => 'Remove ' . $record->name . ' permanently')
+                    ->modalDescription(fn (Worksheet $record) => 'Are you sure you want to remove the worksheet ' . $record->name . ' permanently?')
+                    ->modalSubmitActionLabel('Yes')
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->icon('heroicon-o-document-minus')
+                            ->title('Equipment Removed Permanently')
+                            ->body('The equipment has been permanently removed.'),
+                    ),
+                Tables\Actions\RestoreAction::make()
+                    ->color('primary')
+                    ->modalIcon('heroicon-o-document-check')
+                    ->modalHeading(fn (Worksheet $record) => 'Bring ' . $record->name . ' back')
+                    ->modalDescription(fn (Worksheet $record) => 'Are you sure you want to bring back worksheet ' . $record->name . '?')
+                    ->modalSubmitActionLabel('Yes')
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->icon('heroicon-o-document-check')
+                            ->title('Worksheet Restored')
+                            ->body('The worksheet has been restored succesfully.'),
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

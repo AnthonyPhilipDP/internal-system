@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\CustomerResource\Pages;
 
-use App\Filament\Resources\CustomerResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\CustomerResource;
 
 class CreateCustomer extends CreateRecord
 {
@@ -26,5 +27,14 @@ class CreateCustomer extends CreateRecord
         return $this->getResource()::getUrl('index');
         // Use the following code to redirect to the previous page after creating a record
         // return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->icon('heroicon-o-user-plus')
+            ->title('Customer Successfully Added')
+            ->body('New Customer has been added to the system.');
     }
 }

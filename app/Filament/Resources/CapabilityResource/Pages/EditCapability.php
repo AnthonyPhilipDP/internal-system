@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CapabilityResource\Pages;
 
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\CapabilityResource;
 
@@ -24,5 +25,13 @@ class EditCapability extends EditRecord
         return $this->getResource()::getUrl('index');
         // Use the following code to redirect to the previous page after creating a record
         // return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Updated Succesfully')
+            ->body('The Capability has been modified and saved successfully.');
     }
 }

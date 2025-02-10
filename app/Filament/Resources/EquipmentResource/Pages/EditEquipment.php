@@ -8,11 +8,12 @@ use Filament\Forms\Form;
 use App\Models\Equipment;
 use Filament\Actions\Action;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\EquipmentResource;
-use Filament\Support\Enums\MaxWidth;
 
 class EditEquipment extends EditRecord
 {
@@ -36,6 +37,14 @@ class EditEquipment extends EditRecord
         return $this->getResource()::getUrl('index');
         // Use the following code to redirect to the previous page after creating a record
         // return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Updated Succesfully')
+            ->body('The Equipment data has been modified and saved successfully.');
     }
 
     // public function form(Form $form): Form

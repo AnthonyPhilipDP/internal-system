@@ -237,9 +237,43 @@ class EquipmentResource extends Resource
                         ->color('primary'),
                     Tables\Actions\DeleteAction::make()
                         ->label('')
-                        ->tooltip('Delete'),
-                    Tables\Actions\ForceDeleteAction::make(),
-                    Tables\Actions\RestoreAction::make(),
+                        ->tooltip('Delete')
+                        ->modalIcon('heroicon-o-trash')
+                        ->modalHeading(fn (Equipment $record) => 'Remove ' . $record->manufacturer)
+                        ->modalDescription(fn (Equipment $record) => 'Are you sure you want to remove ' . $record->manufacturer . ' equipment?')
+                        ->modalSubmitActionLabel('Yes')
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->icon('heroicon-o-trash')
+                                ->title('Equipment Removed')
+                                ->body('The equipment has been removed successfully.'),
+                        ),
+                    Tables\Actions\ForceDeleteAction::make()
+                        ->modalIcon('heroicon-o-trash')
+                        ->modalHeading(fn (Equipment $record) => 'Remove ' . $record->manufacturer . ' permanently?')
+                        ->modalDescription(fn (Equipment $record) => 'Are you sure you want to remove ' . $record->manufacturer . ' equipment permanently?')
+                        ->modalSubmitActionLabel('Yes')
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->icon('heroicon-o-trash')
+                                ->title('Equipment Removed Permanently')
+                                ->body('The equipment has been permanently removed.'),
+                        ),
+                    Tables\Actions\RestoreAction::make()
+                        ->color('primary')
+                        ->modalIcon('heroicon-o-cube')
+                        ->modalHeading(fn (Equipment $record) => 'Bring ' . $record->manufacturer . ' back')
+                        ->modalDescription(fn (Equipment $record) => 'Are you sure you want to bring back ' . $record->manufacturer . ' in our equipments?')
+                        ->modalSubmitActionLabel('Yes')
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->icon('heroicon-o-cube')
+                                ->title('Equipment Restored')
+                                ->body('The equipment has been restored succesfully.'),
+                        ),
                 // ])
                 // ->icon('heroicon-o-cog-6-tooth')
                 // ->tooltip('Options') 

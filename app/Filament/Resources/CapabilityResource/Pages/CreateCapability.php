@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\CapabilityResource\Pages;
 
-use App\Filament\Resources\CapabilityResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\CapabilityResource;
 
 class CreateCapability extends CreateRecord
 {
@@ -20,4 +21,14 @@ class CreateCapability extends CreateRecord
         // Use the following code to redirect to the previous page after creating a record
         // return $this->previousUrl ?? $this->getResource()::getUrl('index');
     }
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->icon('heroicon-o-clipboard-document-check')
+            ->title('Capability Successfully Added')
+            ->body('New Capability has been added to the system.');
+    }
+    
 }

@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
-use App\Filament\Resources\UserResource;
 use Filament\Actions;
+use App\Filament\Resources\UserResource;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
 class EditUser extends EditRecord
@@ -24,5 +25,13 @@ class EditUser extends EditRecord
         return $this->getResource()::getUrl('index');
         // Use the following code to redirect to the previous page after creating a record
         // return $this->previousUrl ?? $this->getResource()::getUrl('index');
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Updated Succesfully')
+            ->body('The User data has been modified and saved successfully.');
     }
 }

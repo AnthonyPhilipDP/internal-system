@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\UserResource\Pages;
@@ -101,9 +102,43 @@ class UserResource extends Resource
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\ForceDeleteAction::make(),
-                    Tables\Actions\RestoreAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                        ->modalIcon('heroicon-o-user-minus')
+                        ->modalHeading(fn (User $record) => 'Remove ' . $record->name)
+                        ->modalDescription(fn (User $record) => 'Are you sure you want to remove ' . $record->name . ' as an Employee?')
+                        ->modalSubmitActionLabel('Yes')
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->icon('heroicon-o-user-minus')
+                                ->title('User Removed')
+                                ->body('The user has been removed successfully.'),
+                         ),
+                    Tables\Actions\ForceDeleteAction::make()
+                        ->modalIcon('heroicon-o-user-minus')
+                        ->modalHeading(fn (User $record) => 'Remove ' . $record->name . ' permanently')
+                        ->modalDescription(fn (User $record) => 'Are you sure you want to remove ' . $record->name . ' as an Employee permanently?')
+                        ->modalSubmitActionLabel('Yes')
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->icon('heroicon-o-user-minus')
+                                ->title('User Removed Permanently')
+                                ->body('The user has been permanently removed.'),
+                         ),
+                    Tables\Actions\RestoreAction::make()
+                        ->color('primary')
+                        ->modalIcon('heroicon-o-user-plus')
+                        ->modalHeading(fn (User $record) => 'Bring ' . $record->name . ' back')
+                        ->modalDescription(fn (User $record) => 'Are you sure you want to bring back ' . $record->name . ' as an Employee?')
+                        ->modalSubmitActionLabel('Yes')
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->icon('heroicon-o-user-plus')
+                                ->title('User Restored')
+                                ->body('The user has been restored succesfully.'),
+                        )
                 ])
                 ->icon('heroicon-o-cog-6-tooth')
                 ->tooltip('Options')

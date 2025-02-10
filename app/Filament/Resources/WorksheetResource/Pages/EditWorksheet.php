@@ -44,4 +44,12 @@ class EditWorksheet extends EditRecord
             }),
         ];
     }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Updated Succesfully')
+            ->body('The Worksheet data has been modified and saved successfully.');
+    }
 }
