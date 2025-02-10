@@ -49,7 +49,7 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'name',
-        'email',
+        'username',
         'level',
         'password',
     ];
@@ -75,5 +75,30 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the login username to be used by the controller.
+     *
+     * @return string
+     */
+    public function username()
+    {
+        return 'username';
+    }
+
+    /**
+     * Customize the authentication credentials.
+     *
+     * @param array $credentials
+     * @return array
+     */
+    public function getAuthCredentials(array $credentials)
+    {
+        if (isset($credentials['username'])) {
+            return ['username' => $credentials['username'], 'password' => $credentials['password']];
+        }
+        
+        return ['name' => $credentials['name'], 'password' => $credentials['password']];
     }
 }

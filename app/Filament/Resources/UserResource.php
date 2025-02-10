@@ -35,10 +35,9 @@ class UserResource extends Resource
                             ->required()
                             ->placeholder('Juan Dela Cruz')
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
-                            ->email()
-                            ->placeholder('sample@email.com')
-                            ->required()
+                        Forms\Components\TextInput::make('username')
+                            ->nullable()
+                            ->placeholder('Anything you like ^_^')
                             ->maxLength(255),
                         Forms\Components\Select::make('level')
                             ->label('User Level')
@@ -66,7 +65,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->alignCenter()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextColumn::make('username')
                     ->alignCenter()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('level')
@@ -79,11 +78,11 @@ class UserResource extends Resource
                         };
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->alignCenter()
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('email_verified_at')
+                //     ->alignCenter()
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->alignCenter()
                     ->dateTime()

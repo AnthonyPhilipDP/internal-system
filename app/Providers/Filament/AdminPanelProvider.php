@@ -6,6 +6,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
+use App\Filament\Auth\Login;
 use Filament\Support\Colors\Color;
 use Filament\Navigation\NavigationItem;
 use Filament\Http\Middleware\Authenticate;
@@ -31,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             //->unsavedChangesAlerts()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(Login::class) 
             // ->registration()
             ->darkMode(false)
             ->globalSearch(false)

@@ -71,6 +71,15 @@ return [
         // ],
     ],
 
+
+    //I added it here together with app/Filament/Auth/Login.php
+    'authentication' => [
+        'fields' => [
+            'username',  // Allow authentication by username
+            'name',      // Allow authentication by name
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Resetting Passwords
