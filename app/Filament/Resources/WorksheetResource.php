@@ -43,6 +43,7 @@ class WorksheetResource extends Resource
                                 ->maxLength(255),
                         FileUpload::make('file')
                             ->previewable(false)
+                            ->panelAspectRatio('2:1')
                             ->uploadingMessage('Uploading worksheet...')
                             ->directory('worksheets')
                             ->disk('public')
@@ -72,7 +73,7 @@ class WorksheetResource extends Resource
                 Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\Action::make('download')
-                ->label('Download File')
+                ->label('Download')
                 ->icon('heroicon-o-folder-arrow-down')
                 ->color('info')
                 ->action(function ($record) {

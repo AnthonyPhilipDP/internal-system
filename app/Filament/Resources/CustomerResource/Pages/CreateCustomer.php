@@ -17,6 +17,10 @@ class CreateCustomer extends CreateRecord
         return $data;
     }
 
+    protected static ?string $breadcrumb = "Creation";
+
+    protected static ?string $title = "Add New Customer";
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');

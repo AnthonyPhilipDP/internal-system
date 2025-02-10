@@ -10,6 +10,10 @@ class CreateWorksheet extends CreateRecord
 {
     protected static string $resource = WorksheetResource::class;
 
+    protected static ?string $breadcrumb = "Creation";
+
+    protected static ?string $title = "Add New Worksheet";
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');

@@ -70,6 +70,13 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('level')
                     ->alignCenter()
+                    ->formatStateUsing(function ($state) {
+                        return match ($state) {
+                            1 => 'Administrator',
+                            2 => 'Employee',
+                            3 => 'Guest',
+                        };
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->alignCenter()

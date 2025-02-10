@@ -10,6 +10,10 @@ class CreateEquipment extends CreateRecord
 {
     protected static string $resource = EquipmentResource::class;
 
+    protected static ?string $breadcrumb = "Creation";
+    
+    protected static ?string $title = "Add New Equipment";
+    
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
