@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Panel;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -49,6 +50,7 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'name',
+        'avatar',
         'username',
         'level',
         'password',
@@ -100,5 +102,11 @@ class User extends Authenticatable implements FilamentUser
         }
         
         return ['name' => $credentials['name'], 'password' => $credentials['password']];
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        // return $this->avatar_url;
+        return $this->avatar ? asset('/storage/' . $this->avatar) : null;
     }
 }

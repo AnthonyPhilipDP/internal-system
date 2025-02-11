@@ -12,7 +12,9 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Columns\ImageColumn;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
@@ -31,6 +33,9 @@ class UserResource extends Resource
             ->schema([
                 Section::make([
                     Grid::make()->schema([
+                        FileUpload::make('avatar')
+                            ->avatar()
+                            ->directory('avatars'),
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->placeholder('Juan Dela Cruz')
@@ -65,6 +70,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->alignCenter()
                     ->searchable(),
+                ImageColumn::make('avatar'),
                 Tables\Columns\TextColumn::make('username')
                     ->alignCenter()
                     ->searchable(),
