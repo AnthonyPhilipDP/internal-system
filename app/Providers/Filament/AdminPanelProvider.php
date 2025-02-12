@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class) 
             // ->registration()
-            ->darkMode(true)
+            ->darkMode(false)
             ->globalSearch(false)
             ->globalSearchKeyBindings(['ctrl+h', 'ctrl+h'])
             ->globalSearchFieldKeyBindingSuffix()
