@@ -27,8 +27,8 @@ class FilamentEditProfile extends Command
      */
     public function handle()
     {
-        $link = base_path('vendor/joaopaulolndev/filament-edit-profile/src/Livewire');
-        $target = app_path('Livewire/EditProfile');
+        $target = base_path('vendor/joaopaulolndev/filament-edit-profile/src/Livewire');
+        $link = app_path('Livewire/EditProfile');
 
         if (!file_exists($link)) {
             if (symlink($target, $link)) {

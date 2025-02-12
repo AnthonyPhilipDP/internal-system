@@ -33,7 +33,7 @@ class UserResource extends Resource
             ->schema([
                 Section::make([
                     Grid::make()->schema([
-                        FileUpload::make('avatar')
+                        FileUpload::make('avatar_url')
                             ->avatar()
                             ->directory('avatars'),
                         Forms\Components\TextInput::make('name')
@@ -70,7 +70,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->alignCenter()
                     ->searchable(),
-                ImageColumn::make('avatar'),
+                ImageColumn::make('avatar_url'),
                 Tables\Columns\TextColumn::make('username')
                     ->alignCenter()
                     ->searchable(),

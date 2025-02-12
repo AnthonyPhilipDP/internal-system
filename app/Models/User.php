@@ -4,8 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Panel;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -50,7 +51,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
      */
     protected $fillable = [
         'name',
-        'avatar',
+        'avatar_url',
         'username',
         'level',
         'password',
@@ -107,6 +108,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     public function getFilamentAvatarUrl(): ?string
     {
         // return $this->avatar_url;
-        return $this->avatar ? asset('/storage/' . $this->avatar) : null;
+        // return $this->avatar ? asset('/storage/' . $this->avatar) : null;
+        $fileSystem = Storage::url(path: $this->avatar_url);
+        $avatarColumn = 'avatar_url';
+        return $this->$avatarColumn ? $fileSystem : null;
     }
 }

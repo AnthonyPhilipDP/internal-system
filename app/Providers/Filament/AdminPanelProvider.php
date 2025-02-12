@@ -7,8 +7,10 @@ use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use App\Filament\Auth\Login;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
 use Filament\Navigation\NavigationItem;
+use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -19,6 +21,9 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
+
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -29,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             //->sidebarFullyCollapsibleOnDesktop()
             ->spa(true)
+            ->topNavigation()
             //->unsavedChangesAlerts()
             ->id('admin')
             ->path('admin')
@@ -66,9 +72,18 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->navigationGroups([
-                'Administration',
-                'PMSi',
-                'Social Media',
+                NavigationGroup::make()
+                    ->label('Administration')
+                    ->icon('heroicon-m-wrench-screwdriver'),
+                NavigationGroup::make()
+                    ->label('PMSi')
+                    ->icon('heroicon-m-building-office'),
+                NavigationGroup::make()
+                    ->label('Social Media')
+                    ->icon('heroicon-m-rectangle-group'),
+                NavigationGroup::make()
+                    ->label('Settings')
+                    ->icon('heroicon-m-cog-6-tooth'),
             ])
             ->navigationItems([
                 NavigationItem::make('Facebook')
@@ -87,6 +102,29 @@ class AdminPanelProvider extends PanelProvider
                     ->url('https://x.com', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->group('Social Media'),
+            ])
+            ->plugins([
+                FilamentEditProfilePlugin::make()
+                    ->shouldShowBrowserSessionsForm(false)
+                    ->setTitle('My Profile')
+                    ->setNavigationLabel('My Profile')
+                    ->setNavigationGroup('Settings')
+                    ->setIcon('heroicon-o-user')
+                    ->setSort(10)
+                    ->shouldRegisterNavigation(false)
+                    ->shouldShowDeleteAccountForm(false)
+                    ->shouldShowAvatarForm(
+                        value: true,
+                        directory: 'avatars',
+                        rules: 'mimes:jpeg,png|max:1024'
+                    )
+            ])
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Settings')
+                    ->url(fn (): string => EditProfilePage::getUrl())
+                    ->icon('heroicon-m-cog-6-tooth'),
             ]);
+
     }
 }
