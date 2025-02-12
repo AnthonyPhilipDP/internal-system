@@ -285,7 +285,7 @@ class EquipmentResource extends Resource
                 ]),
             ])
             ->defaultPaginationPageOption(5)
-            ->paginated([5, 10, 20, 40, 'all'])
+            ->paginated([5, 10, 20, 40])
             ->extremePaginationLinks();
     }
 

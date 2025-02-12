@@ -208,7 +208,6 @@ class EquipmentRelationManager extends RelationManager
                             ->label('Worksheet')
                             ->relationship('worksheet', 'name')
                             ->required()
-                            ->relationship('worksheet', 'name')
                             ->searchable(['name', 'id'])
                             ->preload()
                             ->prefixIcon('heroicon-o-document-check')
@@ -251,7 +250,8 @@ class EquipmentRelationManager extends RelationManager
                                 ->numeric()
                                 ->suffix('Months')
                                 ->nullable()
-                                ->maxLength(255),
+                                ->minValue(0)
+                                ->maxValue(60),
                         ]),
                         Forms\Components\Grid::make(2)->schema([
                             Forms\Components\DatePicker::make('calibrationDue')
@@ -516,7 +516,14 @@ class EquipmentRelationManager extends RelationManager
                     ->label('')
                     ->tooltip('Edit')
                     ->icon('heroicon-m-pencil-square')
-                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
+                    ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex()))
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->icon('heroicon-o-cube')
+                            ->title('Updated Successfully')
+                            ->body('The equipment data has been modified and saved successfully.'),
+                    ),
 
                 Tables\Actions\DeleteAction::make()
                     ->label('')
@@ -526,6 +533,9 @@ class EquipmentRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultPaginationPageOption(5)
+            ->paginated([5, 10, 20, 40])
+            ->extremePaginationLinks();
     }
 }

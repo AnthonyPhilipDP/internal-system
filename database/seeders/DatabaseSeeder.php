@@ -25,6 +25,13 @@ class DatabaseSeeder extends Seeder
             'password' => 'admin',
         ]);
 
+        User::factory()->create([
+            'name' => 'Philip',
+            'email' => null,
+            'level' => 1,
+            'password' => 'admin',
+        ]);
+
         DB::table('customers')->insert([
             'name' => 'Precision Measurement Specialists, Inc.',
             'address' => 'Carmona, Cavite',

@@ -96,7 +96,10 @@ class CapabilityResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultPaginationPageOption(5)
+            ->paginated([5, 10, 20, 40])
+            ->extremePaginationLinks();
     }
 
     public static function getRelations(): array
