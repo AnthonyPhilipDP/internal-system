@@ -109,8 +109,31 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     {
         // return $this->avatar_url;
         // return $this->avatar ? asset('/storage/' . $this->avatar) : null;
+        $default = (asset('images/default avatar.png'));
         $fileSystem = Storage::url(path: $this->avatar_url);
         $avatarColumn = 'avatar_url';
-        return $this->$avatarColumn ? $fileSystem : null;
+        return $this->$avatarColumn ? $fileSystem : $default;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Only delete avatar when the model is being force deleted
+        static::forceDeleted(function ($user) {
+            if ($user->avatar_url) {
+                Storage::disk('public')->delete($user->avatar_url);
+            }
+        });
+
+        // Listen for the updating event to remove the old avatar file
+        static::updating(function ($user) {
+            if ($user->isDirty('avatar_url')) {
+                $oldAvatar = $user->getOriginal('avatar_url');
+                if ($oldAvatar) {
+                    Storage::disk('public')->delete($oldAvatar);
+                }
+            }
+        });
     }
 }

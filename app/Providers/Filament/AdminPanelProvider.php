@@ -31,10 +31,13 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            // ->brandName('Basic')
+            ->brandLogo(asset('images/Site Logo.png'))
+            ->favicon(asset('images/PMSi Logo.png'))
             ->sidebarCollapsibleOnDesktop()
             //->sidebarFullyCollapsibleOnDesktop()
             ->spa(true)
-            ->topNavigation()
+            ->topNavigation(false)
             //->unsavedChangesAlerts()
             ->id('admin')
             ->path('admin')
