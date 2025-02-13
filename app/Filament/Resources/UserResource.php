@@ -70,7 +70,10 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->alignCenter()
                     ->searchable(),
-                ImageColumn::make('avatar_url'),
+                ImageColumn::make('avatar_url')
+                    ->label('Avatar')
+                    ->defaultImageUrl(asset('images/default avatar.png'))
+                    ->extraImgAttributes(['loading' => 'lazy']),
                 Tables\Columns\TextColumn::make('username')
                     ->alignCenter()
                     ->searchable(),
