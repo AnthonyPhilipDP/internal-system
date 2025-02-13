@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             // ->brandName('Basic')
             ->brandLogo(asset('images/Site Logo.png'))
-            ->favicon(asset('images/PMSi Logo.png'))
+            ->favicon(asset('images/PMSi Logo(transparent).png'))
             ->sidebarCollapsibleOnDesktop()
             //->sidebarFullyCollapsibleOnDesktop()
             ->spa(true)
