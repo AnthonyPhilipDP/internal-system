@@ -72,6 +72,7 @@ class UserResource extends Resource
                     ->searchable(),
                 ImageColumn::make('avatar_url')
                     ->label('Avatar')
+                    ->circular()
                     ->defaultImageUrl(asset('images/default avatar.png'))
                     ->extraImgAttributes(['loading' => 'lazy']),
                 Tables\Columns\TextColumn::make('username')
