@@ -9,6 +9,7 @@ use Filament\PanelProvider;
 use App\Filament\Auth\Login;
 use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
+use Illuminate\Support\Facades\Blade;
 use Filament\Navigation\NavigationItem;
 use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
@@ -31,6 +32,10 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->renderHook(
+                'panels::body.end',
+                fn (): string => Blade::render('@livewire(\'username-prompt\')')
+            )
             // ->brandName('Basic')
             ->brandLogo(asset('images/Site Logo.png'))
             ->favicon(asset('images/PMSi Logo(transparent).png'))

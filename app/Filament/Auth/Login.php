@@ -79,6 +79,8 @@ class Login extends BaseAuth
                 $this->throwFailureValidationException();
             }
 
+            session()->put('just_logged_in', true);
+
             return app(LoginResponse::class);
         } catch (ValidationException $e) {
             throw $e;
