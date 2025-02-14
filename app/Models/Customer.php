@@ -75,4 +75,8 @@ class Customer extends Model
         });
     }
 
+    public function getDisplayDateAttribute()
+    {
+        return $this->created_at ?? $this->createdDate;
+    }
 }

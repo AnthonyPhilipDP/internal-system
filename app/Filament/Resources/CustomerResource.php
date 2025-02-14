@@ -3,6 +3,8 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Tables;
 use App\Models\Customer;
 use Filament\Forms\Form;
@@ -313,6 +315,23 @@ class CustomerResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Grid::make(3) // Use a grid with 3 columns
+                    ->schema([
+                        Infolists\Components\TextEntry::make('id')
+                            ->label('ID'),
+                            Infolists\Components\TextEntry::make('address')
+                            ->label('Address'),
+                            Infolists\Components\TextEntry::make('display_date')
+                            ->label('Date Added')
+                            ->date(),
+                    ]),
             ]);
     }
 }
