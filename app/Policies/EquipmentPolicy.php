@@ -45,7 +45,7 @@ class EquipmentPolicy
      */
     public function delete(User $user, Equipment $equipment): bool
     {
-        return $user->isAdmin() || $user->isEmployee();
+        return $user->isAdmin();
     }
 
     /**

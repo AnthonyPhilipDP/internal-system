@@ -524,7 +524,7 @@ class CustomerResource extends Resource
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
                                 ->color('primary')
-                                ->tooltip('Click to copy'),
+                                ->tooltip('Click what you want to copy'),
                             Infolists\Components\TextEntry::make('contactPerson.department')
                                 ->label('Department')
                                 ->listWithLineBreaks()
@@ -532,21 +532,21 @@ class CustomerResource extends Resource
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
                                 ->limit(16)
-                                ->tooltip('Click to copy'),
+                                ->tooltip('Click what you want to copy'),
                             Infolists\Components\TextEntry::make('contactPerson.position')
                                 ->label('Position')
                                 ->listWithLineBreaks()
                                 ->copyable()
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
-                                ->tooltip('Click to copy'),
+                                ->tooltip('Click what you want to copy'),
                             Infolists\Components\TextEntry::make('contactPerson.contact1')
                                 ->label('Primary Contact')
                                 ->listWithLineBreaks()
                                 ->copyable()
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
-                                ->tooltip('Click to copy'),
+                                ->tooltip('Click what you want to copy'),
                             Infolists\Components\TextEntry::make('contactPerson.contact2')
                                 ->label('Alternative Contact')
                                 ->listWithLineBreaks()
@@ -554,7 +554,7 @@ class CustomerResource extends Resource
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
                                 ->limit(16)
-                                ->tooltip('Click to copy'),
+                                ->tooltip('Click what you want to copy'),
                             Infolists\Components\TextEntry::make('contactPerson.email')
                                 ->label('Email')
                                 ->listWithLineBreaks()
@@ -563,7 +563,7 @@ class CustomerResource extends Resource
                                 ->copyMessageDuration(1500)
                                 ->color('info')
                                 ->limit(16)
-                                ->tooltip('Click to copy'),
+                                ->tooltip('Click what you want to copy'),
                             Infolists\Components\TextEntry::make('contactPerson.is_active')
                                 ->label('Status')
                                 ->listWithLineBreaks()
@@ -579,7 +579,7 @@ class CustomerResource extends Resource
                 ])
                 ->collapsed()
                 ->compact()
-                ->description('The current active contact information is displayed here, click to expand')
+                ->description('The  contact information of the customer is displayed here, click to expand')
                 ->icon('heroicon-m-phone'),
             ]);
     }
