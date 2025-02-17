@@ -9,12 +9,13 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Columns\ImageColumn;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
@@ -31,36 +32,73 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Section::make([
-                    Grid::make()->schema([
-                        FileUpload::make('avatar_url')
-                            ->avatar()
-                            ->directory('avatars'),
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->placeholder('Juan Dela Cruz')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('username')
-                            ->nullable()
-                            ->placeholder('Anything you like ^_^')
-                            ->maxLength(255),
-                        Forms\Components\Select::make('level')
+                // Section::make([
+                //     Grid::make()->schema([
+                //         FileUpload::make('avatar_url')
+                //             ->label('Avatar')
+                //             ->avatar()
+                //             ->directory('avatars'),
+                //         Forms\Components\TextInput::make('name')
+                //             ->required()
+                //             ->placeholder('Juan Dela Cruz')
+                //             ->maxLength(255),
+                //         Forms\Components\TextInput::make('username')
+                //             ->nullable()
+                //             ->placeholder('Anything you like ^_^')
+                //             ->maxLength(255),
+                //         Forms\Components\Select::make('level')
+                //             ->label('User Level')
+                //             ->required()
+                //             ->options(User::LEVEL)
+                //             ->default(User::EMPLOYEE),
+                //         Forms\Components\TextInput::make('password')
+                //             ->password()
+                //             ->placeholder('Enter your desired password')
+                //             ->required()
+                //             ->revealable()
+                //             ->maxLength(255),
+                //     ])->columns(3)
+                // ]),
+                Wizard::make([
+                    Wizard\Step::make('Credentials')
+                        ->schema([
+                            Forms\Components\TextInput::make('name')
+                                ->required()
+                                ->placeholder('Juan Dela Cruz')
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('password')
+                                ->password()
+                                ->placeholder('Enter your desired password')
+                                ->required()
+                                ->revealable()
+                                ->maxLength(255),
+                        ])
+                        ->icon('heroicon-o-newspaper')
+                        ->completedIcon('heroicon-m-newspaper'),
+                    Wizard\Step::make('Administrative Information')
+                        ->schema([
+                            Forms\Components\Select::make('level')
                             ->label('User Level')
                             ->required()
                             ->options(User::LEVEL)
                             ->default(User::EMPLOYEE),
-                        Forms\Components\DateTimePicker::make('email_verified_at')
-                            ->label('Email Verified At')
-                            ->default(now()),
-                        Forms\Components\TextInput::make('password')
-                            ->password()
-                            ->placeholder('Enter your desired password')
-                            ->required()
-                            ->revealable()
-                            ->maxLength(255),
-                    ])
-                ])
-            ]);
+                        ])
+                        ->icon('heroicon-o-finger-print')
+                        ->completedIcon('heroicon-m-finger-print'),
+                    Wizard\Step::make('Profile Picture')
+                        ->schema([
+                            FileUpload::make('avatar_url')
+                                ->label('Avatar (optional)')
+                                ->avatar()
+                                ->directory('avatars')
+                                ->alignCenter()
+                                ->imageEditor()
+                                ->circleCropper()
+                        ])
+                        ->icon('heroicon-o-user-circle')
+                        ->completedIcon('heroicon-m-user-circle'),
+                    ])->skippable(),
+            ])->columns(1);
     }
 
     public static function table(Table $table): Table
