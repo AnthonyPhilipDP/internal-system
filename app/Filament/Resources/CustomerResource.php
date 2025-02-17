@@ -157,7 +157,7 @@ class CustomerResource extends Resource
                         ])
                         ->icon('heroicon-o-document-text')
                         ->completedIcon('heroicon-m-document-text'),
-                        Wizard\Step::make('Contact Person')
+                    Wizard\Step::make('Contact Person')
                         ->schema([
                             Group::make()->schema([
                                 Section::make('')->schema([
