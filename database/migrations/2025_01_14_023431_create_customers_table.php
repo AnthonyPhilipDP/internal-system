@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('wht')->nullable("N/A");
             $table->string('businessNature');
             $table->string('qualifyingSystem')->nullable("N/A");
-            $table->string('certifyingBody');
+            $table->string('certifyingBody')->nullable("N/A");
             $table->string('dateCertified');
             $table->string('payment');
             $table->string('status');

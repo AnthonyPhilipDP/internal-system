@@ -3,16 +3,18 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Tables;
+use Filament\Infolists;
 use App\Models\Customer;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Section;
 use Filament\Support\Enums\FontWeight;
 use Filament\Forms\Components\TextInput;
@@ -41,104 +43,275 @@ class CustomerResource extends Resource
     {
         return $form
             ->schema([
-                Group::make()->schema([
-                    Section::make([
-                        Forms\Components\TextInput::make('name')
-                            ->placeholder('Precision Measurement Specialists, Inc.')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextArea::make('address')
-                            ->placeholder("B1 L3 Macaria Business Center. Governor's Dr., Carmona, 4116 Cavite, Philippines")
-                            ->autosize()
-                            ->maxLength(255)    
-                            ->required(),
-                        Forms\Components\TextInput::make('qualifyingSystem')
-                            ->label('Qualifying System')
-                            ->nullable(),
-                        Forms\Components\TextInput::make('certifyingBody')
-                            ->label('Certifying Body')
-                            ->required(),
-                        Forms\Components\DatePicker::make('dateCertified')
-                            ->label('Date Certified')
-                            ->required(),
-                        Forms\Components\TextArea::make('remarks')
-                            ->rows(2)   
-                            ->autosize()
-                            ->nullable(),
-                    ]),
-                ])->columnSpan(2),
+                Wizard::make([
+                    Wizard\Step::make('Basic Information')
+                        ->schema([
+                            Forms\Components\TextInput::make('name')
+                                ->validationAttribute('name')
+                                ->placeholder('Precision Measurement Specialists, Inc.')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextArea::make('address')
+                                ->validationAttribute('address')
+                                ->rows(1) 
+                                ->placeholder("B1 L3 Macaria Business Center. Governor's Dr., Carmona, 4116 Cavite, Philippines")
+                                ->autosize()
+                                ->maxLength(255)    
+                                ->required(),
+                            Forms\Components\TextInput::make('qualifyingSystem')
+                                ->validationAttribute('qualifying system')
+                                ->label('Qualifying System')
+                                ->nullable(),
+                            Forms\Components\TextInput::make('certifyingBody')
+                                ->validationAttribute('certifying body')
+                                ->label('Certifying Body')
+                                ->nullable(),
+                            Forms\Components\DatePicker::make('dateCertified')
+                                ->validationAttribute('date certified')
+                                ->label('Date Certified')
+                                ->required(),
+                            Forms\Components\TextArea::make('remarks')
+                                ->rows(1)   
+                                ->autosize()
+                                ->nullable(),
+                        ])
+                        ->icon('heroicon-o-identification')
+                        ->completedIcon('heroicon-m-identification'),
+                    Wizard\Step::make('BIR Information')
+                        ->schema([
+                            Forms\Components\TextInput::make('tin')
+                                ->validationAttribute('TIN')
+                                ->label('Taxpayer Identification Number')
+                                ->validationAttribute('TIN')
+                                ->required(),
+                            Forms\Components\TextInput::make('sec')
+                                ->label('SEC Reg no.')
+                                ->nullable(),
+                            Forms\Components\Select::make('vat')
+                                ->validationAttribute('VAT')
+                                ->label('VAT')
+                                ->options([
+                                    'VAT' => 'VAT',
+                                    'Non-VAT' => 'Non-VAT',
+                                ])
+                                ->required(),
+                            Forms\Components\TextInput::make('wht')
+                                ->label('With Holding Tax')
+                                ->nullable(),
+                            Forms\Components\TextInput::make('businessNature')
+                                ->validationAttribute('business nature')
+                                ->label('Nature of Business')
+                                ->required(),
+                            Forms\Components\TextInput::make('businessStyle')
+                                ->validationAttribute('business style')
+                                ->label('Business Style')
+                                ->required(),
+                        ])
+                        ->icon('heroicon-o-newspaper')
+                        ->completedIcon('heroicon-m-newspaper'),
+                    Wizard\Step::make('Contact Details')
+                        ->schema([
+                            PhoneInput::make('phone')
+                                ->validationAttribute('phone')
+                                ->defaultCountry('PH')
+                                ->initialCountry('PH')
+                                ->default('+639')
+                                // ->separateDialCode()
+                                ->strictMode()
+                                ->formatAsYouType(false)
+                                ->required(),
+                            PhoneInput::make('landline')
+                                ->validationAttribute('landline')
+                                ->nullable()
+                                ->showFlags(false)
+                                ->disallowDropdown()
+                                ->onlyCountries(['AF']),
+                            Forms\Components\TextInput::make('email')
+                                ->validationAttribute('email')
+                                ->placeholder('pmsical@yahoo.com')
+                                ->email()
+                                ->required(),
+                            Forms\Components\TextInput::make('website')
+                                ->placeholder('www.pmsi-cal.com')
+                                ->label('Website')
+                                ->nullable(),
+                            Forms\Components\Select::make('payment')
+                                ->validationAttribute('payment')
+                                ->options([
+                                    'Cash on Delivery' => 'Cash on Delivery',
+                                    'Net 7 days' => 'Net 7 days',
+                                    'Net 15 days' => 'Net 15 days',
+                                    'Net 30 days' => 'Net 30 days',
+                                    'Net 60 days' => 'Net 60 days',
+                                ])
+                                ->default('cod')
+                                ->required(),
+                            Forms\Components\Select::make('status')
+                                ->label('status')
+                                ->options([
+                                    'Active' => 'Active',
+                                    'Potential' => 'Potential',
+                                ])
+                                ->default('Active')
+                                ->required(),
+                        ])
+                        ->icon('heroicon-o-document-text')
+                        ->completedIcon('heroicon-m-document-text'),
+                        Wizard\Step::make('Contact Person')
+                        ->schema([
+                            Group::make()->schema([
+                                Section::make('')->schema([
+                                Forms\Components\Repeater::make('contactPerson')
+                                    ->label('')
+                                    ->relationship()
+                                    ->schema([
+                                    Forms\Components\TextInput::make('name')
+                                        ->validationAttribute('name')
+                                        ->label('Contact Name')
+                                        ->placeholder('Name of the contact person')
+                                        ->columnSpan(2)
+                                        ->required(),
+                                    Forms\Components\TextInput::make('contact1')
+                                        ->validationAttribute('primary contact number')
+                                        ->label('Primary Contact Number')
+                                        ->placeholder('Main phone number')
+                                        ->length(11)
+                                        ->tel()
+                                        ->columnSpan(2)
+                                        ->required(),
+                                    Forms\Components\TextInput::make('department')
+                                        ->label('Department')
+                                        ->placeholder('Department of the contact person within the company')
+                                        ->columnSpan(2),
+                                    Forms\Components\TextInput::make('contact2')
+                                        ->label('Secondary Contact Number')
+                                        ->placeholder('Alternative phone number')
+                                        ->columnSpan(2),
+                                    Forms\Components\TextInput::make('position')
+                                        ->label('Position')
+                                        ->placeholder('Position or title of the contact person within the company')
+                                        ->columnSpan(2),
+                                    Forms\Components\TextInput::make('email')
+                                        ->columnSpan(2)
+                                        ->email(),
+                                    Forms\Components\Toggle::make('is_active')
+                                        ->label('Active Status')
+                                        ->onIcon('heroicon-o-bolt')
+                                        ->offIcon('heroicon-o-bolt-slash')
+                                        ->onColor('success')
+                                        ->offColor('danger')
+                                        ->inline(),
+                                    ])
+                                    ->reorderable()
+                                    ->reorderableWithButtons()
+                                    ->reorderableWithDragAndDrop()
+                                    ->collapsible()
+                                    ->addActionLabel('Add Contact Person')
+                                    ->columns(4)
+                                ]),
+                            ]),
+                        ])
+                        ->icon('heroicon-o-device-phone-mobile')
+                        ->completedIcon('heroicon-m-device-phone-mobile'),
+                    ])->skippable(),
+                // Group::make()->schema([
+                //     Section::make([
+                //         Forms\Components\TextInput::make('name')
+                //             ->placeholder('Precision Measurement Specialists, Inc.')
+                //             ->required()
+                //             ->maxLength(255),
+                //         Forms\Components\TextArea::make('address')
+                //             ->placeholder("B1 L3 Macaria Business Center. Governor's Dr., Carmona, 4116 Cavite, Philippines")
+                //             ->autosize()
+                //             ->maxLength(255)    
+                //             ->required(),
+                //         Forms\Components\TextInput::make('qualifyingSystem')
+                //             ->label('Qualifying System')
+                //             ->nullable(),
+                //         Forms\Components\TextInput::make('certifyingBody')
+                //             ->label('Certifying Body')
+                //             ->required(),
+                //         Forms\Components\DatePicker::make('dateCertified')
+                //             ->label('Date Certified')
+                //             ->required(),
+                //         Forms\Components\TextArea::make('remarks')
+                //             ->rows(2)   
+                //             ->autosize()
+                //             ->nullable(),
+                //     ]),
+                // ])->columnSpan(2),
 
-                Group::make()->schema([
-                    Section::make([
-                        Forms\Components\TextInput::make('tin')
-                            ->label('TIN No.')
-                            ->required(),
-                        Forms\Components\TextInput::make('sec')
-                            ->label('SEC Reg no.')
-                            ->nullable(),
-                        Forms\Components\Select::make('vat')
-                            ->label('VAT')
-                            ->options([
-                                'VAT' => 'VAT',
-                                'Non-VAT' => 'Non-VAT',
-                            ])
-                            ->required(),
-                        Forms\Components\TextInput::make('wht')
-                            ->label('With Holding Tax')
-                            ->nullable(),
-                        Forms\Components\TextInput::make('businessNature')
-                            ->label('Nature of Business')
-                            ->required(),
-                        Forms\Components\TextInput::make('businessStyle')
-                            ->label('Business Style')
-                            ->required(),
-                    ]),
-                ])->columnSpan(1),
+                // Group::make()->schema([
+                //     Section::make([
+                //         Forms\Components\TextInput::make('tin')
+                //             ->label('TIN No.')
+                //             ->required(),
+                //         Forms\Components\TextInput::make('sec')
+                //             ->label('SEC Reg no.')
+                //             ->nullable(),
+                //         Forms\Components\Select::make('vat')
+                //             ->label('VAT')
+                //             ->options([
+                //                 'VAT' => 'VAT',
+                //                 'Non-VAT' => 'Non-VAT',
+                //             ])
+                //             ->required(),
+                //         Forms\Components\TextInput::make('wht')
+                //             ->label('With Holding Tax')
+                //             ->nullable(),
+                //         Forms\Components\TextInput::make('businessNature')
+                //             ->label('Nature of Business')
+                //             ->required(),
+                //         Forms\Components\TextInput::make('businessStyle')
+                //             ->label('Business Style')
+                //             ->required(),
+                //     ]),
+                // ])->columnSpan(1),
 
-                Group::make()->schema([
-                    Section::make([ 
-                        PhoneInput::make('phone')
-                            ->defaultCountry('PH')
-                            ->initialCountry('PH')
-                            ->default('+639')
-                            // ->separateDialCode()
-                            ->strictMode()
-                            ->formatAsYouType(false)
-                            ->required(),
-                        PhoneInput::make('landline')
-                            ->nullable()
-                            ->showFlags(false)
-                            ->disallowDropdown()
-                            ->onlyCountries(['AF']),
-                        Forms\Components\TextInput::make('email')
-                            ->placeholder('pmsical@yahoo.com')
-                            ->email()
-                            ->required(),
-                        Forms\Components\TextInput::make('website')
-                            ->placeholder('www.pmsi-cal.com')
-                            ->label('Website')
-                            ->nullable(),
-                        Forms\Components\Select::make('payment')
-                            ->options([
-                                'Cash on Delivery' => 'Cash on Delivery',
-                                'Net 7 days' => 'Net 7 days',
-                                'Net 15 days' => 'Net 15 days',
-                                'Net 30 days' => 'Net 30 days',
-                                'Net 60 days' => 'Net 60 days',
-                            ])
-                            ->default('cod')
-                            ->required(),
-                        Forms\Components\Select::make('status')
-                            ->options([
-                                'Active' => 'Active',
-                                'Potential' => 'Potential',
-                            ])
-                            ->default('Active')
-                            ->required(),
-                    ])
-                ])->columnSpan(1)
+                // Group::make()->schema([
+                //     Section::make([ 
+                //         PhoneInput::make('phone')
+                //             ->defaultCountry('PH')
+                //             ->initialCountry('PH')
+                //             ->default('+639')
+                //             // ->separateDialCode()
+                //             ->strictMode()
+                //             ->formatAsYouType(false)
+                //             ->required(),
+                //         PhoneInput::make('landline')
+                //             ->nullable()
+                //             ->showFlags(false)
+                //             ->disallowDropdown()
+                //             ->onlyCountries(['AF']),
+                //         Forms\Components\TextInput::make('email')
+                //             ->placeholder('pmsical@yahoo.com')
+                //             ->email()
+                //             ->required(),
+                //         Forms\Components\TextInput::make('website')
+                //             ->placeholder('www.pmsi-cal.com')
+                //             ->label('Website')
+                //             ->nullable(),
+                //         Forms\Components\Select::make('payment')
+                //             ->options([
+                //                 'Cash on Delivery' => 'Cash on Delivery',
+                //                 'Net 7 days' => 'Net 7 days',
+                //                 'Net 15 days' => 'Net 15 days',
+                //                 'Net 30 days' => 'Net 30 days',
+                //                 'Net 60 days' => 'Net 60 days',
+                //             ])
+                //             ->default('cod')
+                //             ->required(),
+                //         Forms\Components\Select::make('status')
+                //             ->options([
+                //                 'Active' => 'Active',
+                //                 'Potential' => 'Potential',
+                //             ])
+                //             ->default('Active')
+                //             ->required(),
+                //     ])
+                // ])->columnSpan(1)
                 
-            ])->columns(4);
+                ])->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -296,7 +469,8 @@ class CustomerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            EquipmentRelationManager::class
+            //I want it on View only, go to Resource folder/Pages/ViewCustomer.php
+            // EquipmentRelationManager::class
         ];
     }
 
@@ -322,16 +496,91 @@ class CustomerResource extends Resource
     {
         return $infolist
             ->schema([
-                Infolists\Components\Grid::make(3) // Use a grid with 3 columns
-                    ->schema([
-                        Infolists\Components\TextEntry::make('id')
-                            ->label('ID'),
+                Infolists\Components\Section::make('Customer Information')
+                ->schema([
+                    Infolists\Components\Grid::make(3)
+                        ->schema([
+                            Infolists\Components\TextEntry::make('id')
+                                ->label('Customer ID'),
                             Infolists\Components\TextEntry::make('address')
-                            ->label('Address'),
+                                ->label('Address'),
                             Infolists\Components\TextEntry::make('display_date')
-                            ->label('Date Added')
-                            ->date(),
-                    ]),
+                                ->label('Date Added')
+                                ->date(),
+                        ]),
+                ])
+                ->collapsed()
+                ->compact()
+                ->description('The customer information is displayed here, click to expand')
+                ->icon('heroicon-m-identification'),
+                Infolists\Components\Section::make('Contact Information')
+                ->schema([
+                    Infolists\Components\Grid::make(7)
+                        ->schema([
+                            Infolists\Components\TextEntry::make('contactPerson.name')
+                                ->label('Contact Person')
+                                ->listWithLineBreaks()
+                                ->copyable()
+                                ->copyMessage('Copied!')
+                                ->copyMessageDuration(1500)
+                                ->color('primary')
+                                ->tooltip('Click to copy'),
+                            Infolists\Components\TextEntry::make('contactPerson.department')
+                                ->label('Department')
+                                ->listWithLineBreaks()
+                                ->copyable()
+                                ->copyMessage('Copied!')
+                                ->copyMessageDuration(1500)
+                                ->limit(16)
+                                ->tooltip('Click to copy'),
+                            Infolists\Components\TextEntry::make('contactPerson.position')
+                                ->label('Position')
+                                ->listWithLineBreaks()
+                                ->copyable()
+                                ->copyMessage('Copied!')
+                                ->copyMessageDuration(1500)
+                                ->tooltip('Click to copy'),
+                            Infolists\Components\TextEntry::make('contactPerson.contact1')
+                                ->label('Primary Contact')
+                                ->listWithLineBreaks()
+                                ->copyable()
+                                ->copyMessage('Copied!')
+                                ->copyMessageDuration(1500)
+                                ->tooltip('Click to copy'),
+                            Infolists\Components\TextEntry::make('contactPerson.contact2')
+                                ->label('Alternative Contact')
+                                ->listWithLineBreaks()
+                                ->copyable()
+                                ->copyMessage('Copied!')
+                                ->copyMessageDuration(1500)
+                                ->limit(16)
+                                ->tooltip('Click to copy'),
+                            Infolists\Components\TextEntry::make('contactPerson.email')
+                                ->label('Email')
+                                ->listWithLineBreaks()
+                                ->copyable()
+                                ->copyMessage('Copied!')
+                                ->copyMessageDuration(1500)
+                                ->color('info')
+                                ->limit(16)
+                                ->tooltip('Click to copy'),
+                            Infolists\Components\TextEntry::make('contactPerson.is_active')
+                                ->label('Status')
+                                ->listWithLineBreaks()
+                                ->formatStateUsing(fn ($state): string => match ((string) $state) {
+                                    '1' => 'Active',
+                                    default => 'Inactive',
+                                })
+                                ->color(fn (string $state): string => match ($state) {
+                                    '1' => 'success',
+                                    default => 'warning',
+                                }),
+                        ]),
+                ])
+                ->collapsed()
+                ->compact()
+                ->description('The current active contact information is displayed here, click to expand')
+                ->icon('heroicon-m-phone'),
             ]);
     }
 }

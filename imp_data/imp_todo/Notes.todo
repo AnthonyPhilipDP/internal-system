@@ -21,24 +21,12 @@ created a UserPolicy
 -php artisan make:policy UserPolicy --model="User"
 
 
-$customer_id = $this->id;
-$equipment_id
-
-
 #push to new branch
 git checkout -b (name of your new branch)
 #add and commit first before pushing
 git add .
 git commit -m "your message"
 git push origin (your new branch name)
-
-add a contact person to the equipment
-fields must be:
-contact person
-department
-position
-contact
-email 
 
 
 #for future updates of the System
@@ -50,3 +38,7 @@ add soft delete
 add a number of how many customer did the employee add to the System
 add picture of employee in a circular shape
 add an extension to the browser, "Avoid duplicate downloads"
+
+//How to create a Repeater
+php artisan make:model ContactPerson -m
+Set up the new files added

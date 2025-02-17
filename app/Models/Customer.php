@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Equipment;
 use Illuminate\Support\Str;
+use App\Models\ContactPerson;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -78,5 +79,9 @@ class Customer extends Model
     public function getDisplayDateAttribute()
     {
         return $this->created_at ?? $this->createdDate;
+    }
+
+    public function contactPerson() {
+        return $this->hasMany(ContactPerson::class);
     }
 }

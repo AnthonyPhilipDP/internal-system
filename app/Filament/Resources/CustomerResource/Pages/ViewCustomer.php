@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\CustomerResource\Pages;
 
-use App\Filament\Resources\CustomerResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ViewRecord;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
+use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Resources\CustomerResource;
+use App\Filament\Resources\CustomerResource\RelationManagers\EquipmentRelationManager;
 
 class ViewCustomer extends ViewRecord
 {
@@ -21,6 +22,13 @@ class ViewCustomer extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+        ];
+    }
+
+    public function getRelationManagers(): array
+    {
+        return [
+            EquipmentRelationManager::class,
         ];
     }
 }
