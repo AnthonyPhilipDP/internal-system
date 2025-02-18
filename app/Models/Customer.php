@@ -84,4 +84,8 @@ class Customer extends Model
     public function contactPerson() {
         return $this->hasMany(ContactPerson::class);
     }
+
+    public function activeContactPerson() {
+        return $this->hasMany(ContactPerson::class)->where('is_active', true);
+    }
 }

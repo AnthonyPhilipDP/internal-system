@@ -74,7 +74,7 @@ class CustomerResource extends Resource
                                 ->rows(1)   
                                 ->autosize()
                                 ->nullable(),
-                        ])
+                        ])->columns(2)
                         ->icon('heroicon-o-identification')
                         ->completedIcon('heroicon-m-identification'),
                     Wizard\Step::make('BIR Information')
@@ -106,26 +106,37 @@ class CustomerResource extends Resource
                                 ->validationAttribute('business style')
                                 ->label('Business Style')
                                 ->required(),
-                        ])
+                        ])->columns(2)
                         ->icon('heroicon-o-newspaper')
                         ->completedIcon('heroicon-m-newspaper'),
                     Wizard\Step::make('Contact Details')
                         ->schema([
-                            PhoneInput::make('phone')
+                            // PhoneInput::make('phone')
+                            //     ->validationAttribute('phone')
+                            //     ->defaultCountry('PH')
+                            //     ->initialCountry('PH')
+                            //     ->default('+639')
+                            //     // ->separateDialCode()
+                            //     ->strictMode()
+                            //     ->formatAsYouType(false)
+                            //     ->required(),
+                            // PhoneInput::make('landline')
+                            //     ->validationAttribute('landline')
+                            //     ->nullable()
+                            //     ->showFlags(false)
+                            //     ->disallowDropdown()
+                            //     ->onlyCountries(['AF']),
+                            Forms\Components\TextInput::make('phone')
                                 ->validationAttribute('phone')
-                                ->defaultCountry('PH')
-                                ->initialCountry('PH')
-                                ->default('+639')
-                                // ->separateDialCode()
-                                ->strictMode()
-                                ->formatAsYouType(false)
+                                ->placeholder('')
+                                ->prefix('Enter 11 digits')
+                                ->tel()
                                 ->required(),
-                            PhoneInput::make('landline')
-                                ->validationAttribute('landline')
-                                ->nullable()
-                                ->showFlags(false)
-                                ->disallowDropdown()
-                                ->onlyCountries(['AF']),
+                            Forms\Components\TextInput::make('landline')
+                                ->tel()
+                                ->prefix('Enter 10 digits')
+                                ->length(10)
+                                ->nullable(),
                             Forms\Components\TextInput::make('email')
                                 ->validationAttribute('email')
                                 ->placeholder('pmsical@yahoo.com')
@@ -147,14 +158,14 @@ class CustomerResource extends Resource
                                 ->default('cod')
                                 ->required(),
                             Forms\Components\Select::make('status')
-                                ->label('status')
+                                ->label('Status')
                                 ->options([
                                     'Active' => 'Active',
                                     'Potential' => 'Potential',
                                 ])
                                 ->default('Active')
                                 ->required(),
-                        ])
+                        ])->columns(2)
                         ->icon('heroicon-o-document-text')
                         ->completedIcon('heroicon-m-document-text'),
                     Wizard\Step::make('Contact Person')
@@ -200,6 +211,7 @@ class CustomerResource extends Resource
                                         ->offIcon('heroicon-o-bolt-slash')
                                         ->onColor('success')
                                         ->offColor('danger')
+                                        ->default(true)
                                         ->inline(),
                                     ])
                                     ->reorderable()
@@ -498,7 +510,7 @@ class CustomerResource extends Resource
             ->schema([
                 Infolists\Components\Section::make('Customer Information')
                 ->schema([
-                    Infolists\Components\Grid::make(3)
+                    Infolists\Components\Grid::make(4)
                         ->schema([
                             Infolists\Components\TextEntry::make('id')
                                 ->label('Customer ID'),
@@ -507,55 +519,73 @@ class CustomerResource extends Resource
                             Infolists\Components\TextEntry::make('display_date')
                                 ->label('Date Added')
                                 ->date(),
+                            Infolists\Components\TextEntry::make('status')
+                                ->label('Status')
+                                ->formatStateUsing(fn ($state): string => match ((string) $state) {
+                                    'Active' => 'Active',
+                                    'Potential' => 'Potential',
+                                    default => 'No Data',
+                                })
+                                ->color(fn (string $state): string => match ($state) {
+                                    'Active' => 'success',
+                                    'Potential' => 'warning',
+                                    default => 'info',
+                                }),
                         ]),
                 ])
                 ->collapsed()
                 ->compact()
                 ->description('The customer information is displayed here, click to expand')
-                ->icon('heroicon-m-identification'),
+                ->icon('heroicon-m-identification')
+                ->iconColor('primary'),
                 Infolists\Components\Section::make('Contact Information')
                 ->schema([
                     Infolists\Components\Grid::make(7)
                         ->schema([
-                            Infolists\Components\TextEntry::make('contactPerson.name')
+                            Infolists\Components\TextEntry::make('activeContactPerson.name')
                                 ->label('Contact Person')
                                 ->listWithLineBreaks()
                                 ->copyable()
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
                                 ->color('primary')
+                                ->default('Inactive')
                                 ->tooltip('Click what you want to copy'),
-                            Infolists\Components\TextEntry::make('contactPerson.department')
+                            Infolists\Components\TextEntry::make('activeContactPerson.department')
                                 ->label('Department')
                                 ->listWithLineBreaks()
                                 ->copyable()
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
                                 ->limit(16)
+                                ->default('Inactive')
                                 ->tooltip('Click what you want to copy'),
-                            Infolists\Components\TextEntry::make('contactPerson.position')
+                            Infolists\Components\TextEntry::make('activeContactPerson.position')
                                 ->label('Position')
                                 ->listWithLineBreaks()
                                 ->copyable()
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
+                                ->default('Inactive')
                                 ->tooltip('Click what you want to copy'),
-                            Infolists\Components\TextEntry::make('contactPerson.contact1')
+                            Infolists\Components\TextEntry::make('activeContactPerson.contact1')
                                 ->label('Primary Contact')
                                 ->listWithLineBreaks()
                                 ->copyable()
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
+                                ->default('Inactive')
                                 ->tooltip('Click what you want to copy'),
-                            Infolists\Components\TextEntry::make('contactPerson.contact2')
+                            Infolists\Components\TextEntry::make('activeContactPerson.contact2')
                                 ->label('Alternative Contact')
                                 ->listWithLineBreaks()
                                 ->copyable()
                                 ->copyMessage('Copied!')
                                 ->copyMessageDuration(1500)
                                 ->limit(16)
+                                ->default('Inactive')
                                 ->tooltip('Click what you want to copy'),
-                            Infolists\Components\TextEntry::make('contactPerson.email')
+                            Infolists\Components\TextEntry::make('activeContactPerson.email')
                                 ->label('Email')
                                 ->listWithLineBreaks()
                                 ->copyable()
@@ -563,9 +593,11 @@ class CustomerResource extends Resource
                                 ->copyMessageDuration(1500)
                                 ->color('info')
                                 ->limit(16)
+                                ->default('Inactive')
                                 ->tooltip('Click what you want to copy'),
-                            Infolists\Components\TextEntry::make('contactPerson.is_active')
+                            Infolists\Components\TextEntry::make('activeContactPerson.is_active')
                                 ->label('Status')
+                                ->default('Inactive')
                                 ->listWithLineBreaks()
                                 ->formatStateUsing(fn ($state): string => match ((string) $state) {
                                     '1' => 'Active',
@@ -579,8 +611,9 @@ class CustomerResource extends Resource
                 ])
                 ->collapsed()
                 ->compact()
-                ->description('The  contact information of the customer is displayed here, click to expand')
-                ->icon('heroicon-m-phone'),
+                ->description('The active contact information of the customer is displayed here, click to expand')
+                ->icon('heroicon-m-phone')
+                ->iconColor('primary'),
             ]);
     }
 }
