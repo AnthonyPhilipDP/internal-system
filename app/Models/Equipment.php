@@ -14,6 +14,10 @@ class Equipment extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $casts = [
+        'inspection' => 'array',
+    ];
+
     protected $fillable = [
         'id',
         'customer_id',

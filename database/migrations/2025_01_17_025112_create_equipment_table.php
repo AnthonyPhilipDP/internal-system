@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('model');
             $table->string('serial');
             $table->string('description');
-            $table->string('inspection');
+            $table->json('inspection');
             $table->string('lab');
             $table->string('calType');
             $table->string('category')->nullable();

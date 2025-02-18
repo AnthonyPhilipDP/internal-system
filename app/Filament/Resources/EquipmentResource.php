@@ -84,10 +84,19 @@ class EquipmentResource extends Resource
                         Forms\Components\TextInput::make('category')
                         ->required()
                         ->maxLength(255),
-                        Forms\Components\TextInput::make('inspection')
+                        Forms\Components\Select::make('inspection')
+                            ->validationAttribute('inspection findings')
                             ->label('Inspection Findings')
+                            ->multiple()
                             ->required()
-                            ->maxLength(255),
+                            ->options([
+                                'rust' => 'Rust',
+                                'bent' => 'Bent',
+                                'dents' => 'Dents',
+                                'grime' => 'Grime',
+                                'cracks' => 'Cracks',
+                                'scratches' => 'Scratches',
+                            ]),
                         Forms\Components\DatePicker::make('inDate')
                             ->label('Date Received')
                             ->default(now())
@@ -131,12 +140,18 @@ class EquipmentResource extends Resource
                     ->alignCenter()
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('worksheet.name')
+                    ->label('Worksheet')
+                    ->default('No worksheet yet!')
+                    ->alignCenter()
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('manufacturer')
-                ->alignCenter()
+                    ->alignCenter()
                     ->label('Manufacturer')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('model')
-                ->alignCenter()
+                    ->alignCenter()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('serial')
                     ->alignCenter()
@@ -147,7 +162,9 @@ class EquipmentResource extends Resource
                 Tables\Columns\TextColumn::make('inspection')
                     ->alignCenter()
                     ->label('Inspection Findings')
-                    ->searchable()
+                    //This is just for capitalizing the words in the array
+                    ->formatStateUsing(function ($state): string {return ucwords($state);})
+                    ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('lab')
                     ->label('Laboratory')
