@@ -88,14 +88,15 @@ class EquipmentResource extends Resource
                             ->validationAttribute('inspection findings')
                             ->label('Inspection Findings')
                             ->multiple()
-                            ->required()
+                            ->nullable()
                             ->options([
+                                'no visible damage' => 'No Visible Damage',
+                                'scratches' => 'Scratches',
+                                'cracks' => 'Cracks',
+                                'grime' => 'Grime',
+                                'dents' => 'Dents',
                                 'rust' => 'Rust',
                                 'bent' => 'Bent',
-                                'dents' => 'Dents',
-                                'grime' => 'Grime',
-                                'cracks' => 'Cracks',
-                                'scratches' => 'Scratches',
                             ]),
                         Forms\Components\DatePicker::make('inDate')
                             ->label('Date Received')

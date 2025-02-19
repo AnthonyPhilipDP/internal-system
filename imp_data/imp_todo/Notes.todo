@@ -28,12 +28,6 @@ git add .
 git commit -m "your message"
 git push origin (your new branch name)
 
-
-#for future updates of the System
-add a number of how many customer did the employee add to the System
-add picture of employee in a circular shape
-add soft delete
-
 //Important
 add a number of how many customer did the employee add to the System
 add picture of employee in a circular shape
@@ -42,3 +36,13 @@ add an extension to the browser, "Avoid duplicate downloads"
 //How to create a Repeater
 php artisan make:model ContactPerson -m
 Set up the new files added
+
+//Make printable document
+1. Make a PrinterController that controls all the printing functionality
+
+2. Create a new filament resource for each one
+-Acknowledgement Receipt
+-Equipment Delivery Receipt
+-Delivery / Receipt of Documents
+
+

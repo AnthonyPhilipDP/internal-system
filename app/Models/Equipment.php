@@ -74,4 +74,18 @@ class Equipment extends Model
     public function accessory() {
         return $this->hasMany(Accessory::class);
     } 
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+
+            if (empty($model->inspection)) {
+                $model->inspection = ['no visible damage'];
+            }
+
+        });
+    }
 }
