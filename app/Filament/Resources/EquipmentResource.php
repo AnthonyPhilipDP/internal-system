@@ -109,6 +109,36 @@ class EquipmentResource extends Resource
                     ->columnSpan(1),
                     Group::make()->schema([
                         Section::make('')->schema([
+                            Forms\Components\Toggle::make('sameToggle')
+                                ->label('Same')
+                                ->onIcon('heroicon-m-bolt')
+                                ->offIcon('heroicon-m-bolt')
+                                ->onColor('success')
+                                ->offColor('danger')
+                                ->reactive()
+                                ->default(false)
+                                ->afterStateUpdated(function (bool $state, callable $get, callable $set): void {
+                                    $maxAr = Equipment::query()
+                                        ->selectRaw('MAX(CAST(ar_id AS UNSIGNED)) as max')
+                                        ->value('max') ?? 0;
+                                    // If toggle true, use max; otherwise, increment by one.
+                                    $newValue = $state ? $maxAr : ((int)$maxAr + 1);
+                                    $set('ar_id', (string)$newValue);
+                                }),
+                            // TextInput for ar_id: shows computed value and updates on hydration.
+                            Forms\Components\TextInput::make('ar_id')
+                                ->label('Acknowledgement Receipt No.')
+                                ->readonly()
+                                ->reactive()
+                                ->afterStateHydrated(function (?string $state, callable $get, callable $set): void {
+                                    $maxAr = Equipment::query()
+                                        ->selectRaw('MAX(CAST(ar_id AS UNSIGNED)) as max')
+                                        ->value('max') ?? 0;
+                                    $toggle = $get('sameToggle');
+                                    $newValue = $toggle ? $maxAr : ((int)$maxAr + 1);
+                                    $set('ar_id', (string)$newValue);
+                                })
+                                ->maxLength(255),
                             Forms\Components\Repeater::make('accessory')
                                 ->relationship()
                                 ->schema([
