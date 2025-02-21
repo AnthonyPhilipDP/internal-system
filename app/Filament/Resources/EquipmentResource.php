@@ -43,18 +43,6 @@ class EquipmentResource extends Resource
     {
         return $form
             ->schema([
-                //The user will choose if the equipment is single or multiple
-                Forms\Components\Select::make('category')
-                    ->options([
-                        'single' => 'Single Equipment',
-                        'multiple' => 'Multiple Equipments',
-                    ])
-                    ->default('Single Equipment')
-                    ->label('Equipment Quantity')
-                    ->default('multiple')
-                    ->columnSpan(4)
-                    ->reactive(),
-                //The form for single equipment
                 Section::make('Equipment Form')->schema([
                     Group::make()->schema([
                         Section::make('')->schema([
@@ -104,7 +92,7 @@ class EquipmentResource extends Resource
                                 ->multiple()
                                 ->nullable()
                                 ->options([
-                                    'no hidden damage' => 'No hidden Damage',
+                                    'no visible damage' => 'No Visible Damage',
                                     'scratches' => 'Scratches',
                                     'cracks' => 'Cracks',
                                     'grime' => 'Grime',
@@ -140,96 +128,7 @@ class EquipmentResource extends Resource
                     ])
                     ->columnSpan(1),
                 ])
-                ->visible(fn (callable $get) => $get('category') == 'single')
                 ->columns(4),
-                //The form for multiple equipment
-                Section::make('Equipment Form')->schema([
-                    Forms\Components\Repeater::make('Baysek')->schema([
-                        Group::make()->schema([
-                            Section::make('')->schema([
-                                Forms\Components\Select::make('customer_id')
-                                    ->required()
-                                    ->relationship('customer', 'name')
-                                    ->searchable(['name', 'id'])
-                                    ->preload()
-                                    ->prefixIcon('heroicon-o-user')
-                                    ->prefixIconColor('primary'),
-                                Forms\Components\Select::make('worksheet_id')
-                                    ->nullable()
-                                    ->relationship('worksheet', 'name')
-                                    ->searchable(['name', 'id'])
-                                    ->preload()
-                                    ->prefixIcon('heroicon-o-document-check')
-                                    ->prefixIconColor('primary'),
-                                Forms\Components\TextInput::make('manufacturer')
-                                    ->required()    
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('model')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('serial')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('description')
-                                    ->required()
-                                    ->maxLength(255),
-                            ]),
-                        ])
-                        ->columnSpan(2),
-                        Group::make()->schema([
-                            Section::make('')->schema([
-                                Forms\Components\TextInput::make('lab')
-                                ->required()
-                                ->maxLength(255),
-                                Forms\Components\TextInput::make('calType')
-                                ->required()
-                                ->maxLength(255),
-                                Forms\Components\TextInput::make('category')
-                                ->required()
-                                ->maxLength(255),
-                                Forms\Components\Select::make('inspection')
-                                    ->validationAttribute('inspection findings')
-                                    ->label('Inspection Findings')
-                                    ->multiple()
-                                    ->nullable()
-                                    ->options([
-                                        'no hidden damage' => 'No hidden Damage',
-                                        'scratches' => 'Scratches',
-                                        'cracks' => 'Cracks',
-                                        'grime' => 'Grime',
-                                        'dents' => 'Dents',
-                                        'rust' => 'Rust',
-                                        'bent' => 'Bent',
-                                    ]),
-                                Forms\Components\DatePicker::make('inDate')
-                                    ->label('Date Received')
-                                    ->default(now())
-                                    ->required(),
-                            ]),
-                        ])
-                        ->columnSpan(1),
-                        Group::make()->schema([
-                            Section::make('')->schema([
-                                Forms\Components\Repeater::make('accessory')
-                                    ->relationship()
-                                    ->schema([
-                                    Forms\Components\TextInput::make('name')
-                                        ->columnSpan(2),
-                                    Forms\Components\TextInput::make('quantity')
-                                        ->numeric()
-                                        ->columnSpan(2),
-                                ])
-                                ->reorderable()
-                                ->reorderableWithButtons()
-                                ->reorderableWithDragAndDrop()
-                                ->collapsible()
-                                ->addActionLabel('Add Another Accessory')
-                                ->columns(4),
-                            ]),
-                        ]),
-                    ])->columns(4),
-                ])
-                ->visible(fn (callable $get) => $get('category') == 'multiple')
             ]);
     }
 
