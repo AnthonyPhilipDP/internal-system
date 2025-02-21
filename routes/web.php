@@ -9,3 +9,7 @@ Route::get('/', function () {
 Route::get('/worksheet', function () {
     return view('pages.worksheet');
 });
+
+Route::get('/ar', function () {
+    return view('pages.acknowledgment-receipt');
+});

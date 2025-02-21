@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EquipmentResource\Pages;
 
+use Filament\Actions\Action;
 use Filament\Actions;
 use Filament\Support\Enums\Alignment;
 use Filament\Resources\Pages\ListRecords;
@@ -16,6 +17,9 @@ class ListEquipment extends ListRecords
         return [
             Actions\CreateAction::make()
             ->label('Add New Equipment'),
+            Action::make('acknowledgmentReceipt')
+                ->label('Acknowledgment Receipt')
+                ->url('/ar')
         ];
     }
 }
