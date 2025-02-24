@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('livewire.layouts.app')
 
 @section('content')
     <livewire:acknowledgment-receipt />

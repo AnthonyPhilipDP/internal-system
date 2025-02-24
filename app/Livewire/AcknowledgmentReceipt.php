@@ -22,7 +22,9 @@ class AcknowledgmentReceipt extends Component
         $maxArId = Equipment::orderByRaw('CAST(ar_id AS UNSIGNED) DESC')->value('ar_id');
 
         // Retrieve all records that have the maximum ar_id value
-        $this->equipment = Equipment::where('ar_id', $maxArId)->get();
+        $this->equipment = Equipment::with('accessory')
+        ->where('ar_id', $maxArId)
+        ->get();
     }
 
     /**
