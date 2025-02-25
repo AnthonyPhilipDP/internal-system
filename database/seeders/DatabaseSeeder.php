@@ -35,7 +35,8 @@ class DatabaseSeeder extends Seeder
         DB::table('customers')->insert([
             'name' => 'Precision Measurement Specialists, Inc.',
             'address' => 'Carmona, Cavite',
-            'phone' => '+639123123123',
+            'phone' => '09974106031',
+            'landline' => '0468890673',
             'email' => 'admin@email.com',
             'vat' => 'VAT',
             'certifyingBody' => 'Sample',

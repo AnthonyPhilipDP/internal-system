@@ -52,14 +52,24 @@ class EquipmentResource extends Resource
                                 ->searchable(['name', 'id'])
                                 ->preload()
                                 ->prefixIcon('heroicon-o-user')
-                                ->prefixIconColor('primary'),
-                            Forms\Components\Select::make('worksheet_id')
-                                ->nullable()
-                                ->relationship('worksheet', 'name')
-                                ->searchable(['name', 'id'])
-                                ->preload()
-                                ->prefixIcon('heroicon-o-document-check')
-                                ->prefixIconColor('primary'),
+                                ->prefixIconColor('primary')
+                                ->reactive()
+                                ->afterStateHydrated(function (?string $state, callable $get, callable $set): void {
+                                    $maxAr = Equipment::query()
+                                        ->selectRaw('MAX(CAST(ar_id AS UNSIGNED)) as max')
+                                        ->value('max') ?? 0;
+                                    $toggle = $get('sameToggle');
+                                    if ($toggle) {
+                                        $customerId = Equipment::query()
+                                            ->where('ar_id', $maxAr)
+                                            ->value('customer_id');
+                                        $set('customer_id', $customerId);
+                                    }
+                                }),
+                            Forms\Components\TextInput::make('equipment_id')
+                                ->required()  
+                                ->label('Equipment Identification')  
+                                ->maxLength(255),
                             Forms\Components\TextInput::make('manufacturer')
                                 ->required()    
                                 ->maxLength(255),
@@ -156,6 +166,16 @@ class EquipmentResource extends Resource
                                     // If toggle true, use max; otherwise, increment by one.
                                     $newValue = $state ? $maxAr : ((int)$maxAr + 1);
                                     $set('ar_id', (string)$newValue);
+
+                                    if ($state) {
+                                        $customerId = Equipment::query()
+                                            ->where('ar_id', $maxAr)
+                                            ->value('customer_id');
+                                        $set('customer_id', $customerId);
+                                    } else {
+                                        // Set customer_id to blank when toggle is off
+                                        $set('customer_id', null); 
+                                    }
                                 }),
                             // TextInput for ar_id: shows computed value and updates on hydration.
                             Forms\Components\TextInput::make('ar_id')
@@ -170,6 +190,13 @@ class EquipmentResource extends Resource
                                     $toggle = $get('sameToggle');
                                     $newValue = $toggle ? $maxAr : ((int)$maxAr + 1);
                                     $set('ar_id', (string)$newValue);
+
+                                    if ($toggle) {
+                                        $customerId = Equipment::query()
+                                            ->where('ar_id', $maxAr)
+                                            ->value('customer_id');
+                                        $set('customer_id', $customerId);
+                                    }
                                 })
                                 ->maxLength(255),
                             Forms\Components\Repeater::make('accessory')
@@ -208,6 +235,11 @@ class EquipmentResource extends Resource
                     ->alignCenter()
                     ->numeric()
                     ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('equipment_id')
+                    ->label('Equipment ID')
+                    ->alignCenter()
+                    ->numeric()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('Customer Name')

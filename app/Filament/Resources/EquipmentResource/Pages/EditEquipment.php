@@ -70,13 +70,10 @@ class EditEquipment extends EditRecord
                             ->preload()
                             ->prefixIcon('heroicon-o-user')
                             ->prefixIconColor('primary'),
-                        Select::make('worksheet_id')
-                            ->nullable()
-                            ->relationship('worksheet', 'name')
-                            ->searchable(['name', 'id'])
-                            ->preload()
-                            ->prefixIcon('heroicon-o-document-check')
-                            ->prefixIconColor('primary'),
+                        TextInput::make('equipment_id')
+                            ->required()  
+                            ->label('Equipment Identification')  
+                            ->maxLength(255),
                         TextInput::make('manufacturer')
                             ->required()    
                             ->maxLength(255),

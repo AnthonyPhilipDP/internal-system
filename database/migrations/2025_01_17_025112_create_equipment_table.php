@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('equipment', function (Blueprint $table) {
             //For Incoming
             $table->id()->from(500);
+            $table->string('equipment_id')->nullable();
             $table->string('ar_id')->nullable();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->unsignedBigInteger('worksheet_id')->nullable();
