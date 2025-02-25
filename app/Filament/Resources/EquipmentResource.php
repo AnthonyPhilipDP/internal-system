@@ -77,15 +77,47 @@ class EquipmentResource extends Resource
                     ->columnSpan(2),
                     Group::make()->schema([
                         Section::make('')->schema([
-                            Forms\Components\TextInput::make('lab')
-                            ->required()
-                            ->maxLength(255),
-                            Forms\Components\TextInput::make('calType')
-                            ->required()
-                            ->maxLength(255),
-                            Forms\Components\TextInput::make('category')
-                            ->required()
-                            ->maxLength(255),
+                            Forms\Components\Select::make('lab')
+                            ->label('Laboratory')
+                            ->options([
+                                'electrical' => 'Electrical',
+                                'physical' => 'Physical',
+                                'repair' => 'Repair',
+                            ])
+                            ->default('electrical')
+                            ->native(false)
+                            ->searchable()
+                            ->required(),
+                            Forms\Components\Select::make('calType')
+                            ->label('Calibration Type')
+                            ->options([
+                                'iso' => 'ISO 17025',
+                                'ansi' => 'ANSI Z540',
+                                'milstd' => 'Military Standard',
+                            ])
+                            ->default('iso')
+                            ->native(false)
+                            ->searchable()
+                            ->required(),
+                            Forms\Components\Select::make('category')
+                            ->label('Category')
+                            ->options([
+                                'mass' => 'Mass',
+                                'force' => 'Force',
+                                'torque' => 'Torque',
+                                'vacuum' => 'Vacuum',
+                                'pressure' => 'Pressure',
+                                'humidity' => 'Humidity',
+                                'electrical' => 'Electrical',
+                                'dimensional' => 'Dimensional',
+                                'temperature' => 'Temperature',
+                                'conductivity' => 'Conductivity',
+                                'pcr' => 'pH / Conductivity / Resistivity',
+                            ])
+                            ->default('dimensional')
+                            ->native(false)
+                            ->searchable()
+                            ->required(),
                             Forms\Components\Select::make('inspection')
                                 ->validationAttribute('inspection findings')
                                 ->label('Inspection Findings')
@@ -116,7 +148,7 @@ class EquipmentResource extends Resource
                                 ->onColor('success')
                                 ->offColor('danger')
                                 ->reactive()
-                                ->default(false)
+                                ->default(true)
                                 ->afterStateUpdated(function (bool $state, callable $get, callable $set): void {
                                     $maxAr = Equipment::query()
                                         ->selectRaw('MAX(CAST(ar_id AS UNSIGNED)) as max')
@@ -130,6 +162,7 @@ class EquipmentResource extends Resource
                                 ->label('Acknowledgement Receipt No.')
                                 ->readonly()
                                 ->reactive()
+                                ->prefix('401 -')
                                 ->afterStateHydrated(function (?string $state, callable $get, callable $set): void {
                                     $maxAr = Equipment::query()
                                         ->selectRaw('MAX(CAST(ar_id AS UNSIGNED)) as max')
