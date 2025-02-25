@@ -63,7 +63,7 @@
                     @foreach ($equipment as $record)
                         <tr>
                             <td class="px-2 py-2 text-xs text-gray-800 w-1/7 truncate max-w-1">
-                                {{ $record->id }}
+                                {{ $record->equipment_id }}
                             </td>
                             <td class="px-2 py-4 text-xs text-gray-800 w-2/7 truncate max-w-1">
                                 {{ $record->manufacturer }}
