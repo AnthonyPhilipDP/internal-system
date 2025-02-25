@@ -19,6 +19,7 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Button;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\FileUpload;
@@ -38,6 +39,24 @@ class EquipmentResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-cube';
 
     protected static ?string $recordTitleAttribute = 'id';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['id', 'equipment_id', 'manufacturer', 'model', 'serial', 'description'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Equipment ID' => $record->equipment_id,
+            'Manufacturer' => $record->manufacturer,
+            'Model' => $record->model,
+            'Serial' => $record->serial,
+            'Description' => $record->description,
+        ];
+    }
+
+    protected static int $globalSearchResultsLimit = 5;
 
     public static function form(Form $form): Form
     {
@@ -275,16 +294,13 @@ class EquipmentResource extends Resource
                 Tables\Columns\TextColumn::make('lab')
                     ->label('Laboratory')
                     ->alignCenter()
-                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('calType')
                     ->label('Calibration Type')
                     ->alignCenter()
-                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('category')
                     ->alignCenter()
-                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('accessory.name')
                     ->listWithLineBreaks()

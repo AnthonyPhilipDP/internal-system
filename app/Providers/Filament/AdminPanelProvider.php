@@ -49,7 +49,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class) 
             // ->registration()
             ->darkMode(false)
-            ->globalSearch(false)
+            ->globalSearch(true)
             ->globalSearchKeyBindings(['ctrl+h', 'ctrl+h'])
             ->globalSearchFieldKeyBindingSuffix()
             ->colors([

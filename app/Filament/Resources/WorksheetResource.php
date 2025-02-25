@@ -30,6 +30,15 @@ class WorksheetResource extends Resource
 
     protected static ?string $navigationGroup = 'PMSi';
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name'];
+    }
+
+    protected static int $globalSearchResultsLimit = 5;
+
     public static function form(Form $form): Form
     
     {
