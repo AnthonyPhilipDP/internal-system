@@ -165,11 +165,11 @@ class EditEquipment extends EditRecord
                             ->onColor('success')
                             ->offColor('danger')
                             ->reactive()
-                            ->default(true)
                             ->afterStateUpdated(function (bool $state, callable $get, callable $set): void {
+                                $originalArId = $get('original_ar_id');
                                 $currentArId = $get('ar_id');
-                                // If toggle true, decrement by one; otherwise, use current ar_id.
-                                $newValue = $state ? ((int)$currentArId - 1) : $currentArId;
+                                // If toggle true, decrement by one; otherwise, use original ar_id.
+                                $newValue = $state ? ((int)$originalArId - 1) : $originalArId;
                                 $set('ar_id', (string)$newValue);
                             }),
                         // TextInput for ar_id: shows computed value and updates on hydration.
@@ -180,6 +180,7 @@ class EditEquipment extends EditRecord
                             ->prefix('401 -')
                             ->afterStateHydrated(function (?string $state, callable $get, callable $set): void {
                                 $currentArId = $state ?? '0';
+                                $set('original_ar_id', $currentArId); // Store the original ar_id
                                 $toggle = $get('sameToggle');
                                 $newValue = $toggle ? ((int)$currentArId - 1) : $currentArId;
                                 $set('ar_id', (string)$newValue);
