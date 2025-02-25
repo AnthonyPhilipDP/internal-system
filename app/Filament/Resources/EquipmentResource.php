@@ -185,7 +185,11 @@ class EquipmentResource extends Resource
                             ->reorderableWithButtons()
                             ->reorderableWithDragAndDrop()
                             ->collapsible()
-                            ->addActionLabel('Add Another Accessory')
+                            ->addActionLabel(function (callable $get) {
+                                $accessories = $get('accessory');
+                                return empty($accessories) ? 'Add Accessory' : 'Add Another Accessory';
+                            })
+                            ->defaultItems(0)
                             ->columns(4),
                         ]),
                     ])
