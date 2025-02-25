@@ -10,6 +10,6 @@ Route::get('/worksheet', function () {
     return view('pages.worksheet');
 });
 
-Route::get('/ar', function () {
+Route::get('/acknowledgment-receipt', function () {
     return view('pages.acknowledgment-receipt');
 });

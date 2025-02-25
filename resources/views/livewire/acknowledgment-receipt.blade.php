@@ -1,4 +1,5 @@
-<div class="relative w-[8.5in] h-[11in] bg-cover bg-no-repeat pt-45 mx-auto px-20" style="background-image: url('{{ asset('images/templates/ar.jpg') }}');">
+
+<div class="relative w-[8.5in] h-[11in] bg-cover bg-no-repeat pt-45 mx-auto px-20" style="background-image: url('{{ asset('images/templates/AcknowledgmentReceipt.jpg') }}');">
     @if ($equipment && $equipment->count())
         <!-- Display customer and equipment details -->
         <div class="mb-4">
@@ -11,10 +12,10 @@
                 <p class="text-xs font-semibold text-gray-700 pl-28">{{ $equipment->first()->created_at->format('F j, Y, g:i a') }}</p>
             </div>
             <div class="grid grid-cols-2 gap-2 mt-2">
-                @if (!empty($equipment->first()->customer->phone))
+                @if (!is_null($equipment->first()->customer->phone) && $equipment->first()->customer->phone !== 'N/A')
                     <p class="text-xs font-semibold text-gray-700">Phone: {{ $equipment->first()->customer->phone }}</p>
                 @endif
-                @if (!empty($equipment->first()->customer->landline))
+                @if (!is_null($equipment->first()->customer->landline) && $equipment->first()->customer->landline !== 'N/A')
                     <p class="text-xs font-semibold text-gray-700 pl-28">Landline: {{ $equipment->first()->customer->landline }}</p>
                 @endif
             </div>
@@ -68,7 +69,7 @@
                                 {{ $record->manufacturer }}
                             </td>
                             <td class="px-2 py-4 text-xs text-gray-800 w-2/7 truncate max-w-1">
-                                Autoranging Multimeter
+                                {{ $record->description }}
                             </td>
                             <td class="px-2 py-4 text-xs text-gray-800 w-2/7 truncate max-w-1">
                                 {{ $record->serial }}
@@ -81,7 +82,7 @@
                                 @endif
                             </td>
                             <td class="px-2 py-4 text-xs text-gray-800 w-1/7 truncate max-w-1">
-                                @if($record->accessory->isNotEmpty())
+                                @if(isset($record->accessory) && $record->accessory->pluck('name')->filter()->isNotEmpty())
                                     {!! implode('<br>', $record->accessory->pluck('name')->toArray()) !!}
                                 @else
                                     <span class="text-red-600">None</span>
@@ -93,15 +94,19 @@
             </table>
         </div>
         <!-- Static positioned section -->
+        @php
+            $deliveryRider = session('name');
+            $currentUser = Auth::user()->name;
+        @endphp
         <div class="absolute bottom-12 left-0 w-full flex justify-start px-20">
             <div class="flex w-full justify-between">
                 <div class="flex flex-col items-start gap-8">
                     <p class="text-xs font-semibold text-gray-700">Delivered By:</p>
-                    <p class="text-sm font-semibold text-gray-700 uppercase underline">Philip Pudan</p>
+                    <p class="text-sm font-semibold text-gray-700 uppercase underline">{{ $deliveryRider }}</p>
                 </div>
                 <div class="flex flex-col items-end gap-8">
                     <p class="text-xs font-semibold text-gray-700">Received By:</p>
-                    <p class="text-sm font-semibold text-gray-700 uppercase underline">Rose Ambata</p>
+                    <p class="text-sm font-semibold text-gray-700 uppercase underline">{{ $currentUser }}</p>
                 </div>
             </div>
         </div>
@@ -110,3 +115,9 @@
         <p class="text-center text-gray-800">No equipment data found.</p>
     @endif
 </div>
+
+<script>
+    window.onload = function() {
+        window.print();
+    };
+</script>

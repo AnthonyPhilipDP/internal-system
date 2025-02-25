@@ -12,7 +12,7 @@
                     <div>
                         <div class="mt-3 text-center sm:mt-5">
                             <h3 class="text-lg font-bold leading-7 text-gray-900 dark:text-white">
-                                Hello {{ $name }}
+                                Hey there, {{ $name }}!
                             </h3>
                             <h3 class="text-lg font-bold leading-7 text-gray-900 dark:text-white">
                                 It looks like your username hasn't been set up yet.
