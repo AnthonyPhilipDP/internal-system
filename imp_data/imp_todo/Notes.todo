@@ -45,4 +45,11 @@ Set up the new files added
 -Equipment Delivery Receipt
 -Delivery / Receipt of Documents
 
+//Important
+UPDATE your_table_name
+SET 
+    created_at = IF(created_at = '0000-00-00 00:00:00', NOW(), created_at),
+    updated_at = IF(updated_at = '0000-00-00 00:00:00', NOW(), updated_at),
+    deleted_at = IF(deleted_at = '0000-00-00 00:00:00', NULL, deleted_at);
+
 
