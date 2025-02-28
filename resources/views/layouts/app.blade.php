@@ -20,6 +20,7 @@
         @endif
     </head>
     <body>
+        @include('layouts.partials.tutorial')
         @include('layouts.partials.header')
         <main>
             @yield('content')
