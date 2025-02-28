@@ -258,12 +258,10 @@ class EquipmentResource extends Resource
                 Tables\Columns\TextColumn::make('equipment_id')
                     ->label('Equipment ID')
                     ->alignCenter()
-                    ->numeric()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('Customer Name')
                     ->alignCenter()
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('worksheet.name')
                     ->label('Worksheet')
