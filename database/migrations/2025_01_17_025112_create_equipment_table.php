@@ -13,18 +13,18 @@ return new class extends Migration
     {
         Schema::create('equipment', function (Blueprint $table) {
             //For Incoming
-            $table->id()->from(500);
+            $table->id();
             $table->string('equipment_id')->nullable();
             $table->string('ar_id')->nullable();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->unsignedBigInteger('worksheet_id')->nullable();
-            $table->string('manufacturer');
-            $table->string('model');
-            $table->string('serial');
-            $table->string('description');
-            $table->json('inspection')->nullable()->default('{N/A}');
-            $table->string('lab');
-            $table->string('calType');
+            $table->string('manufacturer')->nullable();
+            $table->string('model')->nullable();
+            $table->string('serial')->nullable();
+            $table->string('description')->nullable();
+            $table->json('inspection')->nullable();
+            $table->string('lab')->nullable();
+            $table->string('calType')->nullable();
             $table->string('category')->nullable();
             $table->string('inDate');
             //For Status
