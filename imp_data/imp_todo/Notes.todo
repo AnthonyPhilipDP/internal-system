@@ -1,55 +1,62 @@
-Created a model with migration
-Set up the database migration
-Set up relationships
-Set up filament
-created a user resource
-setup user resource
-create and set up category resource with --generate
-create and set up brand resrouce with --generate
-create and set up product resrouce with --generate
-create and set up order resoure with --view
+#Created a model with migration
+#Set up the database migration
+#Set up relationships
+#Set up filament
+#created a user resource
+#setup user resource
+#create and set up category resource with --generate
+#create and set up brand resrouce with --generate
+#create and set up product resrouce with --generate
+#create and set up order resoure with --view
 
-#First
-Created a model with migration
--php artisan make:model Customer -m
-Set up the database migration
-Set up filament
-created a customer resource
-php artisan make:filament-resource Worksheet --soft-deletes
-setup customer resource
-created a UserPolicy
--php artisan make:policy UserPolicy --model="User"
+% First
+# Created a model with migration
+    - php artisan make:model Customer -m
+# Set up the database migration
+# Set up filament
+# created a customer resource
+    - php artisan make:filament-resource Worksheet --soft-deletes
+# Setup customer resource
+# created a UserPolicy
+    - php artisan make:policy UserPolicy --model="User"
 
 
-#push to new branch
-git checkout -b (name of your new branch)
-#add and commit first before pushing
-git add .
-git commit -m "your message"
-git push origin (your new branch name)
+% push to new branch
+#git checkout -b (name of your new branch)
+% add and commit first before pushing
+#git add .
+#git commit -m "your message"
+#git push origin (your new branch name)
 
-//Important
-add a number of how many customer did the employee add to the System
-add picture of employee in a circular shape
-add an extension to the browser, "Avoid duplicate downloads"
+% Important
+#add a number of how many customer did the employee add to the System
+#add picture of employee in a circular shape
+#add an extension to the browser, "Avoid duplicate downloads"
 
-//How to create a Repeater
-php artisan make:model ContactPerson -m
-Set up the new files added
+% Create a Repeater
+#1.  php artisan make:model ContactPerson -m
+#2.  set up the new files added
 
-//Make printable document
-1. Make a PrinterController that controls all the printing functionality
+% Make printable document
+#1.  Make a PrinterController that controls all the printing functionality
 
-2. Create a new filament resource for each one
--Acknowledgement Receipt
--Equipment Delivery Receipt
--Delivery / Receipt of Documents
+#2.  Create a new filament resource for each one
+    - Acknowledgement Receipt
+    - Equipment Delivery Receipt
+    - Delivery / Receipt of Documents
 
-//Important
-UPDATE your_table_name
+% Query after importing data
+UPDATE equipment
 SET 
     created_at = IF(created_at = '0000-00-00 00:00:00', NOW(), created_at),
     updated_at = IF(updated_at = '0000-00-00 00:00:00', NOW(), updated_at),
     deleted_at = IF(deleted_at = '0000-00-00 00:00:00', NULL, deleted_at);
 
-
+% XAMPP mysql shutdown unexpectedly
+#1.  Go to Control Panel
+#2.  Click on Explorer
+#3.  Go to xampp/mysql/backup
+#4.  Copy mysql, performance_schema and phpmyadmin to the data folder
+#5.  Replace the existing mysql, performance_schema and phpmyadmin in the data folder
+#6.  Restart XAMPP
+#7.  Check if the issue is resolved
