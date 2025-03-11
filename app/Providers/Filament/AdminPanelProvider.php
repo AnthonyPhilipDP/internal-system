@@ -52,6 +52,7 @@ class AdminPanelProvider extends PanelProvider
             ->globalSearch(true)
             ->globalSearchKeyBindings(['ctrl+h', 'ctrl+h'])
             ->globalSearchFieldKeyBindingSuffix()
+            ->breadcrumbs(false)
             ->colors([
                 'primary' => Color::Emerald,
             ])
