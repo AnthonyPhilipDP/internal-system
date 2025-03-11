@@ -60,3 +60,24 @@ SET
 #5.  Replace the existing mysql, performance_schema and phpmyadmin in the data folder
 #6.  Restart XAMPP
 #7.  Check if the issue is resolved
+
+VERY VERY IMPORTANT!
+TO import properly
+REMOVE ALL COMMA, change it into space only
+REMOVE ALL BACKSLASHES, change it into |
+ADD ID because some transaction ID has duplicates
+
+This is the Query for Importing Old DATA
+#Start here
+SET foreign_key_checks = 0;
+LOAD DATA LOCAL INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/equipmentold.csv'
+INTO TABLE equipment_olds
+CHARACTER SET 'latin1'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+
+SHOW WARNINGS;
+#End here
