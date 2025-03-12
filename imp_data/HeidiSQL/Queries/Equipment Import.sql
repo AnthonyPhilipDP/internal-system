@@ -1,4 +1,7 @@
-UPDATE equipment
-SET inspection = IF(JSON_VALID(inspection), inspection, CONCAT('{"value": "', REPLACE(REPLACE(inspection, '"', '\"'), '\n', '\\n'), '"}'));
-
-ALTER TABLE equipment MODIFY COLUMN inspection JSON;
+LOAD DATA LOCAL INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/equipment.csv'
+INTO TABLE equipment
+CHARACTER SET 'latin1'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;

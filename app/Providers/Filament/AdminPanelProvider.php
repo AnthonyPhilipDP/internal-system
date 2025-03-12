@@ -48,11 +48,11 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class) 
             // ->registration()
-            ->darkMode(false)
+            ->darkMode(true)
             ->globalSearch(true)
             ->globalSearchKeyBindings(['ctrl+h', 'ctrl+h'])
             ->globalSearchFieldKeyBindingSuffix()
-            ->breadcrumbs(false)
+            ->breadcrumbs(true)
             ->colors([
                 'primary' => Color::Emerald,
             ])
@@ -111,6 +111,10 @@ class AdminPanelProvider extends PanelProvider
                     ->url('https://x.com', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->group('Social Media'),
+                NavigationItem::make('Profile')
+                    ->url(fn (): string => EditProfilePage::getUrl())
+                    ->icon('heroicon-o-user-circle')
+                    ->group('Settings'),
             ])
             ->plugins([
                 FilamentEditProfilePlugin::make()
