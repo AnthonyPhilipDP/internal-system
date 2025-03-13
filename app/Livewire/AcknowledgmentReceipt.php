@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Equipment;
+use Illuminate\Support\Facades\Session;
 
 class AcknowledgmentReceipt extends Component
 {
@@ -11,9 +12,17 @@ class AcknowledgmentReceipt extends Component
 
     public function mount()
     {
-        $maxArId = Equipment::orderByRaw('CAST(ar_id AS UNSIGNED) DESC')->value('ar_id');
+        // Retrieve the current selected ar_id from the session
+        $currentArId = Session::get('ar_id');
+
+        // $maxArId = Equipment::orderByRaw('CAST(ar_id AS UNSIGNED) DESC')->value('ar_id');
+        // $this->equipment = Equipment::with('accessory')
+        //     ->where('ar_id', $maxArId)
+        //     ->get();
+        
+        // Use the currentArId to filter the equipment
         $this->equipment = Equipment::with('accessory')
-            ->where('ar_id', $maxArId)
+            ->where('ar_id', $currentArId)
             ->get();
 
         $this->totalEquipmentCount = $this->equipment->count();

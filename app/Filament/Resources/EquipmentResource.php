@@ -42,7 +42,7 @@ class EquipmentResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['id', 'equipment_id', 'manufacturer', 'model', 'serial', 'description'];
+        return ['id', 'ar_id', 'equipment_id', 'manufacturer', 'model', 'serial', 'description'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
@@ -255,6 +255,14 @@ class EquipmentResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('ar_id')
+                    ->label('Receipt ID')
+                    ->alignCenter()
+                    ->numeric()
+                    ->searchable()
+                    ->formatStateUsing(function ($state) {
+                        return '401-' . $state;
+                    }),
                 Tables\Columns\TextColumn::make('equipment_id')
                     ->label('Equipment ID')
                     ->alignCenter()
