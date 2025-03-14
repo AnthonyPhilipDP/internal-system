@@ -1,29 +1,30 @@
 <div>
     @foreach ($equipmentChunks as $chunkIndex => $equipmentChunk)
         <div class="relative w-[11in] h-[8.5in] bg-cover bg-no-repeat pt-45 mx-auto px-12" style="background-image: url('{{ asset('images/templates/AcknowledgmentReceipt - Landscape.jpg') }}');">
-            <hr class="mb-4 mt-[-18px] border-t-2 border-gray-700">
+            <hr class="mb-4 border-t-1 border-gray-700">
             <!-- Display customer and equipment details -->
-            <div class="mb-4">
-                <div class="grid grid-cols-2 gap-2">
-                    <p class="text-xs font-bold text-gray-700 underline">{{ $equipmentChunk->first()->customer->name }}</p>
-                    <p class="text-xs font-semibold text-gray-700 pl-36">DR Number: 401-{{ $equipmentChunk->first()->ar_id }}</p>
-                </div>
-                <div class="grid grid-cols-2 gap-2 mt-2">
+            <div class="flex w-full justify-between mb-4">
+                <div class="flex flex-col items-start gap-2 max-w-sm">
+                    <p class="text-xs font-bold text-gray-700 underline uppercase">{{ $equipmentChunk->first()->customer->name }}</p>
                     <p class="text-xs font-semibold text-gray-700">{{ $equipmentChunk->first()->customer->address }}</p>
-                    <p class="text-xs font-semibold text-gray-700 pl-36">{{ $equipmentChunk->first()->created_at->format('F d, Y g:i A') }}</p>
-                </div>
-                <div class="grid grid-cols-2 gap-2 mt-2">
                     @if (!is_null($equipmentChunk->first()->customer->phone) && $equipmentChunk->first()->customer->phone !== 'N/A' 
                         && $equipmentChunk->first()->customer->phone !== '' && $equipmentChunk->first()->customer->phone !== 'n/a')
                         <p class="text-xs font-semibold text-gray-700">Phone: {{ $equipmentChunk->first()->customer->phone }}</p>
                     @endif
+                </div>
+                <div class="flex flex-col items-start gap-2 max-w-sm">
+                    <p class="text-xs font-semibold text-gray-700">DR Number: 401-{{ $equipmentChunk->first()->ar_id }}</p>
+                    <p class="text-xs font-semibold text-gray-700">{{ $equipmentChunk->first()->created_at->format('F d, Y g:i A') }}</p>
                     @if (!is_null($equipmentChunk->first()->customer->landline) && $equipmentChunk->first()->customer->landline !== 'N/A' 
                         && $equipmentChunk->first()->customer->landline !== '' && $equipmentChunk->first()->customer->landline !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700 pl-36">Landline: {{ $equipmentChunk->first()->customer->landline }}</p>
+                        <p class="text-xs font-semibold text-gray-700">Landline: {{ $equipmentChunk->first()->customer->landline }}</p>
                     @endif
                 </div>
+                <div class="flex flex-col items-start gap-2 max-w-sm">
+                    <p class="text-xs font-semibold text-gray-700">Gate Pass: 1234</p>
+                </div>
             </div>
-
+            <hr class="mb-4 border-t-1 border-gray-700">
             <!-- Table Title -->
             <div class="text-lg font-bold text-gray-800 mb-4 text-center uppercase">
                 Acknowledgment Receipt
@@ -32,7 +33,7 @@
             <div class="border-b border-white rounded-lg overflow-x-auto">
                 <table class="min-w-full divide-y divide-white table-auto">
                     @if ($equipmentChunks->count() > 1)
-                        <caption class="caption-bottom text-xs text-gray-500 font-mono">
+                        <caption class="caption-bottom text-xs text-gray-500 font-mono mt-4">
                             Number of equipment in this page: {{ $equipmentChunk->count() }}
                         </caption>
                     @endif
@@ -107,18 +108,28 @@
 
             <!-- Total number of equipment on the last page -->
             @if ($chunkIndex === $equipmentChunks->count() - 1)
-                <div class="text-xs font-semibold text-gray-600 mb-4 text-center uppercase">
+                <div class="text-xs font-semibold text-gray-600 mb-4 text-center uppercase mt-4">
                     Total Number of Equipment: {{ $totalEquipmentCount }}
                 </div>
             @endif
 
-            <div class="absolute bottom-12 left-0 w-full flex justify-start px-12">
-                <div class="flex w-full justify-between">
-                    <div class="flex flex-col items-start gap-8">
+            <div class="absolute bottom-12 left-0 w-full flex justify-around px-12">
+                <div class="flex w-full justify-around">
+                    <div class="flex flex-col items-center gap-8">
                         <p class="text-xs font-semibold text-gray-700">Delivered By:</p>
                         <p class="text-sm font-semibold text-gray-700 uppercase underline">{{ $deliveryRider }}</p>
                     </div>
-                    <div class="flex flex-col items-end gap-8">
+                    <div class="flex flex-col items-start gap-8">
+                    </div>
+                    <div class="flex flex-col items-start gap-8">
+                    </div>
+                    <div class="flex flex-col items-start gap-8">
+                    </div>
+                    <div class="flex flex-col items-start gap-8">
+                    </div>
+                    <div class="flex flex-col items-start gap-8">
+                    </div>
+                    <div class="flex flex-col items-center gap-8">
                         <p class="text-xs font-semibold text-gray-700">Received By:</p>
                         <p class="text-sm font-semibold text-gray-700 uppercase underline">{{ $currentUser }}</p>
                     </div>
