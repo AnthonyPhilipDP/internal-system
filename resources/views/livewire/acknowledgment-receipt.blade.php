@@ -1,32 +1,37 @@
 <div>
     @foreach ($equipmentChunks as $chunkIndex => $equipmentChunk)
         <div class="relative w-[11in] h-[8.5in] bg-cover bg-no-repeat pt-45 mx-auto px-12" style="background-image: url('{{ asset('images/templates/AcknowledgmentReceipt - Landscape.jpg') }}');">
-            <hr class="mb-4 border-t-1 border-gray-700">
+            <hr class="mb-2 border-t-1 border-gray-700">
             <!-- Display customer and equipment details -->
-            <div class="flex w-full justify-between mb-4">
-                <div class="flex flex-col items-start gap-2 max-w-sm">
-                    <p class="text-xs font-bold text-gray-700 underline uppercase">{{ $equipmentChunk->first()->customer->name }}</p>
-                    <p class="text-xs font-semibold text-gray-700">{{ $equipmentChunk->first()->customer->address }}</p>
-                    @if (!is_null($equipmentChunk->first()->customer->phone) && $equipmentChunk->first()->customer->phone !== 'N/A' 
-                        && $equipmentChunk->first()->customer->phone !== '' && $equipmentChunk->first()->customer->phone !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Phone: {{ $equipmentChunk->first()->customer->phone }}</p>
-                    @endif
-                </div>
-                <div class="flex flex-col items-start gap-2 max-w-sm">
-                    <p class="text-xs font-semibold text-gray-700">DR Number: 401-{{ $equipmentChunk->first()->ar_id }}</p>
-                    <p class="text-xs font-semibold text-gray-700">{{ $equipmentChunk->first()->created_at->format('F d, Y g:i A') }}</p>
+            <div class="flex w-full justify-between mb-2">
+                <div class="flex flex-col items-start gap-1 max-w-sm">
+                    <p class="text-xs font-bold text-gray-700">Client: <span class="underline uppercase">{{ $equipmentChunk->first()->customer->name }}</span></p>
+                    <p class="text-xs font-semibold text-gray-700">Attention of: <span class="uppercase">{{ $equipmentChunk->first()->customer->name }}</span></p>
                     @if (!is_null($equipmentChunk->first()->customer->landline) && $equipmentChunk->first()->customer->landline !== 'N/A' 
                         && $equipmentChunk->first()->customer->landline !== '' && $equipmentChunk->first()->customer->landline !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Landline: {{ $equipmentChunk->first()->customer->landline }}</p>
+                        <p class="text-xs font-semibold text-gray-700">Telephone: {{ $equipmentChunk->first()->customer->landline }}</p>
+                    @endif
+                    @if (!is_null($equipmentChunk->first()->customer->phone) && $equipmentChunk->first()->customer->phone !== 'N/A' 
+                        && $equipmentChunk->first()->customer->phone !== '' && $equipmentChunk->first()->customer->phone !== 'n/a')
+                        <p class="text-xs font-semibold text-gray-700">Mobile: {{ $equipmentChunk->first()->customer->phone }}</p>
                     @endif
                 </div>
-                <div class="flex flex-col items-start gap-2 max-w-sm">
-                    <p class="text-xs font-semibold text-gray-700">Gate Pass: 1234</p>
+                <div class="flex flex-col items-start gap-1 max-w-sm">
+                    <p class="text-xs font-semibold text-gray-700">Address: {{ $equipmentChunk->first()->customer->address }}</p>
+                    @if (!is_null($equipmentChunk->first()->customer->email) && $equipmentChunk->first()->customer->email !== 'N/A' 
+                        && $equipmentChunk->first()->customer->email !== '' && $equipmentChunk->first()->customer->email !== 'n/a')
+                        <p class="text-xs font-semibold text-gray-700">Email: {{ $equipmentChunk->first()->customer->email }}</p>
+                    @endif
+                </div>
+                <div class="flex flex-col items-start gap-1 max-w-sm">
+                    <p class="text-xs font-semibold text-gray-700">DR Number: 401-{{ $equipmentChunk->first()->ar_id }}</p>
+                    <p class="text-xs font-semibold text-gray-700">{{ $equipmentChunk->first()->created_at->format('F d, Y g:i A') }}</p>
+                    {{-- <p class="text-xs font-semibold text-gray-700">Gate Pass: 1234</p> --}}
                 </div>
             </div>
-            <hr class="mb-4 border-t-1 border-gray-700">
+            <hr class="mb-2 border-t-1 border-gray-700">
             <!-- Table Title -->
-            <div class="text-lg font-bold text-gray-800 mb-4 text-center uppercase">
+            <div class="text-lg font-bold text-gray-800 mb-2 text-center uppercase">
                 Acknowledgment Receipt
             </div>
 
@@ -39,60 +44,72 @@
                     @endif
                     <thead class="bg-gray-700 text-center">
                         <tr>
-                            <th scope="col" class="px-7 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-1/14">
+                            <th scope="col" class="px-6 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
                                 Transaction
                             </th>
-                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/14">
-                                Equipment ID
-                            </th>
-                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-3/14">
+                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
                                 Make
                             </th>
-                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-3/14">
+                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+                                Model
+                            </th>
+                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
                                 Description
                             </th>
-                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-3/14">
+                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+                                Equipment ID
+                            </th>
+                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
                                 Serial
                             </th>
-                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-3/14">
+                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
                                 Inspection
                             </th>
-                            <th scope="col" class="px-7 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-1/14">
+                            <th scope="col" class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
                                 Accessories
+                            </th>
+                            <th scope="col" class="px-6 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+                                Gate Pass
                             </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 text-center">
                         @foreach ($equipmentChunk as $record)
                             <tr>
-                                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
+                                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words text-center">
                                     {{ $record->id }}
-                                </td>
-                                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
-                                    {{ $record->equipment_id }}
                                 </td>
                                 <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
                                     {{ $record->manufacturer }}
                                 </td>
                                 <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
+                                    {{ $record->model }}
+                                </td>
+                                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
                                     {{ $record->description }}
+                                </td>
+                                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
+                                    {{ $record->equipment_id }}
                                 </td>
                                 <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
                                     {{ $record->serial }}
                                 </td>
-                                <td class="px-1 py-0.5 text-[10px] text-gray-800 capitalize ">
+                                <td class="px-1 py-0.5 text-[10px] text-gray-800 capitalize text-center">
                                     @if(is_array($record->inspection))
                                         {!! implode(', ', $record->inspection) !!}
                                     @else
                                         {{ $record->inspection }}
                                     @endif
                                 </td>
-                                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words capitalize">
+                                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words capitalize text-center">
                                     @if(isset($record->accessory) && $record->accessory->pluck('name')->filter()->isNotEmpty())
                                         {!! implode(', ', $record->accessory->pluck('name')->toArray()) !!}
                                     @else
                                         <span class="text-yellow-600">No Accessory</span>
                                     @endif
+                                </td>
+                                <td class="px-1 py-0.5 text-[10px] text-gray-800 break-words text-center">
+                                    {{-- Gate Pass Code Here --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -109,11 +126,15 @@
             <!-- Total number of equipment on the last page -->
             @if ($chunkIndex === $equipmentChunks->count() - 1)
                 <div class="text-xs font-semibold text-gray-600 mb-4 text-center uppercase mt-4">
-                    Total Number of Equipment: {{ $totalEquipmentCount }}
+                    @if ( $totalEquipmentCount > 1 )
+                        Total Number of Equipments: {{ $totalEquipmentCount }}  
+                    @else
+                        Total Number of Equipment: {{ $totalEquipmentCount }}  
+                    @endif
                 </div>
             @endif
 
-            <div class="absolute bottom-12 left-0 w-full flex justify-around px-12">
+            <div class="absolute bottom-14 left-0 w-full flex justify-around px-12">
                 <div class="flex w-full justify-around">
                     <div class="flex flex-col items-center gap-8">
                         <p class="text-xs font-semibold text-gray-700">Delivered By:</p>
@@ -136,12 +157,13 @@
                 </div>
             </div>
 
-            <!-- Page number in the lower right corner -->
-            @if ($equipmentChunks->count() > 1)
-                <div class="absolute bottom-4 right-4 text-xs font-semibold text-gray-500">
-                    Page {{ $chunkIndex + 1 }}
-                </div>
-            @endif
+            <!-- Page number and CDN number -->
+            <div class="absolute bottom-8 left-12 text-xs font-semibold text-gray-500">
+                DCN 4-4.13.1.1-38
+            </div>
+            <div class="absolute bottom-8 right-0 left-0 text-center text-xs font-semibold text-gray-500">
+                Page {{ $chunkIndex + 1 }} of {{ $equipmentChunks->count() }}   
+            </div>
         </div>
     @endforeach
 </div>
