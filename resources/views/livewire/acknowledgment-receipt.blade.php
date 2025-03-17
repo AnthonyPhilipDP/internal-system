@@ -6,14 +6,21 @@
             <div class="flex w-full justify-between mb-2">
                 <div class="flex flex-col items-start gap-1 max-w-sm">
                     <p class="text-xs font-bold text-gray-700">Client: <span class="underline uppercase">{{ $equipmentChunk->first()->customer->name }}</span></p>
-                    <p class="text-xs font-semibold text-gray-700">Attention of: <span class="uppercase">{{ $equipmentChunk->first()->customer->name }}</span></p>
-                    @if (!is_null($equipmentChunk->first()->customer->landline) && $equipmentChunk->first()->customer->landline !== 'N/A' 
-                        && $equipmentChunk->first()->customer->landline !== '' && $equipmentChunk->first()->customer->landline !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Telephone: {{ $equipmentChunk->first()->customer->landline }}</p>
+                    @php
+                        $activeContactPerson = $equipmentChunk->first()->customer->contactPerson->filter(function($contact) {
+                            return $contact->is_active;
+                        })->last();
+                    @endphp
+                    @if ($activeContactPerson)
+                        <p class="text-xs font-semibold text-gray-700">Attention of: <span class="uppercase">{{ $activeContactPerson->name }}</span></p>
                     @endif
-                    @if (!is_null($equipmentChunk->first()->customer->phone) && $equipmentChunk->first()->customer->phone !== 'N/A' 
-                        && $equipmentChunk->first()->customer->phone !== '' && $equipmentChunk->first()->customer->phone !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Mobile: {{ $equipmentChunk->first()->customer->phone }}</p>
+                    @if (!is_null($equipmentChunk->first()->customer->telephone) && $equipmentChunk->first()->customer->telephone !== 'N/A' 
+                        && $equipmentChunk->first()->customer->telephone !== '' && $equipmentChunk->first()->customer->telephone !== 'n/a')
+                        <p class="text-xs font-semibold text-gray-700">Telephone: {{ $equipmentChunk->first()->customer->telephone }}</p>
+                    @endif
+                    @if (!is_null($equipmentChunk->first()->customer->mobile) && $equipmentChunk->first()->customer->mobile !== 'N/A' 
+                        && $equipmentChunk->first()->customer->mobile !== '' && $equipmentChunk->first()->customer->mobile !== 'n/a')
+                        <p class="text-xs font-semibold text-gray-700">Mobile: {{ $equipmentChunk->first()->customer->mobile }}</p>
                     @endif
                 </div>
                 <div class="flex flex-col items-start gap-1 max-w-sm">
@@ -24,8 +31,8 @@
                     @endif
                 </div>
                 <div class="flex flex-col items-start gap-1 max-w-sm">
-                    <p class="text-xs font-semibold text-gray-700">DR Number: 401-{{ $equipmentChunk->first()->ar_id }}</p>
-                    <p class="text-xs font-semibold text-gray-700">{{ $equipmentChunk->first()->created_at->format('F d, Y g:i A') }}</p>
+                    <p class="text-xs font-semibold text-gray-700">Date: {{ $equipmentChunk->first()->created_at->format('F d, Y g:i A') }}</p>
+                    <p class="text-xs font-bold text-gray-700">DR Number: 401-{{ $equipmentChunk->first()->ar_id }}</p>
                     {{-- <p class="text-xs font-semibold text-gray-700">Gate Pass: 1234</p> --}}
                 </div>
             </div>
@@ -133,12 +140,12 @@
                     @endif
                 </div>
             @endif
-
             <div class="absolute bottom-14 left-0 w-full flex justify-around px-12">
                 <div class="flex w-full justify-around">
                     <div class="flex flex-col items-center gap-8">
                         <p class="text-xs font-semibold text-gray-700">Delivered By:</p>
                         <p class="text-sm font-semibold text-gray-700 uppercase underline">{{ $deliveryRider }}</p>
+                        <p class="text-[8px] text-gray-700 mt-[-36px]">Note: Please sign over printer name</p>
                     </div>
                     <div class="flex flex-col items-start gap-8">
                     </div>

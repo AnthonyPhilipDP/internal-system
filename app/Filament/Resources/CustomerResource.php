@@ -126,13 +126,13 @@ class CustomerResource extends Resource
                             //     ->showFlags(false)
                             //     ->disallowDropdown()
                             //     ->onlyCountries(['AF']),
-                            Forms\Components\TextInput::make('phone')
-                                ->validationAttribute('phone')
+                            Forms\Components\TextInput::make('mobile')
+                                ->validationAttribute('mobile')
                                 ->placeholder('')
                                 ->prefix('Enter 11 digits')
                                 ->tel()
                                 ->required(),
-                            Forms\Components\TextInput::make('landline')
+                            Forms\Components\TextInput::make('telephone')
                                 ->tel()
                                 ->prefix('Enter 10 digits')
                                 ->length(10)
@@ -347,17 +347,17 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('address')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
+                Tables\Columns\TextColumn::make('mobile')
                     ->icon('heroicon-o-device-phone-mobile')
                     ->iconColor('primary')
                     ->copyable()
-                    ->copyMessage('Phone No. copied'),
+                    ->copyMessage('Mobile No. copied'),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('landline')
+                Tables\Columns\TextColumn::make('telephone')
                     ->icon('heroicon-o-phone')
                     ->iconColor('primary')
                     ->copyable()
-                    ->copyMessage('Landline No. copied'),
+                    ->copyMessage('Telephone No. copied'),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->icon('heroicon-m-envelope')

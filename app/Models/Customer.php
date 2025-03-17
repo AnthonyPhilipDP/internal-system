@@ -18,8 +18,8 @@ class Customer extends Model
         'id',
         'name',
         'address',
-        'phone',
-        'landline',
+        'mobile',
+        'telephone',
         'email',
         'website',
         'sec',
@@ -46,7 +46,7 @@ class Customer extends Model
         parent::boot();
 
         static::saving(function ($model) {
-            if (is_null($model->landline)) {
+            if (is_null($model->telephone)) {
                 $model->landline = 'N/A';
             }
 

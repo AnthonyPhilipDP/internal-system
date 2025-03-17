@@ -21,7 +21,7 @@ class AcknowledgmentReceipt extends Component
         //     ->get();
         
         // Use the currentArId to filter the equipment
-        $this->equipment = Equipment::with('accessory')
+        $this->equipment = Equipment::with(['accessory', 'customer.contactPerson'])
             ->where('ar_id', $currentArId)
             ->get();
 

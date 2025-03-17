@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('address');
-            $table->string('phone');
-            $table->string('landline')->nullable("N/A");
+            $table->string('mobile');
+            $table->string('telephone')->nullable("N/A");
             $table->string('email');
             $table->string('website')->nullable("N/A");
             $table->string('sec')->nullable("N/A");
