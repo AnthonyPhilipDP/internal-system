@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Equipment;
 use Illuminate\Support\Str;
 use App\Models\ContactPerson;
+use App\Models\DeliveryPerson;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -83,6 +84,10 @@ class Customer extends Model
 
     public function contactPerson() {
         return $this->hasMany(ContactPerson::class);
+    }
+
+    public function deliveryPerson() {
+        return $this->hasMany(DeliveryPerson::class);
     }
 
     public function activeContactPerson() {

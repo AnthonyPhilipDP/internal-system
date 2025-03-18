@@ -5,8 +5,10 @@ namespace App\Filament\Resources\EquipmentResource\Pages;
 use Filament\Actions;
 use App\Models\Equipment;
 use Filament\Actions\Action;
+use App\Models\DeliveryPerson;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Support\Facades\Session;
 use Filament\Forms\Components\TextInput;
@@ -25,14 +27,49 @@ class ListEquipment extends ListRecords
                 ->color('info')
                 ->requiresConfirmation()
                 ->modalHeading('Acknowledgment Receipt')
-                ->modalDescription('Please provide the name of the delivery person')
+                ->modalDescription('The acknowledgment receipt process is now automated to enhance efficiency and accuracy. Simply confirm the details to proceed seamlessly')
                 ->modalSubmitActionLabel('Confirm')
                 ->modalIcon('heroicon-o-arrow-left-end-on-rectangle')
                 ->form([
                     TextInput::make('name')
                         ->label('Delivery Person Name')
+                        ->placeholder('Please, enter the name of the delivery person')
                         ->autocomplete(false)
-                        ->required(),
+                        ->required()
+                        ->reactive()
+                        ->disabled(function (callable $get) {
+                            $selectedArId = $get('ar_id') ?? Equipment::max('ar_id');
+                            $deliveryPerson = DeliveryPerson::where('ar_id', $selectedArId)->first();
+                            $toggleVisible = $deliveryPerson && !empty($deliveryPerson->name);
+                            return $toggleVisible ? !$get('edit_name') : false;
+                        })
+                        ->dehydrated()
+                        ->afterStateHydrated(function ($state, callable $get, callable $set) {
+                            $arId = $get('ar_id') ?? Equipment::max('ar_id');
+                            if ($arId) {
+                                $deliveryPerson = DeliveryPerson::where('ar_id', $arId)->first();
+                                $set('name', $deliveryPerson ? $deliveryPerson->name : '');
+                            }
+                        }),
+                    Toggle::make('edit_name')
+                        ->label('Enable Editing')
+                        ->default(false)
+                        ->reactive()
+                        ->helperText('Toggle this button to edit the delivery person\'s name.')
+                        ->visible(function (callable $get) {
+                            $selectedArId = $get('ar_id') ?? Equipment::max('ar_id');
+                            $deliveryPerson = DeliveryPerson::where('ar_id', $selectedArId)->first();
+                            return $deliveryPerson && !empty($deliveryPerson->name);
+                        })
+                        ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                            if (!$state) { // If the toggle is turned off
+                                $arId = $get('ar_id') ?? Equipment::max('ar_id');
+                                if ($arId) {
+                                    $deliveryPerson = DeliveryPerson::where('ar_id', $arId)->first();
+                                    $set('name', $deliveryPerson ? $deliveryPerson->name : '');
+                                }
+                            }
+                        }),
                     Select::make('ar_id')
                         ->label('Receipt Number')
                         ->searchable()
@@ -43,7 +80,6 @@ class ListEquipment extends ListRecords
                         ->searchingMessage('Searching DR number, please wait ...')
                         ->noSearchResultsMessage('No DR number found.')
                         ->getSearchResultsUsing(function (string $search) {
-                            // Perform the search strictly on ar_id
                             return Equipment::where('ar_id', 'like', "%{$search}%")
                                 ->pluck('ar_id')
                                 ->mapWithKeys(function ($arId) {
@@ -51,22 +87,31 @@ class ListEquipment extends ListRecords
                                 });
                         })
                         ->getOptionLabelUsing(function ($value) {
-                            // Display the ar_id with the "401-" prefix
                             return '401-' . $value;
                         })
                         ->options(Equipment::pluck('ar_id')->unique()->mapWithKeys(function ($arId) {
                             return [$arId => '401-' . $arId];
                         }))
                         ->default(Equipment::max('ar_id'))
-                        ->required(),
+                        ->required()
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            if ($state) {
+                                $deliveryPerson = DeliveryPerson::where('ar_id', $state)->first();
+                                $set('name', $deliveryPerson ? $deliveryPerson->name : '');
+                            } else {
+                                $set('name', null); // Clear the name if no ar_id is selected
+                            }
+                        }),
                 ])
                 ->action(function (array $data) {
-                    // Handle the action with the input data
-                    $deliveryRider = $data['name'];
-                    $arId = $data['ar_id'];
+                    // Store the delivery person's name and ar_id in the delivery_people table
+                    $this->saveDeliveryPerson($data);
+
                     // Store the delivery rider's name and selected ar_id in the session
-                    Session::put('name', $deliveryRider);
-                    Session::put('ar_id', $arId);
+                    Session::put('name', $data['name']);
+                    Session::put('ar_id', $data['ar_id']);
+
                     // Redirect to the acknowledgment receipt page
                     return redirect()->to('/acknowledgment-receipt');
                 }),
@@ -74,4 +119,22 @@ class ListEquipment extends ListRecords
                 ->label('Add New Equipment'),
         ];
     }
+
+    public function saveDeliveryPerson($data)
+    {
+        // Check if a DeliveryPerson with the given ar_id already exists
+        $deliveryPerson = DeliveryPerson::where('ar_id', $data['ar_id'])->first();
+
+        if ($deliveryPerson) {
+            // Update the existing DeliveryPerson's name
+            $deliveryPerson->update(['name' => $data['name']]);
+        } else {
+            // Create a new DeliveryPerson record
+            DeliveryPerson::create([
+                'name' => $data['name'],
+                'ar_id' => $data['ar_id'],
+            ]);
+        }
+    }
 }
+

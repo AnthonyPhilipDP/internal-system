@@ -4,6 +4,7 @@ namespace  App\Filament\Auth;
 
 use Filament\Forms\Form;
 use Illuminate\Support\Facades\DB;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Auth\Login as BaseAuth;
@@ -16,23 +17,31 @@ class Login extends BaseAuth
     {
         return $form
             ->schema([
-                $this->getLoginFormComponent(), 
-                $this->getPasswordFormComponent(),
-                $this->getRememberFormComponent(),
+                Section::make('Welcome to PMSi - Internal')
+                ->description('Please login to continue')
+                ->schema([
+                    $this->getLoginFormComponent(), 
+                    $this->getPasswordFormComponent(),
+                    $this->getRememberFormComponent(),
+                ])
+                ->extraAttributes([
+                    'style' => 'text-align: center;',
+                ]),
             ])
             ->statePath('data');
     }
  
     protected function getLoginFormComponent(): Component 
     {
-        return TextInput::make('login')
-            ->label('Name or Username')
-            ->required()
-            ->maxLength(255)
-            ->minLength(2)
-            ->autocomplete()
-            ->autofocus()
-            ->extraInputAttributes(['tabindex' => 1]);
+        return 
+            TextInput::make('login')
+                ->label('Name or Username')
+                ->autocomplete(false)
+                ->required()
+                ->maxLength(255)
+                ->minLength(2)
+                ->autofocus()
+                ->extraInputAttributes(['tabindex' => 1]);
     } 
 
     //This applies with email and username only
