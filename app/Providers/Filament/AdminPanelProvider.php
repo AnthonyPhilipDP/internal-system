@@ -7,7 +7,6 @@ use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use App\Filament\Auth\Login;
-use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Blade;
 use Filament\Navigation\NavigationItem;
@@ -22,8 +21,6 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
-use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 
 
 class AdminPanelProvider extends PanelProvider
@@ -114,32 +111,12 @@ class AdminPanelProvider extends PanelProvider
                     ->url('https://x.com', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->group('Social Media'),
-                NavigationItem::make('Profile')
-                    ->url(fn (): string => EditProfilePage::getUrl())
-                    ->icon('heroicon-o-user-circle')
-                    ->group('Settings'),
             ])
             ->plugins([
-                FilamentEditProfilePlugin::make()
-                    ->shouldShowBrowserSessionsForm(false)
-                    ->setTitle('My Profile')
-                    ->setNavigationLabel('My Profile')
-                    ->setNavigationGroup('Settings')
-                    ->setIcon('heroicon-o-user')
-                    ->setSort(10)
-                    ->shouldRegisterNavigation(false)
-                    ->shouldShowDeleteAccountForm(false)
-                    ->shouldShowAvatarForm(
-                        value: true,
-                        directory: 'avatars',
-                        rules: 'mimes:jpeg,png|max:1024'
-                    )
+                //
             ])
             ->userMenuItems([
-                MenuItem::make()
-                    ->label('Settings')
-                    ->url(fn (): string => EditProfilePage::getUrl())
-                    ->icon('heroicon-m-cog-6-tooth'),
+                //
             ]);
 
     }

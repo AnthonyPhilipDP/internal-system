@@ -107,8 +107,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        // return $this->avatar_url;
-        // return $this->avatar ? asset('/storage/' . $this->avatar) : null;
         $default = (asset('images/default avatar.png'));
         $fileSystem = Storage::url(path: $this->avatar_url);
         $avatarColumn = 'avatar_url';
