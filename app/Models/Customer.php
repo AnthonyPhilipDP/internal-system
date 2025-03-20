@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\Equipment;
 use Illuminate\Support\Str;
 use App\Models\ContactPerson;
@@ -79,7 +80,18 @@ class Customer extends Model
 
     public function getDisplayDateAttribute()
     {
-        return $this->created_at ?? $this->createdDate;
+        if ($this->created_at) 
+        {
+            return $this->created_at->format('F d, Y');
+        }
+        elseif ($this->createdDate) 
+        {
+            return Carbon::parse($this->createdDate)->format('F d, Y');
+        }
+        else 
+        {
+            return null;
+        }
     }
 
     public function contactPerson() {
