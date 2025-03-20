@@ -425,9 +425,33 @@ class EquipmentResource extends Resource
                 // ->color('danger')
                 ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
+                Tables\Actions\BulkAction::make('printLabel')
+                ->label('Print Label')
+                ->action(function ($records) {
+                    $equipmentData = $records->map(function ($record) {
+                        return [
+                            'id' => $record->id,
+                            'customer_id' => $record->customer_id,
+                            'equipment_id' => $record->equipment_id,
+                            'inDate' => $record->inDate,
+                            'has_accessory' => $record->accessory()->exists(),
+                        ];
+                    })->toArray();
+
+                    session(['selectedEquipmentData' => $equipmentData]);
+
+                    return redirect('/equipment/print-label');
+                })
+                ->requiresConfirmation()
+                ->modalHeading('Print Label for Selected Equipment')
+                ->modalSubheading('The labeling process is now automated to enhance efficiency and accuracy. Simply confirm the selected equipments to proceed seamlessly')
+                ->modalButton('Confirm')
+                ->modalIcon('heroicon-o-printer')
+                ->icon('heroicon-o-printer')
+                ->color('primary'),
             ])
             ->defaultPaginationPageOption(5)
             ->paginated([5, 10, 20, 40])

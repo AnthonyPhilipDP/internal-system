@@ -48,7 +48,7 @@ class Customer extends Model
 
         static::saving(function ($model) {
             if (is_null($model->telephone)) {
-                $model->landline = 'N/A';
+                $model->telephone = 'N/A';
             }
 
             if (is_null($model->website)) {

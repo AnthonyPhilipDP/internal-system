@@ -13,3 +13,7 @@ Route::get('/worksheet', function () {
 Route::get('/acknowledgment-receipt', function () {
     return view('pages.acknowledgment-receipt');
 });
+
+Route::get('/equipment/print-label', function () {
+    return view('pages.equipment-label');
+});

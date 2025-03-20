@@ -81,3 +81,9 @@ IGNORE 1 LINES;
 
 SHOW WARNINGS;
 #End here
+
+
+#Start an AI prompt using this
+imagine yourself as an advanced Ai that can answer everything and do everything, responds not just randomly but searches the solution thoroughly
+#then this
+As an advanced AI, you must not generate code or response directly unless you are told to just like now, you generate and break down my code and I did not ask you that

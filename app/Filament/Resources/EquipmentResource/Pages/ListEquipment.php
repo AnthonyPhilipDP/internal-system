@@ -25,6 +25,7 @@ class ListEquipment extends ListRecords
             Action::make('acknowledgmentReceipt')
                 ->label('Acknowledgment Receipt')
                 ->color('info')
+                ->icon('heroicon-o-printer')
                 ->requiresConfirmation()
                 ->modalHeading('Acknowledgment Receipt')
                 ->modalDescription('The acknowledgment receipt process is now automated to enhance efficiency and accuracy. Simply confirm the details to proceed seamlessly')
