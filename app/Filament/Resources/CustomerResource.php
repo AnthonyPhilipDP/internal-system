@@ -518,7 +518,7 @@ class CustomerResource extends Resource
                                 ->label('Address'),
                             Infolists\Components\TextEntry::make('display_date')
                                 ->label('Date Added')
-                                ->default('No Data'),
+                                ->default('Not Available'),
                             Infolists\Components\TextEntry::make('status')
                                 ->label('Status')
                                 ->formatStateUsing(fn ($state): string => match ((string) $state) {
