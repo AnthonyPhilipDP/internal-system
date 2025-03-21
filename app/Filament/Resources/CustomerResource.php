@@ -347,13 +347,13 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('address')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('mobile')
+                Tables\Columns\TextColumn::make('formatted_mobile')
                     ->icon('heroicon-o-device-phone-mobile')
                     ->iconColor('primary')
                     ->copyable()
                     ->copyMessage('Mobile No. copied'),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('telephone')
+                Tables\Columns\TextColumn::make('formatted_telephone')
                     ->icon('heroicon-o-phone')
                     ->iconColor('primary')
                     ->copyable()

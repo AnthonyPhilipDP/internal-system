@@ -16,11 +16,11 @@
                     @endif
                     @if (!is_null($equipmentChunk->first()->customer->telephone) && $equipmentChunk->first()->customer->telephone !== 'N/A' 
                         && $equipmentChunk->first()->customer->telephone !== '' && $equipmentChunk->first()->customer->telephone !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Telephone: {{ $equipmentChunk->first()->customer->telephone }}</p>
+                        <p class="text-xs font-semibold text-gray-700">Telephone: {{ $equipmentChunk->first()->customer->formatted_telephone }}</p>
                     @endif
                     @if (!is_null($equipmentChunk->first()->customer->mobile) && $equipmentChunk->first()->customer->mobile !== 'N/A' 
                         && $equipmentChunk->first()->customer->mobile !== '' && $equipmentChunk->first()->customer->mobile !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Mobile: {{ $equipmentChunk->first()->customer->mobile }}</p>
+                        <p class="text-xs font-semibold text-gray-700">Mobile: {{ $equipmentChunk->first()->customer->formatted_mobile }}</p>
                     @endif
                 </div>
                 <div class="flex flex-col items-start gap-1 max-w-sm">

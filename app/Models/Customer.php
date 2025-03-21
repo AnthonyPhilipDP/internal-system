@@ -94,6 +94,31 @@ class Customer extends Model
         }
     }
 
+    public function getFormattedMobileAttribute()
+    {
+        $number = $this->attributes['mobile'];
+
+        // Format the number as (0991) 234-5678
+        return sprintf('(%s) %s-%s',
+            substr($number, 0, 4),
+            substr($number, 4, 3),
+            substr($number, 7)
+        );
+    }
+
+    public function getFormattedTelephoneAttribute()
+    {
+        $number = $this->attributes['telephone'];
+
+        // Format the number as (046) 430-1666
+        return sprintf('(%s) %s-%s',
+            substr($number, 0, 3),
+            substr($number, 3, 3),
+            substr($number, 6)
+        );
+    }
+
+
     public function contactPerson() {
         return $this->hasMany(ContactPerson::class);
     }
