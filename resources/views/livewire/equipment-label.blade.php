@@ -37,8 +37,8 @@
                             <hr class="border-t-[0.5px] border-gray-700">
                             <div class="flex text-[6px] justify-around font-bold text-gray-700">
                                 <span>pmsical@yahoo.com</span>
-                                <span>(+63) 997 410 6031</span>
-                                <span>(046) 889 0673</span>
+                                <span>(0997) 410-6031</span>
+                                <span>(046) 889-0673</span>
                             </div>
                             <hr class="border-t-[0.5px] border-gray-700">
                             <p class="text-[6px] mt-[0.5px] mb-1 font-bold text-gray-800">DCN 5-5.8.2-1 rev.1</p>
