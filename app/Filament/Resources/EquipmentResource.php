@@ -90,6 +90,7 @@ class EquipmentResource extends Resource
                                 ->label('Equipment Identification')  
                                 ->maxLength(255),
                             Forms\Components\TextInput::make('manufacturer')
+                                ->label('Make')
                                 ->required()    
                                 ->maxLength(255),
                             Forms\Components\TextInput::make('model')
@@ -171,28 +172,29 @@ class EquipmentResource extends Resource
                     Group::make()->schema([
                         Section::make('')->schema([
                             Forms\Components\Toggle::make('sameToggle')
-                                ->label('Same')
-                                ->onIcon('heroicon-m-bolt')
-                                ->offIcon('heroicon-m-bolt')
+                                ->label('Generate New Receipt')
+                                ->helperText('Toggle this button to create a new acknowledgment receipt number')
+                                ->onIcon('heroicon-m-squares-plus')
+                                ->offIcon('heroicon-m-squares-2x2')
                                 ->onColor('success')
                                 ->offColor('danger')
                                 ->reactive()
-                                ->default(true)
+                                ->default(false)
                                 ->afterStateUpdated(function (bool $state, callable $get, callable $set): void {
                                     $maxAr = Equipment::query()
                                         ->selectRaw('MAX(CAST(ar_id AS UNSIGNED)) as max')
                                         ->value('max') ?? 0;
-                                    // If toggle true, use max; otherwise, increment by one.
-                                    $newValue = $state ? $maxAr : ((int)$maxAr + 1);
+                                    // Reverse logic: If toggle false, use max; otherwise, increment by one.
+                                    $newValue = !$state ? $maxAr : ((int)$maxAr + 1);
                                     $set('ar_id', (string)$newValue);
 
-                                    if ($state) {
+                                    if (!$state) {
                                         $customerId = Equipment::query()
                                             ->where('ar_id', $maxAr)
                                             ->value('customer_id');
                                         $set('customer_id', $customerId);
                                     } else {
-                                        // Set customer_id to blank when toggle is off
+                                        // Set customer_id to blank when toggle is on
                                         $set('customer_id', null); 
                                     }
                                 }),
@@ -207,16 +209,20 @@ class EquipmentResource extends Resource
                                         ->selectRaw('MAX(CAST(ar_id AS UNSIGNED)) as max')
                                         ->value('max') ?? 0;
                                     $toggle = $get('sameToggle');
-                                    $newValue = $toggle ? $maxAr : ((int)$maxAr + 1);
+                                    // Reverse logic: If toggle false, use max; otherwise, increment by one.
+                                    $newValue = !$toggle ? $maxAr : ((int)$maxAr + 1);
                                     $set('ar_id', (string)$newValue);
 
-                                    if ($toggle) {
+                                    if (!$toggle) {
                                         $customerId = Equipment::query()
                                             ->where('ar_id', $maxAr)
                                             ->value('customer_id');
                                         $set('customer_id', $customerId);
                                     }
                                 })
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('gatePass')
+                                ->label('Gate Pass')
                                 ->maxLength(255),
                             Forms\Components\Repeater::make('accessory')
                                 ->relationship()
@@ -279,7 +285,7 @@ class EquipmentResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('manufacturer')
                     ->alignCenter()
-                    ->label('Manufacturer')
+                    ->label('Make')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('model')
                     ->alignCenter()

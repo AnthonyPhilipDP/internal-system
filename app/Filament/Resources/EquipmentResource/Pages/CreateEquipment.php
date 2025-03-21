@@ -30,4 +30,21 @@ class CreateEquipment extends CreateRecord
             ->title('Equipment Successfully Added')
             ->body('New Equipment has been added to the system.');
     }
+
+    protected function getCreateFormAction(): Actions\Action
+    {
+        return parent::getCreateFormAction()
+            ->submit(null)
+            ->requiresConfirmation()
+            ->modalIcon('heroicon-o-document-duplicate')
+            ->modalHeading('This is a prototype, not yet finished')
+            ->modalSubheading('This is a prototype, not yet finished')
+            ->modalButton('Confirm')
+            // ->tooltip('Duplicate')
+            ->color('primary')
+            ->action(function(){
+                $this->closeActionModal();
+                $this->create();
+            });
+    }
 }

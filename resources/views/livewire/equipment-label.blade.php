@@ -51,6 +51,13 @@
             </div>
         </div>
     @endforeach
+    <style>
+        @media print {
+            @page {
+                size: Letter portrait; /* Set the page size and orientation */
+            }
+        }
+    </style>
 </div>
 
 <script>

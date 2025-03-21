@@ -23,6 +23,7 @@ class Equipment extends Model
         'transaction_id',
         'equipment_id',
         'ar_id',
+        'gatePass',
         'customer_id',
         'worksheet_id',
         'manufacturer',

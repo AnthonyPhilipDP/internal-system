@@ -31,7 +31,7 @@
                     @endif
                 </div>
                 <div class="flex flex-col items-start gap-1 max-w-sm">
-                    <p class="text-xs font-semibold text-gray-700">Date: {{ $equipmentChunk->first()->created_at->format('F d, Y g:i A') }}</p>
+                    <p class="text-xs font-semibold text-gray-700">Date: {{ $equipmentChunk->first()->created_at->format('F d, Y') }}</p>
                     <p class="text-xs font-bold text-gray-700">DR Number: 401-{{ $equipmentChunk->first()->ar_id }}</p>
                     {{-- <p class="text-xs font-semibold text-gray-700">Gate Pass: 1234</p> --}}
                 </div>
@@ -80,7 +80,7 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200 text-center">
+                    <tbody class="bg-white divide-y divide-gray-200 text-left">
                         @foreach ($equipmentChunk as $record)
                             <tr>
                                 <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words text-center">
@@ -101,22 +101,22 @@
                                 <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
                                     {{ $record->serial }}
                                 </td>
-                                <td class="px-1 py-0.5 text-[10px] text-gray-800 capitalize text-center">
+                                <td class="px-1 py-0.5 text-[10px] text-gray-800 capitalize">
                                     @if(is_array($record->inspection))
                                         {!! implode(', ', $record->inspection) !!}
                                     @else
                                         {{ $record->inspection }}
                                     @endif
                                 </td>
-                                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words capitalize text-center">
+                                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words capitalize">
                                     @if(isset($record->accessory) && $record->accessory->pluck('name')->filter()->isNotEmpty())
                                         {!! implode(', ', $record->accessory->pluck('name')->toArray()) !!}
                                     @else
                                         <span class="text-yellow-600">No Accessory</span>
                                     @endif
                                 </td>
-                                <td class="px-1 py-0.5 text-[10px] text-gray-800 break-words text-center">
-                                    {{-- Gate Pass Code Here --}}
+                                <td class="px-1 py-0.5 text-[10px] text-gray-800 break-words">
+                                    {{ $record->gatePass }}
                                 </td>
                             </tr>
                         @endforeach
@@ -145,7 +145,7 @@
                     <div class="flex flex-col items-center gap-8">
                         <p class="text-xs font-semibold text-gray-700">Delivered By:</p>
                         <p class="text-sm font-semibold text-gray-700 uppercase underline">{{ $deliveryRider }}</p>
-                        <p class="text-[8px] text-gray-700 mt-[-36px]">Note: Please sign over printer name</p>
+                        <p class="text-[9px] text-gray-700 mt-[-36px]">Note: Please sign over printer name</p>
                     </div>
                     <div class="flex flex-col items-start gap-8">
                     </div>
@@ -160,19 +160,27 @@
                     <div class="flex flex-col items-center gap-8">
                         <p class="text-xs font-semibold text-gray-700">Received By:</p>
                         <p class="text-sm font-semibold text-gray-700 uppercase underline">{{ $currentUser }}</p>
+                        <p class="text-[9px] text-gray-700 mt-[-36px]">{{ date('F d, Y g:i A') }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Page number and CDN number -->
-            <div class="absolute bottom-8 left-12 text-xs font-semibold text-gray-500">
+            <div class="absolute bottom-6 left-12 text-xs font-semibold text-gray-500">
                 DCN 4-4.13.1.1-38
             </div>
-            <div class="absolute bottom-8 right-0 left-0 text-center text-xs font-semibold text-gray-500">
+            <div class="absolute bottom-6 right-0 left-0 text-center text-xs font-semibold text-gray-500">
                 Page {{ $chunkIndex + 1 }} of {{ $equipmentChunks->count() }}   
             </div>
         </div>
     @endforeach
+    <style>
+        @media print {
+            @page {
+                size: Letter landscape; /* Set the page size and orientation */
+            }
+        }
+    </style>
 </div>
 
 <script>

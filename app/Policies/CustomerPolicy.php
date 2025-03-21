@@ -37,7 +37,7 @@ class CustomerPolicy
      */
     public function update(User $user, Customer $customer): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isEmployee();
     }
 
     /**

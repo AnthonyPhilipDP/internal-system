@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('transaction_id')->nullable();
             $table->string('equipment_id')->nullable();
             $table->string('ar_id')->nullable();
+            $table->string('gatePass')->nullable();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->unsignedBigInteger('worksheet_id')->nullable();
             $table->string('manufacturer')->nullable();

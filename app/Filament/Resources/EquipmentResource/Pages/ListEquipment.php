@@ -30,7 +30,7 @@ class ListEquipment extends ListRecords
                 ->modalHeading('Acknowledgment Receipt')
                 ->modalDescription('The acknowledgment receipt process is now automated to enhance efficiency and accuracy. Simply confirm the details to proceed seamlessly')
                 ->modalSubmitActionLabel('Confirm')
-                ->modalIcon('heroicon-o-arrow-left-end-on-rectangle')
+                ->modalIcon('heroicon-o-printer')
                 ->form([
                     TextInput::make('name')
                         ->label('Delivery Person Name')
