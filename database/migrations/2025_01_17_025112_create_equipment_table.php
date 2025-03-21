@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('gatePass')->nullable();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->unsignedBigInteger('worksheet_id')->nullable();
+            $table->string('qrCodePath')->nullable();
             $table->string('manufacturer')->nullable();
             $table->string('model')->nullable();
             $table->string('serial')->nullable();

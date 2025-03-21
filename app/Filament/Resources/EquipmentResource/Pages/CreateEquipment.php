@@ -6,6 +6,9 @@ use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\EquipmentResource;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Facades\Storage;
 
 class CreateEquipment extends CreateRecord
 {
@@ -45,6 +48,31 @@ class CreateEquipment extends CreateRecord
             ->action(function(){
                 $this->closeActionModal();
                 $this->create();
+                $this->generateQrCode();
             });
+    }
+    
+    protected function generateQrCode()
+    {
+        $equipment = $this->record;
+        $relativePath = 'admin/equipment/' . $equipment->id . '/edit';
+    
+        // Generate the QR code with the full URL
+        $fullUrl = url($relativePath);
+    
+        // Create a new QR code instance
+        $qrCode = new QrCode($relativePath);
+    
+        // Create a writer instance
+        $writer = new PngWriter();
+    
+        // Write the QR code to a string
+        $result = $writer->write($qrCode);
+    
+        $fileName = 'qrcodes/equipment_' . $equipment->id . '.png';
+        Storage::disk('public')->put($fileName, $result->getString());
+    
+        // Store only the relative path in the database
+        $equipment->update(['qrCodePath' => $relativePath]);
     }
 }

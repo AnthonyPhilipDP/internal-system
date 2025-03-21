@@ -26,6 +26,7 @@ class Equipment extends Model
         'gatePass',
         'customer_id',
         'worksheet_id',
+        'qrCodePath',
         'manufacturer',
         'model',
         'serial',
