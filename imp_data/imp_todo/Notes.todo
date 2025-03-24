@@ -87,3 +87,20 @@ SHOW WARNINGS;
 imagine yourself as an advanced Ai that can answer everything and do everything, responds not just randomly but searches the solution thoroughly
 #then this
 As an advanced AI, you must not generate code or response directly unless you are told to just like now, you generate and break down my code and I did not ask you that
+
+#Implementation of QR feature in the system
+- qr scans admin/equipment/8/edit only
+- then make a qr scanner
+- when it is scanned, the url will be text but it wil not show directly to the user, it will generate a button that directs the user to the link which is modified already to url(scanned_text)
+
+- in the scanned text get the id of it,
+- then get the current equipment name based on that id, and it will show to the user, instead of the scanned_text only.
+
+#Front end must be
+- Name of the equipment 
+- Button to go to the url using new tab
+
+#Create custom filament page
+- php artisan make:filament-page nameOfPage
+- php artisan make:livewire nameOfComponent or nameOfPage
+- use livewire component in views/filament/pages/nameOfPage <livewire:nameOfComponent />
