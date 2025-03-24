@@ -104,3 +104,11 @@ As an advanced AI, you must not generate code or response directly unless you ar
 - php artisan make:filament-page nameOfPage
 - php artisan make:livewire nameOfComponent or nameOfPage
 - use livewire component in views/filament/pages/nameOfPage <livewire:nameOfComponent />
+
+#Create another Dashboard but named TOOLS
+! It will include
+- QR Scanner
+- Acknowledgement Receipt
+- Equipment Delivery Receipt
+- Delivery / Receipt of Documents
+- Printable Documents
