@@ -60,11 +60,10 @@ class ListEquipment extends ListRecords
                             ->columnSpan(2),
                         TextInput::make('equipment_id')
                             ->label('Equipment ID')
-                            ->disabled(),
+                            ->readonly(),
                         TextInput::make('id')
                             ->label('Transaction ID')
-                            ->disabled()
-                            ->dehydrated(),
+                            ->readonly(),
                     ])->columns(2)
                 ])
                 ->action(function (array $data) {

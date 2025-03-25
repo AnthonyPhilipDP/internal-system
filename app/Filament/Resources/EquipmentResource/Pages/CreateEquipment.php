@@ -49,19 +49,17 @@ class CreateEquipment extends CreateRecord
                 $this->closeActionModal();
                 $this->create();
                 $this->generateQrCode();
+                $this->getCreatedNotification();
             });
     }
     
     protected function generateQrCode()
     {
         $equipment = $this->record;
-        $relativePath = 'admin/equipment/' . $equipment->id . '/edit';
-    
-        // Generate the QR code with the full URL
-        $fullUrl = url($relativePath);
+        $qrData = $equipment->id;
     
         // Create a new QR code instance
-        $qrCode = new QrCode($relativePath);
+        $qrCode = new QrCode($qrData);
     
         // Create a writer instance
         $writer = new PngWriter();
@@ -73,6 +71,6 @@ class CreateEquipment extends CreateRecord
         Storage::disk('public')->put($fileName, $result->getString());
     
         // Store only the relative path in the database
-        $equipment->update(['qrCodePath' => $relativePath]);
+        //$equipment->update(['qrCodePath' => $qrData]);
     }
 }
