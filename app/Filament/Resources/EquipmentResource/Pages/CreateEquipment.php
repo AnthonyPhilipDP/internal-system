@@ -38,15 +38,15 @@ class CreateEquipment extends CreateRecord
     {
         return parent::getCreateFormAction()
             ->submit(null)
-            ->requiresConfirmation()
-            ->modalIcon('heroicon-o-document-duplicate')
-            ->modalHeading('This is a prototype, not yet finished')
-            ->modalSubheading('This is a prototype, not yet finished')
-            ->modalButton('Confirm')
-            // ->tooltip('Duplicate')
+            // ->requiresConfirmation()
+            // ->modalIcon('heroicon-o-document-duplicate')
+            // ->modalHeading('This is a prototype, not yet finished')
+            // ->modalSubheading('This is a prototype, not yet finished')
+            // ->modalButton('Confirm')
+            // // ->tooltip('Duplicate')
             ->color('primary')
             ->action(function(){
-                $this->closeActionModal();
+                // $this->closeActionModal();
                 $this->create();
                 $this->generateQrCode();
                 $this->getCreatedNotification();
