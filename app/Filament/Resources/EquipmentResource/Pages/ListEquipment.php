@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EquipmentResource\Pages;
 
+use Zxing\QrReader;
 use Filament\Actions;
 use App\Models\Equipment;
 use Filament\Actions\Action;
@@ -10,8 +11,11 @@ use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\Alignment;
+use Filament\Forms\Components\Section;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\EquipmentResource;
 
@@ -22,6 +26,52 @@ class ListEquipment extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('qrScanner')
+                ->label('QR Code Scanner')
+                ->color('info')
+                ->icon('heroicon-o-qr-code')
+                ->modalSubmitActionLabel('Go to equipment')
+                ->form([
+                Section::make('')
+                    ->description('Upload a QR code to scan and view the equipment details')
+                    ->schema([
+                        FileUpload::make('qr_code')
+                            ->label('Upload QR Code')
+                            ->image()
+                            ->directory('temp')
+                            ->fetchFileInformation(false)
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $qrReader = new \Zxing\QrReader($state->getRealPath());
+                                    $decodedText = $qrReader->text();
+                                    $equipment = \App\Models\Equipment::find($decodedText);
+        
+                                    if ($equipment) {
+                                        $set('equipment_id', $equipment->equipment_id);
+                                        $set('id', $equipment->id);
+                                    } else {
+                                        $set('equipment_id', 'Equipment not found.');
+                                        $set('id', null);
+                                    }
+                                }
+                            })
+                            ->columnSpan(2),
+                        TextInput::make('equipment_id')
+                            ->label('Equipment ID')
+                            ->disabled(),
+                        TextInput::make('id')
+                            ->label('Transaction ID')
+                            ->disabled()
+                            ->dehydrated(),
+                    ])->columns(2)
+                ])
+                ->action(function (array $data) {
+                    if ($data['id']) {
+                        return redirect()->to('/admin/equipment/' . $data['id'] . '/edit');
+                    }
+                }),
             Action::make('acknowledgmentReceipt')
                 ->label('Acknowledgment Receipt')
                 ->color('info')

@@ -112,3 +112,10 @@ As an advanced AI, you must not generate code or response directly unless you ar
 - Equipment Delivery Receipt
 - Delivery / Receipt of Documents
 - Printable Documents
+
+Create a custom action button here before the Acknowledgement Receipt button
+- it will be a button that will show the QR Scanner
+- when the QR Scanner is clicked, it will show a modal that will scan the QR code
+- expect the uploaded qr is an equipment id
+- when the QR code is scanned, it will show the equipment name and a button to go to the equipment page
+- use khanamiryan/qrcode-detector-decoder for the qr scanner
