@@ -30,15 +30,21 @@ class ListEquipment extends ListRecords
                 ->label('QR Code Scanner')
                 ->color('info')
                 ->icon('heroicon-o-qr-code')
-                ->modalSubmitActionLabel('Go to equipment')
+                ->modalSubmitActionLabel('Go to Equipment')
                 ->form([
                 Section::make('')
                     ->description('Upload a QR code to scan and view the equipment details')
                     ->schema([
                         FileUpload::make('qr_code')
+                            ->deletable(false)
+                            ->panelAspectRatio('3:1')
+                            ->panelLayout('integrated')
+                            ->uploadButtonPosition('right')
+                            ->uploadProgressIndicatorPosition('right')
                             ->label('Upload QR Code')
                             ->image()
                             ->directory('temp')
+                            ->uploadingMessage('Scanning QR code, please wait ...')
                             ->fetchFileInformation(false)
                             ->required()
                             ->reactive()
@@ -67,6 +73,19 @@ class ListEquipment extends ListRecords
                     ])->columns(2)
                 ])
                 ->action(function (array $data) {
+
+                    // Delete all files in the public/storage/temp directory
+                    $tempFiles = \File::files(public_path('storage/temp'));
+                    foreach ($tempFiles as $file) {
+                        \File::delete($file);
+                    }
+
+                    // Delete all files in the storage/app/private/livewire-tmp directory
+                    $livewireTmpFiles = \File::files(storage_path('app/private/livewire-tmp'));
+                    foreach ($livewireTmpFiles as $file) {
+                        \File::delete($file);
+                    }
+                    
                     if ($data['id']) {
                         return redirect()->to('/admin/equipment/' . $data['id'] . '/edit');
                     }
