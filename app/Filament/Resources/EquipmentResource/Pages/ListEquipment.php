@@ -32,10 +32,14 @@ class ListEquipment extends ListRecords
                 ->icon('heroicon-o-qr-code')
                 ->modalSubmitActionLabel('Go to Equipment')
                 ->form([
-                Section::make('')
-                    ->description('Upload a QR code to scan and view the equipment details')
+                Section::make('Upload a QR code to scan and view the equipment details')
+                    ->description('Experience seamless tracking with the QR code system. Simply capture and upload the QR code from the labeled equipment, and let our system effortlessly locate and display the item details for you')
+                    ->icon('heroicon-o-qr-code')
+                    ->iconColor('info')
+                    ->compact()
                     ->schema([
                         FileUpload::make('qr_code')
+                            ->helperText('When you upload a QR code, the equipment details will be displayed below. Please make sure the QR code is clear and readable')
                             ->deletable(false)
                             ->panelAspectRatio('3:1')
                             ->panelLayout('integrated')
@@ -70,7 +74,11 @@ class ListEquipment extends ListRecords
                         TextInput::make('id')
                             ->label('Transaction ID')
                             ->readonly(),
-                    ])->columns(2)
+                    ])
+                    ->columns(2)
+                    ->extraAttributes([
+                        'style' => 'text-align: center;',
+                    ])
                 ])
                 ->action(function (array $data) {
 
@@ -89,7 +97,8 @@ class ListEquipment extends ListRecords
                     if ($data['id']) {
                         return redirect()->to('/admin/equipment/' . $data['id'] . '/edit');
                     }
-                }),
+                })
+                ->modalAlignment(Alignment::Center),
             Action::make('acknowledgmentReceipt')
                 ->label('Acknowledgment Receipt')
                 ->color('info')
@@ -185,7 +194,8 @@ class ListEquipment extends ListRecords
                     return redirect()->to('/acknowledgment-receipt');
                 }),
             CreateAction::make()
-                ->label('Add New Equipment'),
+                ->label('Add New Equipment')
+                ->icon('heroicon-o-cube'),
         ];
     }
 
