@@ -17,6 +17,7 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Section;
 use Filament\Support\Enums\FontWeight;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
@@ -39,6 +40,37 @@ class CustomerResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-circle';
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['id', 'name', 'email', 'website'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        $details = [
+            'Customer ID' => $record->id,
+            'E-mail' => $record->email,
+        ];
+    
+        if ($record->telephone) {
+            $details['Telephone'] = $record->telephone;
+        }
+    
+        if ($record->mobile) {
+            $details['Mobile'] = $record->mobile;
+        }
+    
+        return $details;
+    }
+
+    protected static int $globalSearchResultsLimit = 5;
+
+    // For going to view instead of the default edit url
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return CustomerResource::getUrl('view', ['record' => $record]);
+    }
+    
     public static function form(Form $form): Form
     {
         return $form
@@ -69,7 +101,8 @@ class CustomerResource extends Resource
                             Forms\Components\DatePicker::make('dateCertified')
                                 ->validationAttribute('date certified')
                                 ->label('Date Certified')
-                                ->required(),
+                                ->required()
+                                ->default(now()),
                             Forms\Components\TextArea::make('remarks')
                                 ->rows(1)   
                                 ->autosize()
@@ -333,8 +366,8 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('id')
                     ->label('Customer ID No.')
                     ->copyable()
-                    ->copyMessage('Customer ID No. copied'),
-                    // ->searchable(),
+                    ->copyMessage('Customer ID No. copied')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Customer Name')
                     ->weight(FontWeight::Bold)
@@ -348,12 +381,14 @@ class CustomerResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('formatted_mobile')
+                    ->label('Mobile')
                     ->icon('heroicon-o-device-phone-mobile')
                     ->iconColor('primary')
                     ->copyable()
                     ->copyMessage('Mobile No. copied'),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('formatted_telephone')
+                    ->label('Telephone')
                     ->icon('heroicon-o-phone')
                     ->iconColor('primary')
                     ->copyable()
@@ -366,12 +401,12 @@ class CustomerResource extends Resource
                     ->copyMessage('Email address copied')
                     ->copyMessageDuration(1500)
                     // ->wrap()
-                    ->words(2),
-                    // ->searchable(),
+                    ->words(2)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('website')
                     ->label('Website')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('sec')
                     ->label('SEC Reg No.')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -413,10 +448,9 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('tin')
                     ->label('TIN'),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('acct_created')
+                Tables\Columns\TextColumn::make('createdDate')
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->label('Date Created')
-                    ->date(),
+                    ->label('Date Created'),
                     // ->searchable(),
             ])
             ->filters([
@@ -481,7 +515,7 @@ class CustomerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //I want it on View only, go to Resource folder/Pages/ViewCustomer.php
+            //Comment this if you want it on View only, go to Resource folder/Pages/ViewCustomer.php
             // EquipmentRelationManager::class
         ];
     }

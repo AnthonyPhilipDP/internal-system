@@ -22,5 +22,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(Kernel $kernel): void
     {
         $kernel->pushMiddleware(AppServiceBoot::class);
+        ini_set('memory_limit', '256M');
     }
 }

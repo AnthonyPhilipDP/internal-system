@@ -15,7 +15,7 @@ class AppServiceBoot
      */
     public function handle(Request $request, Closure $next): Response
     {
-        usleep(1500000);
+        usleep(1000000);
         return $next($request);
     }
 }

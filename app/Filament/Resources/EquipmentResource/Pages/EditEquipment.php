@@ -155,33 +155,68 @@ class EditEquipment extends EditRecord
                 ->columnSpan(1),
                 Group::make()->schema([
                     Section::make('')->schema([
-                        Toggle::make('sameToggle')
-                            ->label('Same')
-                            ->onIcon('heroicon-m-bolt')
-                            ->offIcon('heroicon-m-bolt')
+                        // Toggle::make('sameToggle')
+                        //     ->label('Same')
+                        //     ->onIcon('heroicon-m-bolt')
+                        //     ->offIcon('heroicon-m-bolt')
+                        //     ->onColor('success')
+                        //     ->offColor('danger')
+                        //     ->reactive()
+                        //     ->afterStateUpdated(function (bool $state, callable $get, callable $set): void {
+                        //         $originalArId = $get('original_ar_id');
+                        //         $currentArId = $get('ar_id');
+                        //         // If toggle true, decrement by one; otherwise, use original ar_id.
+                        //         $newValue = $state ? ((int)$originalArId - 1) : $originalArId;
+                        //         $set('ar_id', (string)$newValue);
+                        //     }),
+                        // // TextInput for ar_id: shows computed value and updates on hydration.
+                        // TextInput::make('ar_id')
+                        //     ->label('Acknowledgement Receipt No.')
+                        //     ->readonly()
+                        //     ->reactive()
+                        //     ->prefix('401 -')
+                        //     ->afterStateHydrated(function (?string $state, callable $get, callable $set): void {
+                        //         $currentArId = $state ?? '0';
+                        //         $set('original_ar_id', $currentArId); // Store the original ar_id
+                        //         $toggle = $get('sameToggle');
+                        //         $newValue = $toggle ? ((int)$currentArId - 1) : $currentArId;
+                        //         $set('ar_id', (string)$newValue);
+                        //     })
+                        //     ->maxLength(255),
+                        //Create a toggle here to make the AR ID field readonly if off
+                        //label the toggle "Enable Editing"
+                        // TextInput::make('ar_id')
+                        //     ->label('Acknowledgement Receipt No.')
+                        TextInput::make('ar_id')
+                            ->label('Acknowledgement Receipt No.')
+                            ->disabled(fn (callable $get) => !$get('enableEditing'))
+                            ->dehydrated()
+                            ->reactive()
+                            ->numeric()
+                            ->prefix('401 -')
+                            ->maxLength(255),
+                        Toggle::make('enableEditing')
+                            ->label('Enable Editing')
+                            ->onIcon('heroicon-m-lock-open')
+                            ->offIcon('heroicon-m-lock-closed')
+                            ->helperText('Toggle this button to edit the Acknowledgement Receipt No.')
                             ->onColor('success')
                             ->offColor('danger')
                             ->reactive()
+                            ->default(false)
                             ->afterStateUpdated(function (bool $state, callable $get, callable $set): void {
-                                $originalArId = $get('original_ar_id');
-                                $currentArId = $get('ar_id');
-                                // If toggle true, decrement by one; otherwise, use original ar_id.
-                                $newValue = $state ? ((int)$originalArId - 1) : $originalArId;
-                                $set('ar_id', (string)$newValue);
+                                if ($state) {
+                                    // Store the original value when the toggle is turned on
+                                    $originalValue = $get('ar_id');
+                                    $set('original_ar_id', $originalValue);
+                                } else {
+                                    // Restore the original value when the toggle is turned off
+                                    $originalValue = $get('original_ar_id');
+                                    $set('ar_id', $originalValue);
+                                }
                             }),
-                        // TextInput for ar_id: shows computed value and updates on hydration.
-                        TextInput::make('ar_id')
-                            ->label('Acknowledgement Receipt No.')
-                            ->readonly()
-                            ->reactive()
-                            ->prefix('401 -')
-                            ->afterStateHydrated(function (?string $state, callable $get, callable $set): void {
-                                $currentArId = $state ?? '0';
-                                $set('original_ar_id', $currentArId); // Store the original ar_id
-                                $toggle = $get('sameToggle');
-                                $newValue = $toggle ? ((int)$currentArId - 1) : $currentArId;
-                                $set('ar_id', (string)$newValue);
-                            })
+                        TextInput::make('gatePass')
+                            ->label('Gate Pass')
                             ->maxLength(255),
                         Repeater::make('accessory')
                             ->relationship()

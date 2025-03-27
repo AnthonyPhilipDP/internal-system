@@ -10,16 +10,19 @@ use App\Models\Customer;
 use Filament\Forms\Form;
 use App\Models\Accessory;
 use App\Models\Equipment;
+use Endroid\QrCode\QrCode;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Grid;
+use Endroid\QrCode\Writer\PngWriter;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Button;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\FileUpload;
@@ -49,7 +52,7 @@ class EquipmentResource extends Resource
     {
         return [
             'Equipment ID' => $record->equipment_id,
-            'Manufacturer' => $record->manufacturer,
+            'Make' => $record->manufacturer,
             'Model' => $record->model,
             'Serial' => $record->serial,
             'Description' => $record->description,
@@ -362,16 +365,21 @@ class EquipmentResource extends Resource
                                 $newEquipment = $record->replicate();
                                 $newEquipment->save();
                             }
+
+                            // Generate QR code for the new equipment
+                            EquipmentResource::generateQrCode($newEquipment);
+
                             // Add notification
                             Notification::make()
-                                ->title('Duplication Successful')
-                                ->body('The equipment has been successfully duplicated.')
+                                ->title('Replication Successful')
+                                ->body('The equipment has been successfully replicated.')
+                                ->icon('heroicon-o-document-duplicate')
                                 ->success()
                                 ->send();
                         })
                         ->form([
                             Forms\Components\Toggle::make('with_accessories')
-                                ->label('Duplicate with Accessories?')
+                                ->label('Replicate with Accessories?')
                                 ->default(true)
                                 ->onIcon('heroicon-m-bolt')
                                 ->offIcon('heroicon-m-bolt-slash')
@@ -381,10 +389,10 @@ class EquipmentResource extends Resource
                         ->icon('heroicon-m-document-duplicate')
                         ->requiresConfirmation()
                         ->modalIcon('heroicon-o-document-duplicate')
-                        ->modalHeading('Duplicate Equipment')
-                        ->modalSubheading('Do you want to duplicate this equipment with accessories?')
-                        ->modalButton('Duplicate')
-                        ->tooltip('Duplicate')
+                        ->modalHeading('Replicate Equipment')
+                        ->modalSubheading('Do you want to replicate this equipment with accessories?')
+                        ->modalButton('Replicate')
+                        ->tooltip('Replicate')
                         ->color('primary'),
                     Tables\Actions\DeleteAction::make()
                         ->label('')
@@ -486,5 +494,17 @@ class EquipmentResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    protected static function generateQrCode($equipment)
+    {
+        $qrData = $equipment->id;
+
+        $qrCode = new QrCode($qrData);
+        $writer = new PngWriter();
+        $result = $writer->write($qrCode);
+
+        $fileName = 'qrcodes/equipment_' . $equipment->id . '.png';
+        Storage::disk('public')->put($fileName, $result->getString());
     }
 }

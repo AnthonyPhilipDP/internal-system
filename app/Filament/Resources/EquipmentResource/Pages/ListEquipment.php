@@ -15,6 +15,7 @@ use Filament\Forms\Components\Section;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\EquipmentResource;
@@ -28,18 +29,19 @@ class ListEquipment extends ListRecords
         return [
             Action::make('qrScanner')
                 ->label('QR Code Scanner')
+                ->modalDescription('Experience seamless tracking with the QR code system. Simply capture and upload the QR code from the labeled equipment, and let our system effortlessly locate and display the item details for you')
                 ->color('info')
                 ->icon('heroicon-o-qr-code')
                 ->modalSubmitActionLabel('Go to Equipment')
                 ->form([
                 Section::make('Upload a QR code to scan and view the equipment details')
-                    ->description('Experience seamless tracking with the QR code system. Simply capture and upload the QR code from the labeled equipment, and let our system effortlessly locate and display the item details for you')
+                    ->description('When you upload a QR code, the equipment details will be displayed below. Please make sure the QR code is clear and readable.')
                     ->icon('heroicon-o-qr-code')
                     ->iconColor('info')
                     ->compact()
                     ->schema([
                         FileUpload::make('qr_code')
-                            ->helperText('When you upload a QR code, the equipment details will be displayed below. Please make sure the QR code is clear and readable')
+                            ->helperText(' If the QR code is not recognized, click the X button to remove the uploaded file to upload a file again. If you click the Go to Equipment button without proper QR code, it will close the scanner.')
                             ->deletable(false)
                             ->panelAspectRatio('3:1')
                             ->panelLayout('integrated')
@@ -54,16 +56,16 @@ class ListEquipment extends ListRecords
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $set) {
                                 if ($state) {
-                                    $qrReader = new \Zxing\QrReader($state->getRealPath());
+                                    $qrReader = new QrReader($state->getRealPath());
                                     $decodedText = $qrReader->text();
-                                    $equipment = \App\Models\Equipment::find($decodedText);
+                                    $equipment = Equipment::find($decodedText);
         
                                     if ($equipment) {
                                         $set('equipment_id', $equipment->equipment_id);
                                         $set('id', $equipment->id);
                                     } else {
                                         $set('equipment_id', 'Equipment not found.');
-                                        $set('id', null);
+                                        $set('id', 'Please try again.');
                                     }
                                 }
                             })
@@ -94,10 +96,17 @@ class ListEquipment extends ListRecords
                         \File::delete($file);
                     }
                     
-                    if ($data['id']) {
+                    if ($data['id'] !== 'Please try again.') {
                         return redirect()->to('/admin/equipment/' . $data['id'] . '/edit');
                     }
+                    return Notification::make()
+                        ->title('Equipment not found, please try again.')
+                        ->body('Try to reupload more clearly scanned QR code.')
+                        ->icon('heroicon-o-qr-code')
+                        ->danger()
+                        ->send();
                 })
+                ->modalCloseButton(false)
                 ->modalAlignment(Alignment::Center),
             Action::make('acknowledgmentReceipt')
                 ->label('Acknowledgment Receipt')
@@ -131,6 +140,8 @@ class ListEquipment extends ListRecords
                         }),
                     Toggle::make('edit_name')
                         ->label('Enable Editing')
+                        ->onIcon('heroicon-m-lock-open')
+                        ->offIcon('heroicon-m-lock-closed')
                         ->default(false)
                         ->reactive()
                         ->helperText('Toggle this button to edit the delivery person\'s name.')

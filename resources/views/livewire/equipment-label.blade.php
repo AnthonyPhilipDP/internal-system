@@ -43,7 +43,8 @@
                             <hr class="border-t-[0.5px] border-gray-700">
                             <p class="text-[6px] mt-[0.5px] mb-1 font-bold text-gray-800">DCN 5-5.8.2-1 rev.1</p>
                         </div>
-                        <img src="{{ asset('storage/qrcodes/equipment_' . $equipment['id'] . '.png') }}" alt="Your Image" class="absolute bottom-7 right-4 w-9 h-9">                    </div>
+                        <img src="{{ asset('storage/qrcodes/equipment_' . $equipment['id'] . '.png') }}" alt="Your Image" class="absolute bottom-7 right-4 w-9 h-9">
+                    </div>
                 @endforeach
             </div>
             <div class="text-[10px] text-gray-500 text-center mt-2">

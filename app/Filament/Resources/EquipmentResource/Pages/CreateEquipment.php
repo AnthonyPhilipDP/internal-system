@@ -17,6 +17,8 @@ class CreateEquipment extends CreateRecord
     protected static ?string $breadcrumb = "Creation";
     
     protected static ?string $title = "Add New Equipment";
+
+    protected static bool $canCreateAnother = false;
     
     protected function getRedirectUrl(): string
     {
