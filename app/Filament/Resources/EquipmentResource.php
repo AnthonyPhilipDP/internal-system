@@ -81,13 +81,48 @@ class EquipmentResource extends Resource
                                         ->selectRaw('MAX(CAST(ar_id AS UNSIGNED)) as max')
                                         ->value('max') ?? 0;
                                     $toggle = $get('sameToggle');
-                                    if ($toggle) {
+
+                                    // Ensure customer_id is set based on maxAr if toggle is off (default)
+                                    if (!$toggle) {
                                         $customerId = Equipment::query()
                                             ->where('ar_id', $maxAr)
                                             ->value('customer_id');
                                         $set('customer_id', $customerId);
+
+                                        // Fetch and set the customer's address based on the customer_id
+                                        if ($customerId) {
+                                            $customer = Customer::find($customerId);
+                                            if ($customer) {
+                                                $set('customerAddress', $customer->address);
+                                            }
+                                        }
+                                    }
+                                })
+                                ->afterStateUpdated(function (?string $state, callable $get, callable $set): void {
+                                    // Fetch and set the customer's address when customer_id changes
+                                    if ($state) {
+                                        $customer = Customer::find($state);
+                                        if ($customer) {
+                                            $set('customerAddress', $customer->address);
+                                        }
+                                    } else {
+                                        // Clear the customerAddress if customer_id is removed
+                                        $set('customerAddress', '');
                                     }
                                 }),
+
+                            Forms\Components\TextArea::make('customerAddress')
+                                ->label('Selected Customer Address')
+                                ->disabled()
+                                ->default(function (callable $get) {
+                                    $customerId = $get('customer_id');
+                                    if ($customerId) {
+                                        $customer = Customer::find($customerId);
+                                        return $customer ? $customer->address : '';
+                                    }
+                                    return ''; // Default to empty if no customer_id
+                                })
+                                ->autosize(),
                             Forms\Components\TextInput::make('equipment_id')
                                 ->required()  
                                 ->label('Equipment Identification')  
@@ -196,9 +231,18 @@ class EquipmentResource extends Resource
                                             ->where('ar_id', $maxAr)
                                             ->value('customer_id');
                                         $set('customer_id', $customerId);
+                                    
+                                        // Fetch and set the customer's address based on the customer_id
+                                        if ($customerId) {
+                                            $customer = Customer::find($customerId);
+                                            if ($customer) {
+                                                $set('customerAddress', $customer->address);
+                                            }
+                                        }
                                     } else {
-                                        // Set customer_id to blank when toggle is on
-                                        $set('customer_id', null); 
+                                        // Set customer_id to null and clear address when toggle is on
+                                        $set('customer_id', null);
+                                        $set('customerAddress', '');
                                     }
                                 }),
                             // TextInput for ar_id: shows computed value and updates on hydration.

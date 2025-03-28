@@ -4,6 +4,7 @@ namespace App\Filament\Resources\EquipmentResource\Pages;
 
 use Filament\Actions;
 use Spatie\Color\Rgb;
+use App\Models\Customer;
 use Filament\Forms\Form;
 use App\Models\Equipment;
 use Filament\Actions\Action;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -69,7 +71,33 @@ class EditEquipment extends EditRecord
                             ->searchable(['name', 'id'])
                             ->preload()
                             ->prefixIcon('heroicon-o-user')
-                            ->prefixIconColor('primary'),
+                            ->prefixIconColor('primary')
+                            ->reactive()
+                            ->afterStateHydrated(function (?string $state, callable $get, callable $set): void {
+                                // Set the customerAddress based on the initial customer_id
+                                if ($state) {
+                                    $customer = Customer::find($state);
+                                    if ($customer) {
+                                        $set('customerAddress', $customer->address);
+                                    }
+                                }
+                            })
+                            ->afterStateUpdated(function (?string $state, callable $get, callable $set): void {
+                                // Update the customerAddress when customer_id changes
+                                if ($state) {
+                                    $customer = Customer::find($state);
+                                    if ($customer) {
+                                        $set('customerAddress', $customer->address);
+                                    }
+                                } else {
+                                    // Clear the customerAddress if customer_id is removed
+                                    $set('customerAddress', '');
+                                }
+                            }),
+                        TextArea::make('customerAddress')
+                            ->label('Selected Customer Address')
+                            ->disabled()
+                            ->autosize(),
                         TextInput::make('equipment_id')
                             ->required()  
                             ->label('Equipment Identification')  

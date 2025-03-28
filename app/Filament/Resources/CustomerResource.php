@@ -42,13 +42,14 @@ class CustomerResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['id', 'name', 'email', 'website'];
+        return ['id', 'address', 'email', 'mobile', 'telephone'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         $details = [
             'Customer ID' => $record->id,
+            'Address' => $record->address,
             'E-mail' => $record->email,
         ];
     
