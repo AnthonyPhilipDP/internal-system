@@ -36,7 +36,7 @@
                         <div class="absolute bottom-0 left-0 right-0 px-4">
                             <hr class="border-t-[0.5px] border-gray-700">
                             <div class="flex text-[6px] justify-around font-bold text-gray-700">
-                                <span>pmsical@yahoo.com</span>
+                                <span>info@pmsi-cal.com</span>
                                 <span>(0997) 410-6031</span>
                                 <span>(046) 889-0673</span>
                             </div>
