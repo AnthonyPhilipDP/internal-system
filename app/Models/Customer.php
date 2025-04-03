@@ -19,9 +19,12 @@ class Customer extends Model
     protected $fillable = [
         'id',
         'name',
+        'nickname',
         'address',
-        'mobile',
-        'telephone',
+        'mobile1',
+        'mobile2',
+        'telephone1',
+        'telephone2',
         'email',
         'website',
         'sec',
@@ -178,36 +181,62 @@ class Customer extends Model
         return is_null($value) || $value === '' ? 'N/A' : $value;
     }
 
-    public function getFormattedTelephoneAttribute()
-    {
-        $number = $this->attributes['telephone'];
-
-        if (is_null($number) || $number === '') {
-            return 'N/A';
-        }
-
-        // Format the number as (046) 430-1666
-        return sprintf('(%s) %s-%s',
-            substr($number, 0, 3),
-            substr($number, 3, 3),
-            substr($number, 6)
-        );
-    }
-
     public function getFormattedMobileAttribute()
     {
-        $number = $this->attributes['mobile'];
+        $mobile1 = $this->attributes['mobile1'];
+        $mobile2 = $this->attributes['mobile2'];
 
-        if (is_null($number) || $number === '') {
+        if (is_null($mobile1) || $mobile1 === '') {
             return 'N/A';
         }
 
-        // Format the number as (0991) 234-5678
-        return sprintf('(%s) %s-%s',
-            substr($number, 0, 4),
-            substr($number, 4, 3),
-            substr($number, 7)
+        // Format mobile numbers (example format: (0991) 234-5678)
+        $formattedMobile1 = sprintf('(%s) %s-%s',
+            substr($mobile1, 0, 4),
+            substr($mobile1, 4, 3),
+            substr($mobile1, 7)
         );
+
+        $formattedMobile = $formattedMobile1;
+        if (!is_null($mobile2) && $mobile2 !== '') {
+            $formattedMobile2 = sprintf('(%s) %s-%s',
+                substr($mobile2, 0, 4),
+                substr($mobile2, 4, 3),
+                substr($mobile2, 7)
+            );
+            $formattedMobile .= "<br>" . $formattedMobile2;
+        }
+
+        return $formattedMobile;
+    }
+
+    public function getFormattedTelephoneAttribute()
+    {
+        $telephone1 = $this->attributes['telephone1'];
+        $telephone2 = $this->attributes['telephone2'];
+
+        if (is_null($telephone1) || $telephone1 === '') {
+            return 'N/A';
+        }
+
+        // Format telephone numbers (example format: (046) 430-1666)
+        $formattedTelephone1 = sprintf('(%s) %s-%s',
+            substr($telephone1, 0, 3),
+            substr($telephone1, 3, 3),
+            substr($telephone1, 6)
+        );
+
+        $formattedTelephones = $formattedTelephone1;
+        if (!is_null($telephone2) && $telephone2 !== '') {
+            $formattedTelephone2 = sprintf('(%s) %s-%s',
+                substr($telephone2, 0, 3),
+                substr($telephone2, 3, 3),
+                substr($telephone2, 6)
+            );
+            $formattedTelephones .= "<br>" . $formattedTelephone2;
+        }
+
+        return $formattedTelephones;
     }
 
 

@@ -83,32 +83,43 @@ class CustomerResource extends Resource
                                 ->validationAttribute('name')
                                 ->placeholder('Precision Measurement Specialists, Inc.')
                                 ->required()
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('nickname')
+                                ->validationAttribute('nickname')
+                                ->nullable()
+                                ->maxLength(20)
+                                ->columnSpan(2),
                             Forms\Components\TextArea::make('address')
                                 ->validationAttribute('address')
                                 ->rows(1) 
                                 ->placeholder("B1 L3 Macaria Business Center. Governor's Dr., Carmona, 4116 Cavite, Philippines")
                                 ->autosize()
                                 ->maxLength(255)    
-                                ->required(),
-                            Forms\Components\TextInput::make('qualifyingSystem')
-                                ->validationAttribute('qualifying system')
-                                ->label('Qualifying System')
-                                ->nullable(),
-                            Forms\Components\TextInput::make('certifyingBody')
-                                ->validationAttribute('certifying body')
-                                ->label('Certifying Body')
-                                ->nullable(),
+                                ->required()
+                                ->columnSpan(3),
                             Forms\Components\DatePicker::make('dateCertified')
                                 ->validationAttribute('date certified')
                                 ->label('Date Certified')
                                 ->required()
-                                ->default(now()),
+                                ->default(now())
+                                ->columnSpan(1),
+                            Forms\Components\TextInput::make('qualifyingSystem')
+                                ->validationAttribute('qualifying system')
+                                ->label('Qualifying System')
+                                ->nullable()
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('certifyingBody')
+                                ->validationAttribute('certifying body')
+                                ->label('Certifying Body')
+                                ->nullable()
+                                ->columnSpan(2),
                             Forms\Components\TextArea::make('remarks')
                                 ->rows(1)   
                                 ->autosize()
-                                ->nullable(),
-                        ])->columns(2)
+                                ->nullable()
+                                ->columnSpan(4),
+                        ])->columns(4)
                         ->icon('heroicon-o-identification')
                         ->completedIcon('heroicon-m-identification'),
                     Wizard\Step::make('BIR Information')
@@ -120,7 +131,7 @@ class CustomerResource extends Resource
                                 ->required(),
                             Forms\Components\TextInput::make('sec')
                                 ->label('SEC Reg no.')
-                                ->nullable(),
+                                ->required(),
                             Forms\Components\Select::make('vat')
                                 ->validationAttribute('VAT')
                                 ->label('VAT')
@@ -131,7 +142,7 @@ class CustomerResource extends Resource
                                 ->required(),
                             Forms\Components\TextInput::make('wht')
                                 ->label('With Holding Tax')
-                                ->nullable(),
+                                ->required(),
                             Forms\Components\TextInput::make('businessNature')
                                 ->validationAttribute('business nature')
                                 ->label('Nature of Business')
@@ -160,14 +171,32 @@ class CustomerResource extends Resource
                             //     ->showFlags(false)
                             //     ->disallowDropdown()
                             //     ->onlyCountries(['AF']),
-                            Forms\Components\TextInput::make('mobile')
-                                ->validationAttribute('mobile')
-                                ->placeholder('')
+                            Forms\Components\TextInput::make('mobile1')
+                                ->validationAttribute('mobile number')
+                                ->label('Mobile Number (Primary)')
+                                ->placeholder('Start with 09')
                                 ->prefix('Enter 11 digits')
                                 ->tel()
-                                ->required(),
-                            Forms\Components\TextInput::make('telephone')
+                                ->nullable(),
+                            Forms\Components\TextInput::make('telephone1')
+                                ->validationAttribute('telephone number')
                                 ->tel()
+                                ->label('Telephone Number (Primary)')
+                                ->prefix('Enter 10 digits')
+                                ->length(10)
+                                ->nullable(),
+                            Forms\Components\TextInput::make('mobile2')
+                                ->label('Mobile Number (Secondary)')
+                                ->validationAttribute('mobile number')
+                                ->placeholder('Start with 09')
+                                ->length(11)
+                                ->prefix('Enter 11 digits')
+                                ->tel()
+                                ->nullable(),
+                            Forms\Components\TextInput::make('telephone2')
+                                ->tel()
+                                ->label('Telephone Number (Secondary)')
+                                ->validationAttribute('telephone number')
                                 ->prefix('Enter 10 digits')
                                 ->length(10)
                                 ->nullable(),
@@ -369,6 +398,12 @@ class CustomerResource extends Resource
                     ->copyable()
                     ->copyMessage('Customer ID No. copied')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('nickname')
+                    ->label('Nickname')
+                    ->copyable()
+                    ->copyMessage('Customer ID No. copied')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Customer Name')
                     ->weight(FontWeight::Bold)
@@ -386,14 +421,16 @@ class CustomerResource extends Resource
                     ->icon('heroicon-o-device-phone-mobile')
                     ->iconColor('primary')
                     ->copyable()
-                    ->copyMessage('Mobile No. copied'),
+                    ->copyMessage('Mobile No. copied')
+                    ->html(),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('formatted_telephone')
                     ->label('Telephone')
                     ->icon('heroicon-o-phone')
                     ->iconColor('primary')
                     ->copyable()
-                    ->copyMessage('Telephone No. copied'),
+                    ->copyMessage('Telephone No. copied')
+                    ->html(),
                     // ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->icon('heroicon-m-envelope')

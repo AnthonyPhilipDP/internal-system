@@ -35,8 +35,8 @@ class DatabaseSeeder extends Seeder
         DB::table('customers')->insert([
             'name' => 'Precision Measurement Specialists, Inc.',
             'address' => "B1 L3 Macaria Business Center, Governor's Dr., Carmona, 4116 Cavite, Philippines",
-            'mobile' => '09974106031',
-            'telephone' => '0468890673',
+            'mobile1' => '09974106031',
+            'telephone1' => '0468890673',
             'email' => 'admin@email.com',
             'vat' => 'VAT',
             'certifyingBody' => 'Sample',
