@@ -45,42 +45,91 @@ class EquipmentRelationManager extends RelationManager
                 Group::make()->schema([
                     Section::make('')->schema([
                         Forms\Components\Select::make('customer_id')
-                            ->required()
                             ->searchable()
                             ->preload()
                             ->relationship('customer', 'name'),
                         Forms\Components\TextInput::make('manufacturer')
-                            ->readOnly()
-                            ->required()    
+                            ->readOnly()    
                             ->maxLength(255),
                         Forms\Components\TextInput::make('model')
-                            ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('serial')
-                            ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('description')
-                            ->required()
                             ->maxLength(255),
                     ]),
                 ])->columnSpan(3),
                 Group::make()->schema([
                     Section::make('')->schema([
-                        Forms\Components\TextInput::make('lab')
-                        ->label('Laboratory')
-                        ->required()
-                        ->maxLength(255),
-                        Forms\Components\TextInput::make('calType')
-                        ->label('Calibration Type')
-                        ->required()
-                        ->maxLength(255),
-                        Forms\Components\TextInput::make('category')
-                        ->required()
-                        ->maxLength(255),
-                        Forms\Components\TextInput::make('inspection')
+                        Forms\Components\Select::make('lab')
+                            ->label('Laboratory')
+                            ->options([
+                                'electrical' => 'Electrical',
+                                'physical' => 'Physical',
+                                'repair' => 'Repair',
+                            ])
+                            ->searchable(),
+                        Forms\Components\Select::make('calType')
+                            ->label('Calibration Type')
+                            ->options([
+                                'iso' => 'ISO 17025',
+                                'ansi' => 'ANSI Z540',
+                                'milstd' => 'Military Standard',
+                            ])
+                            ->searchable(),
+                        Forms\Components\Select::make('category')
+                            ->label('Category')
+                            ->options([
+                                'mass' => 'Mass',
+                                'force' => 'Force',
+                                'torque' => 'Torque',
+                                'vacuum' => 'Vacuum',
+                                'pressure' => 'Pressure',
+                                'humidity' => 'Humidity',
+                                'electrical' => 'Electrical',
+                                'dimensional' => 'Dimensional',
+                                'temperature' => 'Temperature',
+                                'conductivity' => 'Conductivity',
+                                'pcr' => 'pH / Conductivity / Resistivity',
+                            ])
+                            ->searchable(),
+                        Forms\Components\Select::make('inspection')
+                            ->validationAttribute('inspection findings')
                             ->label('Inspection Findings')
-                            ->required()
-                            ->maxLength(255),
+                            ->multiple()
+                            ->options([
+                                'no visible damage' => 'No Visible Damage',
+                                'scratches' => 'Scratches',
+                                'cracks' => 'Cracks',
+                                'grime' => 'Grime',
+                                'dents' => 'Dents',
+                                'rust' => 'Rust',
+                                'bent' => 'Bent',
+                            ]),
+                        Forms\Components\Select::make('status')
+                            ->label('Status')
+                            ->searchable()
+                            ->options([
+                                'abandoned' => 'Abandoned',
+                                'completed' => 'Completed',
+                                'delivered' => 'Delivered',
+                                'evaluation' => 'Evaluation',
+                                'repair' => 'Repair',
+                                'forSale' => 'For Sale',
+                                'incoming' => 'Incoming',
+                                'spareParts' => 'Spare Parts',
+                                'onHold' => 'On Hold',
+                                'onSite' => 'On Site',
+                                'pickedUp' => 'Picked Up',
+                                'pending' => 'Pending',
+                                'rejected' => 'Rejected',
+                                'returned' => 'Returned',
+                                'shippedOut' => 'Shipped Out',
+                                'Sold' => 'Sold',
+                                'transferred' => 'Transferred',
+                                'unclaimed' => 'Unclaimed',
+                                'audit' => 'ISO Audit',
+                            ]),
                     ]),
                 ])->columnSpan(3),
                 Group::make()->schema([
@@ -178,32 +227,7 @@ class EquipmentRelationManager extends RelationManager
                             ->label('Intermediate Check')
                             ->boolean()
                             ->inline()
-                            ->inlineLabel(false)
-                            ->required(),
-                        Forms\Components\Select::make('status')
-                            ->label('Status')
-                            ->searchable()
-                            ->options([
-                                'abandoned' => 'Abandoned',
-                                'completed' => 'Completed',
-                                'delivered' => 'Delivered',
-                                'evaluation' => 'Evaluation',
-                                'repair' => 'Repair',
-                                'for Sale' => 'For Sale',
-                                'incoming' => 'Incoming',
-                                'spareParts' => 'Spare Parts',
-                                'onHold' => 'On Hold',
-                                'onSite' => 'On Site',
-                                'pickedUp' => 'Picked Up',
-                                'Pending' => 'Pending',
-                                'rejected' => 'Rejected',
-                                'returned' => 'Returned',
-                                'shippedOut' => 'Shipped Out',
-                                'Sold' => 'Sold',
-                                'transferred' => 'Transferred',
-                                'unclaimed' => 'Unclaimed',
-                                'audit' => 'ISO Audit',
-                            ]),
+                            ->inlineLabel(false),
                     ]),
                 ])->columnSpan(5),
                 Group::make()->schema([
@@ -211,7 +235,6 @@ class EquipmentRelationManager extends RelationManager
                         Forms\Components\Select::make('worksheet')
                             ->label('Worksheet')
                             ->relationship('worksheet', 'name')
-                            ->required()
                             ->searchable(['name', 'id'])
                             ->preload()
                             ->prefixIcon('heroicon-o-document-check')
@@ -360,7 +383,6 @@ class EquipmentRelationManager extends RelationManager
                             ->fetchFileInformation(false)
                             ->panelAspectRatio('2:1')
                             ->label('Upload Data from Excel File')
-                            ->required()
                             ->acceptedFileTypes([
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                                 'application/vnd.ms-excel'

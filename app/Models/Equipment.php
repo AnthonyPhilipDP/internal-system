@@ -91,5 +91,9 @@ class Equipment extends Model
             }
 
         });
+
+        static::creating(function ($model) {
+            $model->status = 'pending';
+        });
     }
 }

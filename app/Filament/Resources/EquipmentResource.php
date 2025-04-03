@@ -302,6 +302,29 @@ class EquipmentResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\SelectColumn::make('status')
+                    ->label('Status')
+                    ->options([
+                        'incoming' => 'Incoming',
+                        'pending' => 'Pending',
+                        'delivered' => 'Delivered',
+                        'abandoned' => 'Abandoned',
+                        'completed' => 'Completed',
+                        'evaluation' => 'Evaluation',
+                        'repair' => 'Repair',
+                        'forSale' => 'For Sale',
+                        'spareParts' => 'Spare Parts',
+                        'onHold' => 'On Hold',
+                        'onSite' => 'On Site',
+                        'pickedUp' => 'Picked Up',
+                        'rejected' => 'Rejected',
+                        'returned' => 'Returned',
+                        'shippedOut' => 'Shipped Out',
+                        'Sold' => 'Sold',
+                        'transferred' => 'Transferred',
+                        'unclaimed' => 'Unclaimed',
+                        'audit' => 'ISO Audit',
+                    ]),
                 Tables\Columns\TextColumn::make('id')
                     ->label('Transaction ID')
                     ->alignCenter()
