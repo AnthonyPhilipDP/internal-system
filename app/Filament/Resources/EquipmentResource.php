@@ -302,6 +302,12 @@ class EquipmentResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('Transaction ID')
+                    ->alignCenter()
+                    ->numeric()
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\SelectColumn::make('status')
                     ->label('Status')
                     ->options([
@@ -325,12 +331,6 @@ class EquipmentResource extends Resource
                         'unclaimed' => 'Unclaimed',
                         'audit' => 'ISO Audit',
                     ]),
-                Tables\Columns\TextColumn::make('id')
-                    ->label('Transaction ID')
-                    ->alignCenter()
-                    ->numeric()
-                    ->sortable()
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('ar_id')
                     ->label('Receipt ID')
                     ->alignCenter()
