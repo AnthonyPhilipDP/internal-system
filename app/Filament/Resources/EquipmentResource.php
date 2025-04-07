@@ -71,7 +71,7 @@ class EquipmentResource extends Resource
                             Forms\Components\Select::make('customer_id')
                                 ->required()
                                 ->relationship('customer', 'name')
-                                ->searchable(['name', 'id'])
+                                ->searchable(['name', 'id', 'nickname'])
                                 ->preload()
                                 ->prefixIcon('heroicon-o-user')
                                 ->prefixIconColor('primary')

@@ -25,27 +25,27 @@ class DatabaseSeeder extends Seeder
             'password' => 'admin',
         ]);
 
-        User::factory()->create([
-            'name' => 'Philip',
-            'email' => null,
-            'level' => 1,
-            'password' => 'admin',
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Philip',
+        //     'email' => null,
+        //     'level' => 1,
+        //     'password' => 'admin',
+        // ]);
 
-        DB::table('customers')->insert([
-            'name' => 'Precision Measurement Specialists, Inc.',
-            'address' => "B1 L3 Macaria Business Center, Governor's Dr., Carmona, 4116 Cavite, Philippines",
-            'mobile1' => '09974106031',
-            'telephone1' => '0468890673',
-            'email' => 'admin@email.com',
-            'vat' => 'VAT',
-            'certifyingBody' => 'Sample',
-            'dateCertified' => '2025-01-30',
-            'payment' => 'Cash on Delivery',
-            'status' => 'Active',
-            'businessStyle' => 'Measurement Services',
-            'businessNature' => 'Metrology',
-            'tin' => '123456',
-        ]);
+        // DB::table('customers')->insert([
+        //     'name' => 'Precision Measurement Specialists, Inc.',
+        //     'address' => "B1 L3 Macaria Business Center, Governor's Dr., Carmona, 4116 Cavite, Philippines",
+        //     'mobile1' => '09974106031',
+        //     'telephone1' => '0468890673',
+        //     'email' => 'admin@email.com',
+        //     'vat' => 'VAT',
+        //     'certifyingBody' => 'Sample',
+        //     'dateCertified' => '2025-01-30',
+        //     'payment' => 'Cash on Delivery',
+        //     'status' => 'Active',
+        //     'businessStyle' => 'Measurement Services',
+        //     'businessNature' => 'Metrology',
+        //     'tin' => '123456',
+        // ]);
     }
 }

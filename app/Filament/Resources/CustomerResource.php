@@ -42,7 +42,7 @@ class CustomerResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['id', 'address', 'email', 'mobile', 'telephone'];
+        return ['id', 'address', 'email', 'mobile1', 'telephone1', 'name', 'nickname'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
@@ -206,8 +206,11 @@ class CustomerResource extends Resource
                                 ->email()
                                 ->required(),
                             Forms\Components\TextInput::make('website')
-                                ->placeholder('www.pmsi-cal.com')
+                                ->placeholder('pmsi-cal.com')
                                 ->label('Website')
+                                ->prefix('www')
+                                ->suffixIcon('heroicon-m-globe-alt')
+                                ->suffixIconColor('primary')
                                 ->nullable(),
                             Forms\Components\Select::make('payment')
                                 ->validationAttribute('payment')
@@ -394,10 +397,11 @@ class CustomerResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('Customer ID No.')
+                    ->label('Customer ID')
                     ->copyable()
                     ->copyMessage('Customer ID No. copied')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('nickname')
                     ->label('Nickname')
                     ->copyable()
@@ -490,7 +494,7 @@ class CustomerResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Date Created'),
                     // ->searchable(),
-            ])
+            ])->defaultSort('id', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])

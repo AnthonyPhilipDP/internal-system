@@ -14,12 +14,12 @@
                     @if ($activeContactPerson)
                         <p class="text-xs font-semibold text-gray-700">Attention of: <span class="uppercase">{{ $activeContactPerson->name }}</span></p>
                     @endif
-                    @if (!is_null($equipmentChunk->first()->customer->telephone) && $equipmentChunk->first()->customer->telephone !== 'N/A' 
-                        && $equipmentChunk->first()->customer->telephone !== '' && $equipmentChunk->first()->customer->telephone !== 'n/a')
+                    @if (!is_null($equipmentChunk->first()->customer->telephone1) && $equipmentChunk->first()->customer->telephone1 !== 'N/A' 
+                        && $equipmentChunk->first()->customer->telephone1 !== '' && $equipmentChunk->first()->customer->telephone1 !== 'n/a')
                         <p class="text-xs font-semibold text-gray-700">Telephone: {{ $equipmentChunk->first()->customer->formatted_telephone }}</p>
                     @endif
-                    @if (!is_null($equipmentChunk->first()->customer->mobile) && $equipmentChunk->first()->customer->mobile !== 'N/A' 
-                        && $equipmentChunk->first()->customer->mobile !== '' && $equipmentChunk->first()->customer->mobile !== 'n/a')
+                    @if (!is_null($equipmentChunk->first()->customer->mobile1) && $equipmentChunk->first()->customer->mobile1 !== 'N/A' 
+                        && $equipmentChunk->first()->customer->mobile1 !== '' && $equipmentChunk->first()->customer->mobile1 !== 'n/a')
                         <p class="text-xs font-semibold text-gray-700">Mobile: {{ $equipmentChunk->first()->customer->formatted_mobile }}</p>
                     @endif
                 </div>
