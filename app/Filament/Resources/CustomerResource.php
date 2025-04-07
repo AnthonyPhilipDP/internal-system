@@ -500,8 +500,10 @@ class CustomerResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make()
+                        ->color('warning'),
+                    Tables\Actions\EditAction::make()
+                        ->color('info'),
                     Tables\Actions\DeleteAction::make()
                         ->modalIcon('heroicon-o-user-minus')
                         ->modalHeading(fn (Customer $record) => 'Remove ' . $record->name)
