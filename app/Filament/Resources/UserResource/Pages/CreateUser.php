@@ -13,7 +13,7 @@ class CreateUser extends CreateRecord
 
     protected static ?string $breadcrumb = "Creation";
 
-    protected static ?string $title = 'Add New User';
+    protected static ?string $title = 'Add New Employee';
 
     protected function getRedirectUrl(): string
     {
@@ -27,7 +27,7 @@ class CreateUser extends CreateRecord
         return Notification::make()
             ->success()
             ->icon('heroicon-o-user-plus')
-            ->title('User Registration Completed')
-            ->body('The user account has been created successfully.');
+            ->title('Employee Registration Completed')
+            ->body('The employee account has been created successfully.');
     }
 }

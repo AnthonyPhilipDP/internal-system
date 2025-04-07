@@ -14,7 +14,8 @@ class ListUsers extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-            ->label('Add New User'),
+            ->label('Add New Employee')
+            ->icon('heroicon-o-user-plus'),
         ];
     }
 }
