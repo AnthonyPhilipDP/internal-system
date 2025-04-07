@@ -450,7 +450,7 @@ class EquipmentRelationManager extends RelationManager
                     ->modalDescription('Upload worksheet to update equipment details')
                     ->modalSubmitActionLabel('Upload and Process'),
 
-                Tables\Actions\Action::make('duplicate')
+                Tables\Actions\Action::make('replicate')
                     ->label('')
                     ->action(function (Equipment $record, $data) {
                         if ($data['with_accessories']) {
@@ -471,14 +471,14 @@ class EquipmentRelationManager extends RelationManager
                         }
                         // Add notification
                         Notification::make()
-                        ->title('Duplication Successful')
-                        ->body('The equipment has been successfully duplicated.')
+                        ->title('Replication Successful')
+                        ->body('The equipment has been successfully replicated.')
                         ->success()
                         ->send();
                     })
                     ->form([
                         Forms\Components\Toggle::make('with_accessories')
-                        ->label('Duplicate with Accessories?')
+                        ->label('Replicate with Accessories?')
                         ->default(true)
                         ->onIcon('heroicon-m-bolt')
                         ->offIcon('heroicon-m-bolt-slash')
@@ -488,10 +488,10 @@ class EquipmentRelationManager extends RelationManager
                         ->icon('heroicon-m-document-duplicate')
                         ->requiresConfirmation()
                         ->modalIcon('heroicon-o-document-duplicate')
-                        ->modalHeading('Duplicate Equipment')
-                        ->modalSubheading('Do you want to duplicate this equipment with accessories?')
-                        ->modalButton('Duplicate')
-                        ->tooltip('Duplicate')
+                        ->modalHeading('Replicate Equipment')
+                        ->modalSubheading('Do you want to replicate this equipment with accessories?')
+                        ->modalButton('Replicate')
+                        ->tooltip('Replicate')
                         ->color('primary'),
                         
                 Tables\Actions\Action::make('downloadWorksheet')
