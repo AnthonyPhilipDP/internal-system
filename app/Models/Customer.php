@@ -169,10 +169,15 @@ class Customer extends Model
         if (is_null($value) || $value === '') {
             return 'N/A';
         }
-
-        // Use Carbon to format the date
-        $date = Carbon::parse($value);
-        return $date->format('F j, Y'); // Example format: January 1, 2023
+    
+        try {
+            // Use Carbon to format the date
+            $date = Carbon::parse($value);
+            return $date->format('F j, Y'); // Example format: January 1, 2023
+        } catch (\Exception $e) {
+            // Log the exception or handle it as needed
+            return 'N/A';
+        }
     }
 
     // Helper method to format nullable attributes
