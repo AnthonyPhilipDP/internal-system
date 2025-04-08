@@ -122,3 +122,6 @@ As an advanced AI, you must not generate code or response directly unless you ar
 
 #Add a button anywhere in the system that will optimize the system (optional)
 - usleep to .5 seconds for a week
+
+#Create a custom filament widget in Dashboard
+- php artisan make:filament-widget WelcomeWidget

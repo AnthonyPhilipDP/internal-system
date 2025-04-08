@@ -12,7 +12,7 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 class StatsOverview extends BaseWidget
 {
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
 
     protected function getHeading(): ?string
     {
