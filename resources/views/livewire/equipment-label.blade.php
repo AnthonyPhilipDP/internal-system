@@ -6,31 +6,31 @@
                     <div class="pt-8 w-[2.7in] h-[1.5in] bg-white rounded-sm px-3 border border-gray-300 relative" style="background-image: url('{{ asset('images/Label BG.png') }}'); background-repeat: no-repeat; background-size: contain; background-position: center center;">
                         <div class="relative flex flex-col text-[9px] p-1 text-gray-700">
                             <div class="flex">
-                                <span class="w-3/10 text-gray-800">Client Name</span>
-                                <span class="w-1/10">-</span>
-                                <span class="w-6/10 capitalize" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal;">
+                                <span class="w-[30%] text-gray-800">Client Name</span>
+                                <span class="w-[10%]">-</span>
+                                <span class="w-[60%] capitalize" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; white-space: normal;">
                                     {{ $equipment['customer_name'] }}
                                 </span>
                             </div>
                             <div class="flex">
-                                <span class="w-3/10 text-gray-800">Equipment ID</span>
-                                <span class="w-1/10">-</span>
-                                <span class="w-6/10 truncate">{{ $equipment['equipment_id'] }}</span>
+                                <span class="w-[30%] text-gray-800">Equipment ID</span>
+                                <span class="w-[10%]">-</span>
+                                <span class="w-[60%] truncate">{{ $equipment['equipment_id'] }}</span>
                             </div>
                             <div class="flex">
-                                <span class="w-3/10 text-gray-800">Certificate No</span>
-                                <span class="w-1/10">-</span>
-                                <span class="w-6/10 truncate">40-{{ $equipment['id'] }}</span>
+                                <span class="w-[30%] text-gray-800">Certificate No</span>
+                                <span class="w-[10%]">-</span>
+                                <span class="w-[60%] truncate">40-{{ $equipment['id'] }}</span>
                             </div>
                             <div class="flex">
-                                <span class="w-3/10 text-gray-800">Date Received</span>
-                                <span class="w-1/10">-</span>
-                                <span class="w-6/10 truncate">{{ date('F d, Y', strtotime($equipment['inDate'])) }}</span>
+                                <span class="w-[30%] text-gray-800">Date Received</span>
+                                <span class="w-[10%]">-</span>
+                                <span class="w-[60%] truncate">{{ date('F d, Y', strtotime($equipment['inDate'])) }}</span>
                             </div>
                             <div class="flex">
-                                <span class="w-3/10 text-gray-800">Accessory</span>
-                                <span class="w-1/10">-</span>
-                                <span class="w-6/10 truncate">{{ $equipment['has_accessory'] ? 'Included' : 'None' }}</span>
+                                <span class="w-[30%] text-gray-800">Accessory</span>
+                                <span class="w-[10%]">-</span>
+                                <span class="w-[60%] truncate">{{ $equipment['has_accessory'] ? 'Included' : 'None' }}</span>
                             </div>
                         </div>
                         <div class="absolute bottom-0 left-0 right-0 px-4">
@@ -55,7 +55,7 @@
     <style>
         @media print {
             @page {
-                size: Letter portrait; /* Set the page size and orientation */
+                size: Letter portrait;
             }
         }
     </style>

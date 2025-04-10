@@ -1,6 +1,6 @@
 <div>
     @foreach ($equipmentChunks as $chunkIndex => $equipmentChunk)
-        <div class="relative w-[11in] h-[8.5in] bg-cover bg-no-repeat pt-45 mx-auto px-12" style="background-image: url('{{ asset('images/templates/AcknowledgmentReceipt - Landscape.jpg') }}');">
+        <div class="relative w-[11in] h-[8.5in] bg-cover bg-no-repeat pt-[11.25rem] mx-auto px-12" style="background-image: url('{{ asset('images/templates/AcknowledgmentReceipt - Landscape.jpg') }}');">
             <hr class="mb-2 border-t-1 border-gray-700">
             <!-- Display customer and equipment details -->
             <div class="flex w-full justify-between mb-2">
@@ -16,11 +16,11 @@
                     @endif
                     @if (!is_null($equipmentChunk->first()->customer->telephone1) && $equipmentChunk->first()->customer->telephone1 !== 'N/A' 
                         && $equipmentChunk->first()->customer->telephone1 !== '' && $equipmentChunk->first()->customer->telephone1 !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Telephone: {{ $equipmentChunk->first()->customer->formatted_telephone }}</p>
+                        <p class="text-xs font-semibold text-gray-700">Telephone: {{ $equipmentChunk->first()->customer->telephone1 }}</p>
                     @endif
                     @if (!is_null($equipmentChunk->first()->customer->mobile1) && $equipmentChunk->first()->customer->mobile1 !== 'N/A' 
                         && $equipmentChunk->first()->customer->mobile1 !== '' && $equipmentChunk->first()->customer->mobile1 !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Mobile: {{ $equipmentChunk->first()->customer->formatted_mobile }}</p>
+                        <p class="text-xs font-semibold text-gray-700">Mobile: {{ $equipmentChunk->first()->customer->mobile1 }}</p>
                     @endif
                 </div>
                 <div class="flex flex-col items-start gap-1 max-w-sm">
@@ -177,7 +177,7 @@
     <style>
         @media print {
             @page {
-                size: Letter landscape; /* Set the page size and orientation */
+                size: Letter landscape;
             }
         }
     </style>
