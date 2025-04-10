@@ -7,7 +7,7 @@
         </div>
         </div>
         <div class="text-center">
-        <h1 class="text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">Precision Measurement Specialists, <span class="text-red-500 italic">i</span>nc.</h1>
+        <h1 class="text-5xl font-semibold tracking-tight text-gray-900 sm:text-6xl">Precision Measurement Specialists, <span class="text-red-500 italic">i</span>nc.</h1>
         <p class="mt-8 text-lg font-medium italic text-gray-500 sm:text-xl">'a metrology company'</p>
         <p class="text-lg font-medium italic text-gray-500 sm:text-xl">(since 1998)</p>
         <div class="mt-6 flex items-center justify-center gap-x-6">
@@ -17,7 +17,7 @@
         </div>
         <div class="hidden sm:mt-10 sm:flex sm:justify-center">
         <div class="relative rounded-full px-2 py-1 text-sm text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-            This website is currently on alpha testing phase. <a wire:navigate href="/release-notes" class="font-semibold text-emerald-600"><span class="absolute inset-0" aria-hidden="true"></span>Go to Release Notes <span aria-hidden="true">&rarr;</span></a>
+            This website is currently on Alpha Testing Phase. <a wire:navigate href="/release-notes" class="font-semibold text-emerald-600"><span class="absolute inset-0" aria-hidden="true"></span>Check Release Notes <span aria-hidden="true">&rarr;</span></a>
         </div>
         </div>
     </div>

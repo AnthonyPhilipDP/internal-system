@@ -17,12 +17,14 @@
   
       <title>{{ $title ?? 'PMSi - Internal' }}</title>
   </head>
-    <body>
+    <body class="flex flex-col min-h-screen">
         {{-- @include('layouts.partials.tutorial') --}}
-        @include('components.layouts.partials.header')
-        {{ $slot }}
+        <main class="flex-grow">
+            @include('components.layouts.partials.header')
+            {{ $slot }}
+        </main>
+        @include('components.layouts.partials.footer')
     </body>
-    @include('components.layouts.partials.footer')
     <script>
         document.getElementById('menu-toggle').addEventListener('click', function() {
             document.getElementById('mobile-menu').classList.toggle('hidden');

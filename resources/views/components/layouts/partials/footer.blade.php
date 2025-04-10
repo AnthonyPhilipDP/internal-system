@@ -1,4 +1,4 @@
-<footer class="bg-gray-900/90 text-white py-4 relative z-20">
+<footer class="bg-gray-900/90 text-white py-6 relative z-20">
     <div class="container mx-auto px-4">
       <div class="flex flex-wrap justify-between">
         <div class="w-full md:w-1/4 mb-6 md:mb-0">
@@ -6,12 +6,12 @@
           <p class="mt-2 text-gray-400">Precision Measurement Specialists, Inc. has been providing top-notch metrology services since 1998.</p>
         </div>
         <div class="w-full md:w-1/4 mb-6 md:mb-0">
-          <h2 class="text-lg font-semibold">Contact</h2>
+          <h2 class="text-lg font-semibold">Contact Us</h2>
           <ul class="mt-2 text-gray-400">
             <li>Email: info@pmsi-cal.com</li>
             <li>Phone: (0997) 410 6031</li>
             <li>Landline: (046) 889 0673</li>
-            <li>B1 L3 Macaria Business Center, Governor’s Drive, Carmona, 4116</li>
+            <li>B1 L3 Macaria Business Center, Governor’s Drive, Carmona, Cavite, 4116 Philippines</li>
           </ul>
         </div>
         <div class="w-full md:w-1/4">
