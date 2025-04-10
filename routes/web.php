@@ -1,19 +1,12 @@
 <?php
 
+use App\Livewire\Index;
+use App\Livewire\ReleaseNotes;
+use App\Livewire\EquipmentLabel;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\AcknowledgmentReceipt;
 
-Route::get('/', function () {
-    return view('pages.welcome');
-});
-
-Route::get('/acknowledgment-receipt', function () {
-    return view('pages.acknowledgment-receipt');
-});
-
-Route::get('/equipment/print-label', function () {
-    return view('pages.equipment-label');
-});
-
-Route::get('/release-notes', function () {
-    return view('pages.release-notes');
-});
+Route::get('/', Index::class);
+Route::get('/release-notes', ReleaseNotes::class);
+Route::get('/equipment/print-label', EquipmentLabel::class);
+Route::get('/acknowledgment-receipt', AcknowledgmentReceipt::class);

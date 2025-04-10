@@ -97,7 +97,7 @@ class ListEquipment extends ListRecords
                     }
                     
                     if ($data['id'] !== 'Please try again.') {
-                        return redirect()->to('/admin/equipment/' . $data['id'] . '/edit');
+                        return $this->redirect('/admin/equipment/' . $data['id'] . '/edit', navigate: true);
                     }
                     return Notification::make()
                         ->title('Equipment not found, please try again.')
@@ -202,7 +202,7 @@ class ListEquipment extends ListRecords
                     Session::put('ar_id', $data['ar_id']);
 
                     // Redirect to the acknowledgment receipt page
-                    return redirect()->to('/acknowledgment-receipt');
+                    return $this->redirect('/acknowledgment-receipt', navigate: true);
                 }),
             CreateAction::make()
                 ->label('Add New Equipment')

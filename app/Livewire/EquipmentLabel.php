@@ -28,6 +28,6 @@ class EquipmentLabel extends Component
     {
         return view('livewire.equipment-label', [
             'equipmentDataChunks' => $this->equipmentDataChunks,
-        ]);
+        ])->layout('components.layouts.vanilla');
     }
 }

@@ -18,12 +18,11 @@
 
             <div class="flex flex-col items-end gap-y-1">
                 <x-filament::link
+                    wire:navigate
                     color="gray"
                     href="/release-notes"
                     icon="heroicon-m-book-open"
                     icon-alias="panels::widgets.filament-info.open-documentation-button"
-                    rel="noopener noreferrer"
-                    target="_blank"
                 >
                     {{ __('Release Notes') }}
                 </x-filament::link>

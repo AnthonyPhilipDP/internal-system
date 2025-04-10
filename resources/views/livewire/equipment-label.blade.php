@@ -1,4 +1,4 @@
-<div style="font-family: 'Space Grotesk', sans-serif;">
+<div>
     @foreach($equipmentDataChunks as $chunkIndex => $chunk)
         <div class="relative container mx-4 py-4 w-[8.5in] h-[11in]">
             <div class="grid grid-cols-3 gap-x-[0.2in] gap-y-[0.1in]">

@@ -36,6 +36,6 @@ class AcknowledgmentReceipt extends Component
         return view('livewire.acknowledgment-receipt', [
             'equipmentChunks' => $equipmentChunks,
             'totalEquipmentCount' => $this->totalEquipmentCount,
-        ]);
+        ])->layout('components.layouts.vanilla');
     }
 }

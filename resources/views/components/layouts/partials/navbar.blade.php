@@ -6,7 +6,7 @@
         {{-- <a href="#" class="text-sm font-semibold text-gray-900">Company</a> --}}
     </div>
     <div class="flex justify-center flex-none">
-        <a href="#" class="-m-1.5 p-1.5">
+        <a wire:navigate href="/" class="-m-1.5 p-1.5">
             <span class="sr-only">PMSi</span>
             <img class="h-20 w-auto" src="{{ asset('images/PMSi Logo(transparent).png') }}" alt="">
         </a>
