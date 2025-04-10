@@ -17,3 +17,7 @@ Route::get('/acknowledgment-receipt', function () {
 Route::get('/equipment/print-label', function () {
     return view('pages.equipment-label');
 });
+
+Route::get('/release-notes', function () {
+    return view('pages.release-notes');
+});

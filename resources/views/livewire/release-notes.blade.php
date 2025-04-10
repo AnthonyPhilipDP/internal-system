@@ -1,0 +1,92 @@
+<style>
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .dynamic-gradient {
+      background: radial-gradient(circle, #d1f1e2, #deebfc, #fceed5, #daf7e1, #f6f8d8);
+      background-size: 300% 300%;
+      animation: gradient 15s linear(0 0%, 0 1.8%, 0.01 3.6%, 0.03 6.35%, 0.07 9.1%, 0.13 11.4%, 0.19 13.4%, 0.27 15%, 0.34 16.1%, 0.54 18.35%, 0.66 20.6%, 0.72 22.4%, 0.77 24.6%, 0.81 27.3%, 0.85 30.4%, 0.88 35.1%, 0.92 40.6%, 0.94 47.2%, 0.96 55%, 0.98 64%, 0.99 74.4%, 1 86.4%, 1 100%) infinite;
+    }
+  </style>
+<div class="flex flex-col bg-gray-50 dynamic-gradient"> 
+    <div class="m-32 border border-gray-200 px-32 py-24 shadow-lg rounded-xl bg-gradient-to-r from-emerald-50 to-emerald-100 dynamic-gradient">
+        <h1 class="font-bold text-center text-3xl text-emerald-700">Release Notes - Alpha Testing</h1>
+        <h1 class="font-bold text-center text-lg text-emerald-500 italic">version 0.1.0</h1>
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold text-emerald-600 mb-3">Introduction</h3>
+            <p class="font-semibold">Welcome to the alpha testing of our modern web application!</p>
+            <br>
+            <p>
+                This alpha release is a significant step forward in optimizing the calibration workflow for <span class="font-semibold">PMS<span class="italic text-red-500">i</span></span>. 
+                By automating equipment intake, our system streamlines the logging process, 
+                reducing manual entry errors and ensuring accurate tracking of incoming instruments. 
+                This foundational feature sets the stage for future enhancements, including equipment updating and tracking, 
+                which will be introduced in the next testing phase.
+            </p>
+        </div>
+        <div class="flex flex-wrap justify-between mb-8">
+            <div class="w-full md:w-1/3 p-4">
+                <h3 class="text-xl font-semibold text-gray-600 mb-3">Main Features</h3>
+                <div class="text-gray-800 space-y-2">
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">User Registration</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Dashboard</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Employees</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Capabilities</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Customers</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Equipments</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Worksheets</div>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-600 my-3">Amazing Features</h3>
+                <div class="text-gray-800 space-y-2">
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Equipment Replication</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">QR Code Implementation</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">QR Code Scanner</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Acknowledgment Receipt Automation</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Global Search</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Nickname Implementation</div>
+                </div>
+            </div>
+        
+            <div class="w-full md:w-1/3 p-4">
+                <h3 class="text-xl font-semibold text-gray-600 mb-3">Social Media Integration</h3>
+                <div class="text-gray-800 space-y-2">
+                    <!-- Add other features here -->
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Facebook</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Instagram</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Twitter / X</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">TikTok</div>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-600 my-3">Design Features</h3>
+                <div class="text-gray-800 space-y-2">
+                    <!-- Add other features here -->
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Single Page Application</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Most modern CSS is used for styling</div>
+                </div>
+            </div>
+        
+            <div class="w-full md:w-1/3 p-4">
+                <h3 class="text-xl font-semibold text-gray-600 mb-3">Database Features</h3>
+                <div class="text-gray-800 space-y-2">
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none"><span class="italic">MySQL</span> is used for the data handling</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Old data from the old system has been migrated</div>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-600 my-3">Other Features</h3>
+                <div class="text-gray-800 space-y-2">
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Dark Mode Implemented</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Equipment status editable in table only</div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Employees may log in using <span class="italic">username</span></div>
+                    <div class="font-semibold text-emerald-500 hover:text-emerald-700 hover:text-lg transition-all duration-300 select-none">Employees may have an <span class="italic">avatar</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
