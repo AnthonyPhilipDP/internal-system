@@ -14,7 +14,8 @@ class ListCustomers extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-            ->label('Add New Customer'),
+            ->label('Add New Customer')
+            ->icon('heroicon-o-user-plus'),
         ];
     }
 }
