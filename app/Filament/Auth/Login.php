@@ -13,6 +13,8 @@ use Filament\Http\Responses\Auth\Contracts\LoginResponse;
  
 class Login extends BaseAuth
 {
+    protected static string $view = 'filament.auth.custom-login';
+    
     public function form(Form $form): Form
     {
         return $form
