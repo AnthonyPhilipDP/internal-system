@@ -102,7 +102,7 @@ class EditEquipment extends EditRecord
                             ->required()  
                             ->label('Equipment Identification')  
                             ->maxLength(255),
-                        TextInput::make('manufacturer')
+                        TextInput::make('make')
                             ->required()    
                             ->maxLength(255),
                         TextInput::make('model')
@@ -119,7 +119,7 @@ class EditEquipment extends EditRecord
                 ->columnSpan(2),
                 Group::make()->schema([
                     Section::make('')->schema([
-                        Select::make('lab')
+                        Select::make('laboratory')
                         ->label('Laboratory')
                         ->options([
                             'electrical' => 'Electrical',
@@ -130,7 +130,7 @@ class EditEquipment extends EditRecord
                         ->native(false)
                         ->searchable()
                         ->required(),
-                        Select::make('calType')
+                        Select::make('calibrationType')
                         ->label('Calibration Type')
                         ->options([
                             'iso' => 'ISO 17025',
