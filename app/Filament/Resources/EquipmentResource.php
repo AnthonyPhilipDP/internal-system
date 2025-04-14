@@ -187,8 +187,8 @@ class EquipmentResource extends Resource
                             ->searchable()
                             ->required(),
                             Forms\Components\Select::make('inspection')
-                                ->validationAttribute('inspection findings')
-                                ->label('Inspection Findings')
+                                ->validationAttribute('Visual Inspection')
+                                ->label('Visual Inspection')
                                 ->multiple()
                                 ->nullable()
                                 ->options([

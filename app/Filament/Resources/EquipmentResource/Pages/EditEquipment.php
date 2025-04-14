@@ -161,8 +161,8 @@ class EditEquipment extends EditRecord
                         ->searchable()
                         ->required(),
                         Select::make('inspection')
-                            ->validationAttribute('inspection findings')
-                            ->label('Inspection Findings')
+                            ->validationAttribute('Visual Inspection')
+                            ->label('Visual Inspection')
                             ->multiple()
                             ->nullable()
                             ->options([
