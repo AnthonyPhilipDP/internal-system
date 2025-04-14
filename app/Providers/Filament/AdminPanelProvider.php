@@ -98,19 +98,19 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Facebook')
-                    ->url('https://facebook.com', shouldOpenInNewTab: true)
+                    ->url('https://www.facebook.com/PrecisionMeasurementSpecialists', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->group('Social Media'),
                 NavigationItem::make('TikTok')
-                    ->url('https://tiktok.com', shouldOpenInNewTab: true)
+                    ->url('https://www.tiktok.com/@pmsi_official', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->group('Social Media'),
                 NavigationItem::make('Instagram')
-                    ->url('https://instagram.com', shouldOpenInNewTab: true)
+                    ->url('https://www.instagram.com/pmsiofficial/', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->group('Social Media'),
                 NavigationItem::make('Twitter / X')
-                    ->url('https://x.com', shouldOpenInNewTab: true)
+                    ->url('https://x.com/pmsiofficial', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->group('Social Media'),
             ])
