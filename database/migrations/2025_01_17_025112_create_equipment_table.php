@@ -20,13 +20,13 @@ return new class extends Migration
             $table->string('gatePass')->nullable();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
             $table->unsignedBigInteger('worksheet_id')->nullable();
-            $table->string('manufacturer')->nullable();
+            $table->string('make')->nullable();
             $table->string('model')->nullable();
             $table->string('serial')->nullable();
             $table->string('description')->nullable();
             $table->json('inspection')->nullable();
-            $table->string('lab')->nullable();
-            $table->string('calType')->nullable();
+            $table->string('laboratory')->nullable();
+            $table->string('calibrationType')->nullable();
             $table->string('category')->nullable();
             $table->string('inDate');
             //For Status

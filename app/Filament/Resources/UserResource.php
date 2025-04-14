@@ -38,7 +38,7 @@ class UserResource extends Resource
             ->schema([
                 // Section::make([
                 //     Grid::make()->schema([
-                //         FileUpload::make('avatar_url')
+                //         FileUpload::make('avatarUrl')
                 //             ->label('Avatar')
                 //             ->avatar()
                 //             ->directory('avatars'),
@@ -91,7 +91,7 @@ class UserResource extends Resource
                         ->completedIcon('heroicon-m-finger-print'),
                     Wizard\Step::make('Profile Picture')
                         ->schema([
-                            FileUpload::make('avatar_url')
+                            FileUpload::make('avatarUrl')
                                 ->label('Avatar (optional)')
                                 ->avatar()
                                 ->directory('avatars')
@@ -112,7 +112,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->alignCenter()
                     ->searchable(),
-                ImageColumn::make('avatar_url')
+                ImageColumn::make('avatarUrl')
                     ->label('Avatar')
                     ->circular()
                     ->defaultImageUrl(asset('images/default avatar.png'))

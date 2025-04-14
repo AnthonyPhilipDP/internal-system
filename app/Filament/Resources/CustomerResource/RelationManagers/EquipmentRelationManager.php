@@ -48,7 +48,7 @@ class EquipmentRelationManager extends RelationManager
                             ->searchable()
                             ->preload()
                             ->relationship('customer', 'name'),
-                        Forms\Components\TextInput::make('manufacturer')
+                        Forms\Components\TextInput::make('make')
                             ->readOnly()    
                             ->maxLength(255),
                         Forms\Components\TextInput::make('model')
@@ -61,7 +61,7 @@ class EquipmentRelationManager extends RelationManager
                 ])->columnSpan(3),
                 Group::make()->schema([
                     Section::make('')->schema([
-                        Forms\Components\Select::make('lab')
+                        Forms\Components\Select::make('laboratory')
                             ->label('Laboratory')
                             ->options([
                                 'electrical' => 'Electrical',
@@ -69,7 +69,7 @@ class EquipmentRelationManager extends RelationManager
                                 'repair' => 'Repair',
                             ])
                             ->searchable(),
-                        Forms\Components\Select::make('calType')
+                        Forms\Components\Select::make('calibrationType')
                             ->label('Calibration Type')
                             ->options([
                                 'iso' => 'ISO 17025',
@@ -352,7 +352,7 @@ class EquipmentRelationManager extends RelationManager
                 ->label('Transaction ID')
                 ->alignCenter()
                 ->searchable(),
-                Tables\Columns\TextColumn::make('manufacturer')
+                Tables\Columns\TextColumn::make('make')
                 ->alignCenter(),
                 Tables\Columns\TextColumn::make('model')
                 ->alignCenter(),
@@ -513,7 +513,7 @@ class EquipmentRelationManager extends RelationManager
                                 $spreadsheet->addSheet($sheet);
                             }
                         
-                                $sheet->setCellValue('b20', $record->manufacturer);
+                                $sheet->setCellValue('b20', $record->make);
                                 $sheet->setCellValue('b21', $record->model);
                                 $sheet->setCellValue('b22', $record->serial);
                                 $sheet->setCellValue('b23', $record->description);

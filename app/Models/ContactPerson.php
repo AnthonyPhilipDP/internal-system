@@ -20,11 +20,11 @@ class ContactPerson extends Model
         'contact1',
         'contact2',
         'email',
-        'is_active',
+        'isActive',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'isActive' => 'boolean',
     ];
 
     public function customer(){
@@ -33,6 +33,6 @@ class ContactPerson extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('isActive', true);
     }
 }

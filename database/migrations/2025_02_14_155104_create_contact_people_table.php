@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('contact1')->nullable();
             $table->string('contact2')->nullable();
             $table->string('email')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->boolean('isActive')->default(true);
             $table->timestamps();
         });
     }

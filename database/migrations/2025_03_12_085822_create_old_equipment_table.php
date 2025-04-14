@@ -12,6 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('old_equipment', function (Blueprint $table) {
+            /*
+             * The column names are INTENTIONALLY left as they are
+             * to maintain compatibility with old data and references.
+             * I have to follow the naming convention of the old database.
+             * because this is preferred by the company.
+             * The data is intended for viewing only anyways.
+             */
             $table->id();
             $table->string('trans no')->nullable();
             $table->string('cert no')->nullable();

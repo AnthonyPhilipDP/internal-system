@@ -45,14 +45,14 @@ class EquipmentResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['id', 'ar_id', 'equipment_id', 'manufacturer', 'model', 'serial', 'description'];
+        return ['id', 'ar_id', 'equipment_id', 'make', 'model', 'serial', 'description'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
             'Equipment ID' => $record->equipment_id,
-            'Make' => $record->manufacturer,
+            'Make' => $record->make,
             'Model' => $record->model,
             'Serial' => $record->serial,
             'Description' => $record->description,
@@ -127,7 +127,7 @@ class EquipmentResource extends Resource
                                 ->required()  
                                 ->label('Equipment Identification')  
                                 ->maxLength(255),
-                            Forms\Components\TextInput::make('manufacturer')
+                            Forms\Components\TextInput::make('make')
                                 ->label('Make')
                                 ->required()    
                                 ->maxLength(255),
@@ -145,7 +145,7 @@ class EquipmentResource extends Resource
                     ->columnSpan(2),
                     Group::make()->schema([
                         Section::make('')->schema([
-                            Forms\Components\Select::make('lab')
+                            Forms\Components\Select::make('laboratory')
                             ->label('Laboratory')
                             ->options([
                                 'electrical' => 'Electrical',
@@ -156,7 +156,7 @@ class EquipmentResource extends Resource
                             ->native(false)
                             ->searchable()
                             ->required(),
-                            Forms\Components\Select::make('calType')
+                            Forms\Components\Select::make('calibrationType')
                             ->label('Calibration Type')
                             ->options([
                                 'iso' => 'ISO 17025',
@@ -353,7 +353,7 @@ class EquipmentResource extends Resource
                     ->alignCenter()
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('manufacturer')
+                Tables\Columns\TextColumn::make('make')
                     ->alignCenter()
                     ->label('Make')
                     ->searchable(),
@@ -373,11 +373,11 @@ class EquipmentResource extends Resource
                     ->formatStateUsing(function ($state): string {return ucwords($state);})
                     ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('lab')
+                Tables\Columns\TextColumn::make('laboratory')
                     ->label('Laboratory')
                     ->alignCenter()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('calType')
+                Tables\Columns\TextColumn::make('calibrationType')
                     ->label('Calibration Type')
                     ->alignCenter()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -465,8 +465,8 @@ class EquipmentResource extends Resource
                         ->label('')
                         ->tooltip('Delete')
                         ->modalIcon('heroicon-o-trash')
-                        ->modalHeading(fn (Equipment $record) => 'Remove ' . $record->manufacturer)
-                        ->modalDescription(fn (Equipment $record) => 'Are you sure you want to remove ' . $record->manufacturer . ' equipment?')
+                        ->modalHeading(fn (Equipment $record) => 'Remove ' . $record->make)
+                        ->modalDescription(fn (Equipment $record) => 'Are you sure you want to remove ' . $record->make . ' equipment?')
                         ->modalSubmitActionLabel('Yes')
                         ->successNotification(
                             Notification::make()
@@ -477,8 +477,8 @@ class EquipmentResource extends Resource
                         ),
                     Tables\Actions\ForceDeleteAction::make()
                         ->modalIcon('heroicon-o-trash')
-                        ->modalHeading(fn (Equipment $record) => 'Remove ' . $record->manufacturer . ' permanently?')
-                        ->modalDescription(fn (Equipment $record) => 'Are you sure you want to remove ' . $record->manufacturer . ' equipment permanently?')
+                        ->modalHeading(fn (Equipment $record) => 'Remove ' . $record->make . ' permanently?')
+                        ->modalDescription(fn (Equipment $record) => 'Are you sure you want to remove ' . $record->make . ' equipment permanently?')
                         ->modalSubmitActionLabel('Yes')
                         ->successNotification(
                             Notification::make()
@@ -490,8 +490,8 @@ class EquipmentResource extends Resource
                     Tables\Actions\RestoreAction::make()
                         ->color('primary')
                         ->modalIcon('heroicon-o-cube')
-                        ->modalHeading(fn (Equipment $record) => 'Bring ' . $record->manufacturer . ' back')
-                        ->modalDescription(fn (Equipment $record) => 'Are you sure you want to bring back ' . $record->manufacturer . ' in our equipments?')
+                        ->modalHeading(fn (Equipment $record) => 'Bring ' . $record->make . ' back')
+                        ->modalDescription(fn (Equipment $record) => 'Are you sure you want to bring back ' . $record->make . ' in our equipments?')
                         ->modalSubmitActionLabel('Yes')
                         ->successNotification(
                             Notification::make()

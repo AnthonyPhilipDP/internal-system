@@ -39,6 +39,7 @@ class UsernamePrompt extends Component implements HasForms
                     ->prefix('Enter your desired username:')
                     ->minLength(3)
                     ->maxLength(12)
+                    ->required()
                     ->unique('users', 'username', ignorable: auth()->user())
             ]);
     }

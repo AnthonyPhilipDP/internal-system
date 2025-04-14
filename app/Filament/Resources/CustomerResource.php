@@ -140,7 +140,7 @@ class CustomerResource extends Resource
                                     'Non-VAT' => 'Non-VAT',
                                 ])
                                 ->required(),
-                            Forms\Components\TextInput::make('wht')
+                            Forms\Components\TextInput::make('withHoldingTax')
                                 ->label('With Holding Tax')
                                 ->required(),
                             Forms\Components\TextInput::make('businessNature')
@@ -271,7 +271,7 @@ class CustomerResource extends Resource
                                     Forms\Components\TextInput::make('email')
                                         ->columnSpan(2)
                                         ->email(),
-                                    Forms\Components\Toggle::make('is_active')
+                                    Forms\Components\Toggle::make('isActive')
                                         ->label('Active Status')
                                         ->onIcon('heroicon-o-bolt')
                                         ->offIcon('heroicon-o-bolt-slash')
@@ -667,7 +667,7 @@ class CustomerResource extends Resource
                                 ->color('info')
                                 ->limit(16)
                                 ->tooltip('Click what you want to copy'),
-                            Infolists\Components\TextEntry::make('activeContactPerson.is_active')
+                            Infolists\Components\TextEntry::make('activeContactPerson.isActive')
                                 ->label('Status')
                                 ->listWithLineBreaks()
                                 ->formatStateUsing(fn ($state): string => match ((string) $state) {

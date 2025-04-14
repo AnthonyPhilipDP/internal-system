@@ -29,7 +29,7 @@ class Customer extends Model
         'website',
         'sec',
         'vat',
-        'wht',
+        'withHoldingTax',
         'businessNature',
         'qualifyingSystem',
         'certifyingBody',
@@ -114,7 +114,7 @@ class Customer extends Model
         return $this->formatNullableAttribute($value);
     }
 
-    public function getWhtAttribute($value)
+    public function getWithHoldingTaxAttribute($value)
     {
         return $this->formatNullableAttribute($value);
     }
@@ -254,6 +254,6 @@ class Customer extends Model
     }
 
     public function activeContactPerson() {
-        return $this->hasMany(ContactPerson::class)->where('is_active', true);
+        return $this->hasMany(ContactPerson::class)->where('isActive', true);
     }
 }

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('website')->nullable("N/A");
             $table->string('sec')->nullable("N/A");
             $table->string('vat');
-            $table->string('wht')->nullable("N/A");
+            $table->string('withHoldingTax')->nullable("N/A");
             $table->string('businessNature');
             $table->string('qualifyingSystem')->nullable("N/A");
             $table->string('certifyingBody')->nullable("N/A");

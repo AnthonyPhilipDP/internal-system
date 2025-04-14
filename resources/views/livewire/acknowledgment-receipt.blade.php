@@ -87,7 +87,7 @@
                                     {{ $record->id }}
                                 </td>
                                 <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
-                                    {{ $record->manufacturer }}
+                                    {{ $record->make }}
                                 </td>
                                 <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
                                     {{ $record->model }}
