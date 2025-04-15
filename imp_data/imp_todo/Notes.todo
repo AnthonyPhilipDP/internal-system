@@ -66,6 +66,7 @@ TO import properly
 REMOVE ALL COMMA, change it into space only
 REMOVE ALL BACKSLASHES, change it into |
 ADD ID because some transaction ID has duplicates
+REMOVE ALL semicolons, change it into space only
 
 This is the Query for Importing Old DATA
 #Start here

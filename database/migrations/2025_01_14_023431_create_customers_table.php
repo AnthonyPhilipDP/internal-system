@@ -27,10 +27,10 @@ return new class extends Migration
             $table->string('businessNature');
             $table->string('qualifyingSystem')->nullable("N/A");
             $table->string('certifyingBody')->nullable("N/A");
-            $table->string('dateCertified');
+            $table->string('dateCertified')->nullable("N/A");
             $table->string('payment');
             $table->string('status');
-            $table->string('remarks')->nullable("N/A");
+            $table->string('remarks', 1000)->nullable("N/A");
             $table->string('businessStyle');
             $table->string('tin');
             $table->string('createdDate')->nullable("N/A");

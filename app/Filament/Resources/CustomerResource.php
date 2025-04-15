@@ -101,7 +101,7 @@ class CustomerResource extends Resource
                             Forms\Components\DatePicker::make('dateCertified')
                                 ->validationAttribute('date certified')
                                 ->label('Date Certified')
-                                ->required()
+                                ->nullable()
                                 ->default(now())
                                 ->columnSpan(1),
                             Forms\Components\TextInput::make('qualifyingSystem')
