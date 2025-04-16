@@ -139,6 +139,7 @@ class CustomerResource extends Resource
                                     'VAT' => 'VAT',
                                     'Non-VAT' => 'Non-VAT',
                                 ])
+                                ->native(false)
                                 ->required(),
                             Forms\Components\TextInput::make('withHoldingTax')
                                 ->label('With Holding Tax')
@@ -221,7 +222,8 @@ class CustomerResource extends Resource
                                     'Net 30 days' => 'Net 30 days',
                                     'Net 60 days' => 'Net 60 days',
                                 ])
-                                ->default('cod')
+                                ->default('Cash on Delivery')
+                                ->native(false)
                                 ->required(),
                             Forms\Components\Select::make('status')
                                 ->label('Status')
@@ -230,6 +232,7 @@ class CustomerResource extends Resource
                                     'Potential' => 'Potential',
                                 ])
                                 ->default('Active')
+                                ->native(false)
                                 ->required(),
                         ])->columns(2)
                         ->icon('heroicon-o-document-text')
