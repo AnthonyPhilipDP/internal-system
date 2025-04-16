@@ -349,11 +349,22 @@ class EquipmentResource extends Resource
                         'unclaimed' => 'Unclaimed',
                         'audit' => 'ISO Audit',
                     ]),
+                Tables\Columns\SelectColumn::make('service')
+                    ->label('Service')
+                    ->options([
+                        'calibration' => 'Calibration',
+                        'cal and realign' => 'Calibration and Realign',
+                        'cal and repair' => 'Calibration and Repair',
+                        'repair' => 'Repair',
+                        'diagnostic' => 'Diagnostic',
+                        'N/A' => 'Not Available',
+                    ]),
                 Tables\Columns\TextColumn::make('ar_id')
                     ->label('Receipt ID')
                     ->alignCenter()
                     ->numeric()
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->formatStateUsing(function ($state) {
                         return '401-' . $state;
                     }),
