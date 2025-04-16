@@ -29,6 +29,8 @@ return new class extends Migration
             $table->string('calibrationType')->nullable();
             $table->string('category')->nullable();
             $table->string('inDate');
+            $table->string('calibrationCycle')->nullable();
+            $table->string('decisionRule')->nullable();
             //For Status
             $table->string('calibrationProcedure')->nullable();
             $table->string('previousCondition')->nullable();

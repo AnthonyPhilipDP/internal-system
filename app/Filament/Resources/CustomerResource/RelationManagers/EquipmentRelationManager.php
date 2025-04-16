@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CustomerResource\RelationManagers;
 
+use DateTime;
 use Filament\Forms;
 use Filament\Tables;
 use Spatie\Color\Rgb;
@@ -11,20 +12,20 @@ use App\Models\Equipment;
 use App\Models\Worksheet;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Filament\Facades\Filament;
 use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
-use Illuminate\Http\Request;
-
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class EquipmentRelationManager extends RelationManager
 {
@@ -401,21 +402,21 @@ class EquipmentRelationManager extends RelationManager
                             
                             // Extract data from specific cells
                             $updateData = [
-                                'calibrationProcedure' => $sheet->getCell('B3')->getCalculatedValue(),
-                                'previousCondition' => $sheet->getCell('B4')->getCalculatedValue(),
-                                'inCondition' => $sheet->getCell('B5')->getCalculatedValue(),
-                                'outCondition' => $sheet->getCell('B6')->getCalculatedValue(),
-                                'category' => $sheet->getCell('B7')->getCalculatedValue(),
-                                'service' => $sheet->getCell('B8')->getCalculatedValue(),
-                                'status' => $sheet->getCell('B9')->getCalculatedValue(),
-                                'comments' => $sheet->getCell('B10')->getCalculatedValue(),
-                                'code_range' => $sheet->getCell('B11')->getCalculatedValue(),
-                                'reference' => $sheet->getCell('B12')->getCalculatedValue(),
-                                'standardsUsed' => $sheet->getCell('B13')->getCalculatedValue(),
-                                'validation' => $sheet->getCell('B15')->getCalculatedValue(),
-                                'validatedBy' => $sheet->getCell('D15')->getCalculatedValue(),
-                                'temperature' => $sheet->getCell('B16')->getCalculatedValue(),
-                                'humidity' => $sheet->getCell('B17')->getCalculatedValue(),
+                                'calibrationCycle' => $sheet->getCell('B13')->getCalculatedValue(),
+                                'calibrationProcedure' => $sheet->getCell('B14')->getCalculatedValue(),
+                                'previousCondition' => $sheet->getCell('B15')->getCalculatedValue(),
+                                'inCondition' => $sheet->getCell('B16')->getCalculatedValue(),
+                                'outCondition' => $sheet->getCell('B17')->getCalculatedValue(),
+                                'category' => $sheet->getCell('B18')->getCalculatedValue(),
+                                'code_range' => $sheet->getCell('B19')->getCalculatedValue(),
+                                'reference' => $sheet->getCell('B20')->getCalculatedValue(),
+                                'standardsUsed' => $sheet->getCell('B21')->getCalculatedValue(),
+                                // 'worksheet_id' => $sheet->getCell('B2')->getCalculatedValue(), // I think this is for downloading, not uploading
+                                // 'worksheet_rev' => $sheet->getCell('B23')->getCalculatedValue(), // Tbf
+                                'validation' => $sheet->getCell('B24')->getCalculatedValue(),
+                                'validatedBy' => $sheet->getCell('B25')->getCalculatedValue(),
+                                'temperature' => $sheet->getCell('B26')->getCalculatedValue(),
+                                'humidity' => $sheet->getCell('B27')->getCalculatedValue(),
                             ];
 
                             // Update the equipment record
@@ -513,15 +514,21 @@ class EquipmentRelationManager extends RelationManager
                                 $spreadsheet->addSheet($sheet);
                             }
                         
-                                $sheet->setCellValue('b20', $record->make);
-                                $sheet->setCellValue('b21', $record->model);
-                                $sheet->setCellValue('b22', $record->serial);
-                                $sheet->setCellValue('b23', $record->description);
-                                $sheet->setCellValue('b24', $record->calibrationDate);
+                                $sheet->setCellValue('b1', $record->customer->name);
+                                // $sheet->setCellValue('b2', $record->customer->exclusive); // Tbf
+                                $sheet->setCellValue('b3', $record->equipment_id);
+                                $sheet->setCellValue('b4', $record->make);
+                                $sheet->setCellValue('b5', $record->model);
+                                $sheet->setCellValue('b6', $record->description);
+                                $sheet->setCellValue('b7', $record->serial);
+                                $sheet->setCellValue('b8', (new DateTime($record->inDate))->format('d/m/Y'));
+                                $sheet->setCellValue('b9', '40-' . $record->id);
+                                $sheet->setCellValue('b10', $record->calibrationCycle);
+                                $sheet->setCellValue('b11', $record->getDecisionRuleName());
                         
                                 // Save the modified file
                                 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-                                $fileName = $worksheet->name . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+                                $fileName = '40-' . $record->id . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
                                 $modifiedFilePath = public_path($fileName);
                                 $writer->save($modifiedFilePath);
                         

@@ -35,6 +35,8 @@ class Equipment extends Model
         'calibrationType',
         'category',
         'inDate',
+        'calibrationCycle',
+        'decisionRule',
         //For Status
         'calibrationProcedure',
         'previousCondition',
@@ -96,4 +98,16 @@ class Equipment extends Model
             $model->status = 'incoming';
         });
     }
+
+    public function getDecisionRuleName()
+{
+    $decisionRuleNames = [
+        'default' => 'Simple Calibration',
+        'rule1' => 'Binary Statement for Simple Acceptance Rule ( w = 0 )',
+        'rule2' => 'Binary Statement with Guard Band( w = U )',
+        'rule3' => 'Non-binary Statement with Guard Band( w = U )',
+    ];
+
+    return $decisionRuleNames[$this->decisionRule] ?? '';
+}
 }

@@ -178,6 +178,24 @@ class EditEquipment extends EditRecord
                             ->label('Date Received')
                             ->default(now())
                             ->required(),
+                        TextInput::make('calibrationCycle')
+                            ->label('Calibration Cycle')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(12)
+                            ->default(12)
+                            ->required(),
+                        Select::make('decisionRule')
+                            ->label('Decision Rule')
+                            ->options([
+                                'default' => 'Simple Calibration',
+                                'rule1' => 'Binary Statement for Simple Acceptance Rule ( w = 0 )',
+                                'rule2' => 'Binary Statement with Guard Band( w = U )',
+                                'rule3' => 'Non-binary Statement with Guard Band( w = U )',
+                            ])
+                            ->default('default')
+                            ->native(false)
+                            ->required(),
                     ]),
                 ])
                 ->columnSpan(1),
