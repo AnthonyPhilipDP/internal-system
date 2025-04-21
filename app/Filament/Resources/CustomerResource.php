@@ -591,15 +591,22 @@ class CustomerResource extends Resource
             ->schema([
                 Infolists\Components\Section::make('Customer Information')
                 ->schema([
-                    Infolists\Components\Grid::make(4)
+                    Infolists\Components\Grid::make(5)
                         ->schema([
                             Infolists\Components\TextEntry::make('id')
-                                ->label('Customer ID'),
+                                ->label('Client ID')
+                                ->copyable(),
+                            Infolists\Components\TextEntry::make('name')
+                                ->label('Client Name')
+                                ->copyable(),
                             Infolists\Components\TextEntry::make('address')
-                                ->label('Address'),
-                            Infolists\Components\TextEntry::make('display_date')
+                                ->label('Address')
+                                ->copyable(),
+                                Infolists\Components\TextEntry::make('display_date')
                                 ->label('Date Added')
-                                ->default('Not Available'),
+                                ->default('Not Available')
+                                ->copyable()
+                                ->copyableState(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('d/m/Y') : 'Not Available'),
                             Infolists\Components\TextEntry::make('status')
                                 ->label('Status')
                                 ->formatStateUsing(fn ($state): string => match ((string) $state) {
