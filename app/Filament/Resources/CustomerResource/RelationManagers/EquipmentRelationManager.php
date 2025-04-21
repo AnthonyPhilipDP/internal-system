@@ -583,12 +583,15 @@ class EquipmentRelationManager extends RelationManager
                             Group::make()->schema([
                                 Section::make('')->schema([
                                     Forms\Components\Select::make('worksheet')
-                                        ->label('Worksheet')
-                                        ->relationship('worksheet', 'name')
-                                        ->searchable(['name', 'id'])
-                                        ->preload()
-                                        ->prefixIcon('heroicon-o-document-check')
-                                        ->prefixIconColor('primary'),
+                                    ->label('Worksheet')
+                                    ->relationship('worksheet', 'name')
+                                    ->getOptionLabelFromRecordUsing(function ($record) {
+                                        return "{$record->name} Rev. {$record->revision}";
+                                    })
+                                    ->searchable(['name', 'id'])
+                                    ->preload()
+                                    ->prefixIcon('heroicon-o-document-check')
+                                    ->prefixIconColor('primary'),
                                     Forms\Components\TextInput::make('code_range')
                                         ->label('Code | Range')
                                         ->nullable()
@@ -714,24 +717,30 @@ class EquipmentRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('equipment_id')
                 ->label('Equipment ID')
                 ->alignCenter()
+                ->searchable()
                 ->copyable(),
                 Tables\Columns\TextColumn::make('make')
                 ->alignCenter()
+                ->searchable()
                 ->copyable(),
                 Tables\Columns\TextColumn::make('model')
                 ->alignCenter()
+                ->searchable()
                 ->copyable(),
                 Tables\Columns\TextColumn::make('description')
                 ->alignCenter()
+                ->searchable()
                 ->copyable(),
                 Tables\Columns\TextColumn::make('serial')
                 ->alignCenter()
                 ->searchable()
                 ->copyable(),
-                Tables\Columns\TextColumn::make('worksheet.name')
+                Tables\Columns\TextColumn::make('worksheet')
                 ->label('Worksheet')
                 ->alignCenter()
-                ->searchable(),
+                ->formatStateUsing(function ($record) {
+                    return "{$record->worksheet->name} Rev. {$record->worksheet->revision}";
+                }),
             ])->defaultSort('id', 'desc')
             ->filters([
                 //

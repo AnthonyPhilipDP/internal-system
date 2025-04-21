@@ -44,23 +44,30 @@ class WorksheetResource extends Resource
     {
         return $form
             ->schema([
-                Group::make()->schema([
-                    Section::make([
-                        Forms\Components\TextInput::make('name')
-                                ->required()
-                                ->autocapitalize('words')
-                                ->maxLength(255),
-                        FileUpload::make('file')
-                            ->previewable(false)
-                            ->panelAspectRatio('2:1')
-                            ->uploadingMessage('Uploading worksheet...')
-                            ->directory('worksheets')
-                            ->disk('public')
-                            ->preserveFilenames()
-                            ->acceptedFileTypes(['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])
-                    ]),
+                Section::make([
+                    Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->autocapitalize('words')
+                        ->maxLength(255)
+                        ->columnSpan(1),
+                    Forms\Components\TextInput::make('revision')
+                        ->label('Revision')
+                        ->required()
+                        ->autocapitalize('words')
+                        ->maxLength(255)
+                        ->columnSpan(1),
+                ])->columns(2),
+                Section::make([
+                    FileUpload::make('file')
+                        ->previewable(false)
+                        // ->panelAspectRatio('2:1')
+                        ->uploadingMessage('Uploading worksheet...')
+                        ->directory('worksheets')
+                        ->disk('public')
+                        ->preserveFilenames()
+                        ->acceptedFileTypes(['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']),
                 ]),
-            ]);
+            ])->columns(4);
     }
 
     public static function table(Table $table): Table
@@ -68,6 +75,11 @@ class WorksheetResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->alignCenter()
+                    ->weight(FontWeight::Bold)
+                    ->color('primary')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('revision')
                     ->alignCenter()
                     ->weight(FontWeight::Bold)
                     ->color('primary')

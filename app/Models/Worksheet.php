@@ -15,6 +15,7 @@ class Worksheet extends Model
     protected $fillable = [
         'name',
         'file',
+        'revision',
     ];
 
     protected static function boot()
