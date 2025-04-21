@@ -49,6 +49,9 @@ class EquipmentRelationManager extends RelationManager
                             ->searchable()
                             ->preload()
                             ->relationship('customer', 'name'),
+                        Forms\Components\TextInput::make('equipment_id')
+                            ->label('Equipment ID')
+                            ->maxLength(255),
                         Forms\Components\TextInput::make('make')
                             ->readOnly()    
                             ->maxLength(255),
@@ -131,6 +134,24 @@ class EquipmentRelationManager extends RelationManager
                                 'unclaimed' => 'Unclaimed',
                                 'audit' => 'ISO Audit',
                             ]),
+                            Forms\Components\TextInput::make('calibrationCycle')
+                            ->label('Calibration Cycle')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(12)
+                            ->default(12)
+                            ->nullable(),
+                            Forms\Components\Select::make('decisionRule')
+                            ->label('Decision Rule')
+                            ->options([
+                                'default' => 'Simple Calibration',
+                                'rule1' => 'Binary Statement for Simple Acceptance Rule ( w = 0 )',
+                                'rule2' => 'Binary Statement with Guard Band( w = U )',
+                                'rule3' => 'Non-binary Statement with Guard Band( w = U )',
+                            ])
+                            ->default('default')
+                            ->native(false)
+                            ->nullable(),
                     ]),
                 ])->columnSpan(3),
                 Group::make()->schema([
@@ -353,19 +374,27 @@ class EquipmentRelationManager extends RelationManager
                 ->label('Transaction ID')
                 ->alignCenter()
                 ->searchable(),
+                Tables\Columns\TextColumn::make('equipment_id')
+                ->label('Equipment ID')
+                ->alignCenter()
+                ->copyable(),
                 Tables\Columns\TextColumn::make('make')
-                ->alignCenter(),
+                ->alignCenter()
+                ->copyable(),
                 Tables\Columns\TextColumn::make('model')
-                ->alignCenter(),
+                ->alignCenter()
+                ->copyable(),
+                Tables\Columns\TextColumn::make('description')
+                ->alignCenter()
+                ->copyable(),
                 Tables\Columns\TextColumn::make('serial')
                 ->alignCenter()
-                ->searchable(),
+                ->searchable()
+                ->copyable(),
                 Tables\Columns\TextColumn::make('worksheet.name')
                 ->label('Worksheet')
                 ->alignCenter()
                 ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                ->alignCenter(),
             ])->defaultSort('id', 'desc')
             ->filters([
                 //
@@ -411,8 +440,6 @@ class EquipmentRelationManager extends RelationManager
                                 'code_range' => $sheet->getCell('B19')->getCalculatedValue(),
                                 'reference' => $sheet->getCell('B20')->getCalculatedValue(),
                                 'standardsUsed' => $sheet->getCell('B21')->getCalculatedValue(),
-                                // 'worksheet_id' => $sheet->getCell('B2')->getCalculatedValue(), // I think this is for downloading, not uploading
-                                // 'worksheet_rev' => $sheet->getCell('B23')->getCalculatedValue(), // Tbf
                                 'validation' => $sheet->getCell('B24')->getCalculatedValue(),
                                 'validatedBy' => $sheet->getCell('B25')->getCalculatedValue(),
                                 'temperature' => $sheet->getCell('B26')->getCalculatedValue(),
@@ -499,44 +526,63 @@ class EquipmentRelationManager extends RelationManager
                     ->tooltip('Download Worksheet')
                     ->label('')
                     ->icon('heroicon-m-arrow-down-tray')
+                        // ->action(function ($record) {
+                        //     $worksheetId = $record->worksheet_id;
+                        //     $worksheet = Worksheet::find($worksheetId);
+                        //     if ($record->worksheet_id) {
+                        //         $filePath = Storage::disk('public')->path($worksheet->file);
+                        //         $spreadsheet = IOFactory::load($filePath);
+
+                        //         // Check if the "IS update" sheet exists
+                        //     $sheet = $spreadsheet->getSheetByName('IS update');
+                        //     if (!$sheet) {
+                        //         // Create the "IS update" sheet if it doesn't exist
+                        //         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'IS update');
+                        //         $spreadsheet->addSheet($sheet);
+                        //     }
+                        
+                        //         $sheet->setCellValue('b1', $record->customer->name);
+                        //         // $sheet->setCellValue('b2', $record->customer->exclusive); // Tbf
+                        //         $sheet->setCellValue('b3', $record->equipment_id);
+                        //         $sheet->setCellValue('b4', $record->make);
+                        //         $sheet->setCellValue('b5', $record->model);
+                        //         $sheet->setCellValue('b6', $record->description);
+                        //         $sheet->setCellValue('b7', $record->serial);
+                        //         $sheet->setCellValue('b8', (new DateTime($record->inDate))->format('d/m/Y'));
+                        //         $sheet->setCellValue('b9', '40-' . $record->id);
+                        //         $sheet->setCellValue('b10', $record->calibrationCycle);
+                        //         $sheet->setCellValue('b11', $record->getDecisionRuleName());
+                        
+                        //         // Save the modified file
+                        //         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                        //         $fileName = '40-' . $record->id . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+                        //         $modifiedFilePath = public_path($fileName);
+                        //         $writer->save($modifiedFilePath);
+                        
+                        //         // Optionally, download the modified file
+                        //         return response()->download($modifiedFilePath)->deleteFileAfterSend(true);
+                              
+                        //     }
+                        //     else {
+                        //         Notification::make()
+                        //             ->title('No file available')
+                        //             ->body('Please include a worksheet file for this equipment first.')
+                        //             ->danger()
+                        //             ->send();
+                        //     }
                         ->action(function ($record) {
                             $worksheetId = $record->worksheet_id;
                             $worksheet = Worksheet::find($worksheetId);
-                            if ($record->worksheet_id) {
+                        
+                            if ($worksheet) {
                                 $filePath = Storage::disk('public')->path($worksheet->file);
-                                $spreadsheet = IOFactory::load($filePath);
-
-                                // Check if the "IS update" sheet exists
-                            $sheet = $spreadsheet->getSheetByName('IS update');
-                            if (!$sheet) {
-                                // Create the "IS update" sheet if it doesn't exist
-                                $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'IS update');
-                                $spreadsheet->addSheet($sheet);
-                            }
                         
-                                $sheet->setCellValue('b1', $record->customer->name);
-                                // $sheet->setCellValue('b2', $record->customer->exclusive); // Tbf
-                                $sheet->setCellValue('b3', $record->equipment_id);
-                                $sheet->setCellValue('b4', $record->make);
-                                $sheet->setCellValue('b5', $record->model);
-                                $sheet->setCellValue('b6', $record->description);
-                                $sheet->setCellValue('b7', $record->serial);
-                                $sheet->setCellValue('b8', (new DateTime($record->inDate))->format('d/m/Y'));
-                                $sheet->setCellValue('b9', '40-' . $record->id);
-                                $sheet->setCellValue('b10', $record->calibrationCycle);
-                                $sheet->setCellValue('b11', $record->getDecisionRuleName());
-                        
-                                // Save the modified file
-                                $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                                // Generate the download file name
                                 $fileName = '40-' . $record->id . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
-                                $modifiedFilePath = public_path($fileName);
-                                $writer->save($modifiedFilePath);
                         
-                                // Optionally, download the modified file
-                                return response()->download($modifiedFilePath)->deleteFileAfterSend(true);
-                              
-                            }
-                            else {
+                                // Return the file for download
+                                return response()->download($filePath, $fileName);
+                            } else {
                                 Notification::make()
                                     ->title('No file available')
                                     ->body('Please include a worksheet file for this equipment first.')
