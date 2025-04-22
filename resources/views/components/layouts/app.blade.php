@@ -15,7 +15,7 @@
       <!-- Custom CSS -->
       <link rel="stylesheet" href="{{ asset('css/custom/dynamic-gradient.css') }}">
   
-      <title>{{ $title ?? 'PMSi - Internal' }}</title>
+      <title>{{ config('app.name') ?? 'PMSi - Internal' }}</title>
   </head>
     <body class="flex flex-col min-h-screen">
         {{-- @include('layouts.partials.tutorial') --}}

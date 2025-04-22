@@ -16,30 +16,34 @@ class Customer extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = [
-        'id',
-        'name',
-        'nickname',
-        'address',
-        'mobile1',
-        'mobile2',
-        'telephone1',
-        'telephone2',
-        'email',
-        'website',
-        'sec',
-        'vat',
-        'withHoldingTax',
-        'businessNature',
-        'qualifyingSystem',
-        'certifyingBody',
-        'dateCertified',
-        'payment',
-        'status',
-        'remarks',
-        'businessStyle',
-        'tin',
-        'createdDate',
+    // protected $fillable = [
+    //     'id',
+    //     'name',
+    //     'nickname',
+    //     'address',
+    //     'mobile1',
+    //     'mobile2',
+    //     'telephone1',
+    //     'telephone2',
+    //     'email',
+    //     'website',
+    //     'sec',
+    //     'vat',
+    //     'withHoldingTax',
+    //     'businessNature',
+    //     'qualifyingSystem',
+    //     'certifyingBody',
+    //     'dateCertified',
+    //     'payment',
+    //     'status',
+    //     'remarks',
+    //     'businessStyle',
+    //     'tin',
+    //     'createdDate',
+    // ];
+
+    protected $guarded = [
+        'id'
     ];
 
     public function equipment() {
