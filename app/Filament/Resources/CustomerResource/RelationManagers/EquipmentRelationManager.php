@@ -509,7 +509,7 @@ class EquipmentRelationManager extends RelationManager
                         ->icon('heroicon-m-arrow-path')
                         ->schema([
                             Group::make()->schema([
-                                Section::make('Status')->schema([
+                                Section::make('')->schema([
                                     Forms\Components\Select::make('worksheet')
                                         ->label('Worksheet')
                                         ->relationship('worksheet', 'name')
@@ -672,11 +672,11 @@ class EquipmentRelationManager extends RelationManager
                                 ]),
                             ])->columnSpan(4), 
                         ])->columns(3),
-                    Tabs\Tab::make('Documents Update')
+                    Tabs\Tab::make('Documents')
                         ->icon('heroicon-m-document-text')
                         ->schema([
                             Group::make()->schema([
-                                Section::make('Documents Update')->schema([
+                                Section::make('')->schema([
                                     Forms\Components\Grid::make(2)->schema([
                                         Forms\Components\TextInput::make('calibrationDocument')
                                             ->label('Calibration Document')
