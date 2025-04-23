@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Filament\Tables\Enums\ActionsPosition;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 
@@ -43,6 +44,7 @@ class EquipmentRelationManager extends RelationManager
     public function form(Form $form): Form
     {
         return $form
+        /*
             // ->schema([
             //     Group::make()->schema([
             //         Section::make('')->schema([
@@ -364,18 +366,19 @@ class EquipmentRelationManager extends RelationManager
             //         ]),
             //     ])->columnSpan(5),
             // ])->columns(9); 
+        */
             ->schema([
                 Tabs::make('Tabs')
                 ->tabs([
-                    Tabs\Tab::make('Equipment Details')
+                    Tabs\Tab::make('Details')
                         ->icon('heroicon-m-cube')
                         ->schema([
                             Group::make()->schema([
                                 Section::make('')->schema([
-                                    Forms\Components\Select::make('customer_id')
-                                        ->searchable()
-                                        ->preload()
-                                        ->relationship('customer', 'name'),
+                                    // Forms\Components\Select::make('customer_id')
+                                    //     ->searchable()
+                                    //     ->preload()
+                                    //     ->relationship('customer', 'name'),
                                     Forms\Components\TextInput::make('equipment_id')
                                         ->label('Equipment ID')
                                         ->maxLength(255),
@@ -388,6 +391,13 @@ class EquipmentRelationManager extends RelationManager
                                         ->maxLength(255),
                                     Forms\Components\TextInput::make('description')
                                         ->maxLength(255),
+                                    Forms\Components\TextInput::make('calibrationCycle')
+                                        ->label('Calibration Cycle')
+                                        ->numeric()
+                                        ->minValue(1)
+                                        ->maxValue(12)
+                                        ->default(12)
+                                        ->nullable(),
                                 ]),
                             ]),
                             Group::make()->schema([
@@ -461,13 +471,6 @@ class EquipmentRelationManager extends RelationManager
                                             'unclaimed' => 'Unclaimed',
                                             'audit' => 'ISO Audit',
                                         ]),
-                                        Forms\Components\TextInput::make('calibrationCycle')
-                                        ->label('Calibration Cycle')
-                                        ->numeric()
-                                        ->minValue(1)
-                                        ->maxValue(12)
-                                        ->default(12)
-                                        ->nullable(),
                                         Forms\Components\Select::make('decisionRule')
                                         ->label('Decision Rule')
                                         ->options([
@@ -489,24 +492,34 @@ class EquipmentRelationManager extends RelationManager
                                         Forms\Components\TextInput::make('name'),
                                         Forms\Components\TextInput::make('quantity')
                                             //->numeric(),
-                                    ])
-                                    ->reorderable()
-                                    ->reorderableWithButtons()
-                                    ->reorderableWithDragAndDrop()
-                                    ->collapsible()
-                                    ->addActionLabel(function (callable $get) {
-                                        $accessories = $get('accessory');
-                                        return empty($accessories) ? 'Add Accessory' : 'Add Another Accessory';
-                                    })
-                                    ->defaultItems(0),
+                                        ])
+                                        ->reorderable()
+                                        ->reorderableWithButtons()
+                                        ->reorderableWithDragAndDrop()
+                                        ->collapsible()
+                                        ->addActionLabel(function (callable $get) {
+                                            $accessories = $get('accessory');
+                                            return empty($accessories) ? 'Add Accessory' : 'Add Another Accessory';
+                                        })
+                                        ->defaultItems(0),
                                 ]),
                             ]),
                         ])->columns(3),
-                    Tabs\Tab::make('Equipment Status')
+                    Tabs\Tab::make('Status')
                         ->icon('heroicon-m-arrow-path')
                         ->schema([
                             Group::make()->schema([
                                 Section::make('Status')->schema([
+                                    Forms\Components\Select::make('worksheet')
+                                        ->label('Worksheet')
+                                        ->relationship('worksheet', 'name')
+                                        ->getOptionLabelFromRecordUsing(function ($record) {
+                                            return "{$record->name} Rev. {$record->revision}";
+                                        })
+                                        ->searchable(['name', 'id'])
+                                        ->preload()
+                                        ->prefixIcon('heroicon-o-document-check')
+                                        ->prefixIconColor('primary'),
                                     Forms\Components\TextInput::make('calibrationProcedure')
                                         ->label('Calibration Procedure')
                                         ->nullable()
@@ -573,25 +586,14 @@ class EquipmentRelationManager extends RelationManager
                                     Forms\Components\TextInput::make('service')
                                         ->nullable()
                                         ->maxLength(255),
-                                    Forms\Components\Radio::make('intermediateCheck')
+                                    Forms\Components\Toggle::make('intermediateCheck')
                                         ->label('Intermediate Check')
-                                        ->boolean()
-                                        ->inline()
-                                        ->inlineLabel(false),
+                                        ->onIcon('heroicon-m-check')
+                                        ->offIcon('heroicon-m-x-mark'),
                                 ]),
                             ])->columnSpan(1),
                             Group::make()->schema([
                                 Section::make('')->schema([
-                                    Forms\Components\Select::make('worksheet')
-                                    ->label('Worksheet')
-                                    ->relationship('worksheet', 'name')
-                                    ->getOptionLabelFromRecordUsing(function ($record) {
-                                        return "{$record->name} Rev. {$record->revision}";
-                                    })
-                                    ->searchable(['name', 'id'])
-                                    ->preload()
-                                    ->prefixIcon('heroicon-o-document-check')
-                                    ->prefixIconColor('primary'),
                                     Forms\Components\TextInput::make('code_range')
                                         ->label('Code | Range')
                                         ->nullable()
@@ -617,9 +619,16 @@ class EquipmentRelationManager extends RelationManager
                                             ->nullable()
                                             ->maxLength(255),
                                     ]),
-                                        //Put NCF Report here
+                                    Forms\Components\TextInput::make('ncfReport')
+                                        ->label('Non-conformity Report')
+                                        ->nullable()
+                                        ->maxLength(255),
                                 ]),
-                            ])->columnSpan(2),
+                            ])->columnSpan(2), 
+                        ])->columns(3),
+                    Tabs\Tab::make('Timeline')
+                        ->icon('heroicon-m-calendar')
+                        ->schema([
                             Group::make()->schema([
                                 Section::make('')->schema([
                                     Forms\Components\Grid::make(2)->schema([
@@ -639,26 +648,27 @@ class EquipmentRelationManager extends RelationManager
                                         Forms\Components\DatePicker::make('outDate')
                                             ->label('Date Released'),
                                     ]),
-                                    Forms\Components\TextInput::make('poNoCalibration')
-                                        ->label('Purchase Order No.')
-                                        ->suffix('For Calibration')
-                                        ->nullable()
-                                        ->maxLength(255),
-                                    Forms\Components\TextInput::make('poNoRealign')
-                                        ->label('Purchase Order No.')
-                                        ->suffix('For Realign')
-                                        ->nullable()
-                                        ->maxLength(255),
-                                    Forms\Components\TextInput::make('poNoRepair')
-                                        ->label('Purchase Order No.')
-                                        ->suffix('For Repair')
-                                        ->nullable()
-                                        ->maxLength(255),
-                                    Forms\Components\TextInput::make('prNo')
-                                        ->label('Purchase Receipt No.')
-                                        ->nullable()
-                                        ->maxLength(255),
-                                        //Document Section, make another section right here
+                                    Forms\Components\Grid::make(2)->schema([
+                                        Forms\Components\TextInput::make('poNoCalibration')
+                                            ->label('Purchase Order No.')
+                                            ->suffix('For Calibration')
+                                            ->nullable()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('poNoRealign')
+                                            ->label('Purchase Order No.')
+                                            ->suffix('For Realign')
+                                            ->nullable()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('poNoRepair')
+                                            ->label('Purchase Order No.')
+                                            ->suffix('For Repair')
+                                            ->nullable()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('prNo')
+                                            ->label('Purchase Receipt No.')
+                                            ->nullable()
+                                            ->maxLength(255),
+                                    ]),
                                 ]),
                             ])->columnSpan(4), 
                         ])->columns(3),
@@ -685,11 +695,6 @@ class EquipmentRelationManager extends RelationManager
                                             ->nullable()
                                             ->maxLength(255),
                                     ]),
-                                    
-                                    Forms\Components\TextInput::make('ncfReport')
-                                        ->label('Non-conformity Report')
-                                        ->nullable()
-                                        ->maxLength(255),
                                     Forms\Components\TextArea::make('comments')
                                         ->rows(2)   
                                         ->autosize()
@@ -711,36 +716,36 @@ class EquipmentRelationManager extends RelationManager
             // ->recordTitleAttribute('make')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                ->label('Transaction ID')
-                ->alignCenter()
-                ->searchable(),
+                    ->label('Transaction ID')
+                    ->alignCenter()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('equipment_id')
-                ->label('Equipment ID')
-                ->alignCenter()
-                ->searchable()
-                ->copyable(),
+                    ->label('Equipment ID')
+                    ->alignCenter()
+                    ->searchable()
+                    ->copyable(),
                 Tables\Columns\TextColumn::make('make')
-                ->alignCenter()
-                ->searchable()
-                ->copyable(),
+                    ->alignCenter()
+                    ->searchable()
+                    ->copyable(),
                 Tables\Columns\TextColumn::make('model')
-                ->alignCenter()
-                ->searchable()
-                ->copyable(),
+                    ->alignCenter()
+                    ->searchable()
+                    ->copyable(),
                 Tables\Columns\TextColumn::make('description')
-                ->alignCenter()
-                ->searchable()
-                ->copyable(),
+                    ->alignCenter()
+                    ->searchable()
+                    ->copyable(),
                 Tables\Columns\TextColumn::make('serial')
-                ->alignCenter()
-                ->searchable()
-                ->copyable(),
+                    ->alignCenter()
+                    ->searchable()
+                    ->copyable(),
                 Tables\Columns\TextColumn::make('worksheet')
-                ->label('Worksheet')
-                ->alignCenter()
-                ->formatStateUsing(function ($record) {
-                    return "{$record->worksheet->name} Rev. {$record->worksheet->revision}";
-                }),
+                    ->label('Worksheet')
+                    ->alignCenter()
+                    ->formatStateUsing(function ($record) {
+                        return "{$record->worksheet->name} Rev. {$record->worksheet->revision}";
+                    }),
             ])->defaultSort('id', 'desc')
             ->filters([
                 //
@@ -777,19 +782,16 @@ class EquipmentRelationManager extends RelationManager
                             
                             // Extract data from specific cells
                             $updateData = [
-                                'calibrationCycle' => $sheet->getCell('B13')->getCalculatedValue(),
+                                // calibrationCycle is not included in uploading, I did not erase it in case it is needed in the future
+                                // 'calibrationCycle' => $sheet->getCell('B13')->getCalculatedValue(),
                                 'calibrationProcedure' => $sheet->getCell('B14')->getCalculatedValue(),
-                                'previousCondition' => $sheet->getCell('B15')->getCalculatedValue(),
-                                'inCondition' => $sheet->getCell('B16')->getCalculatedValue(),
-                                'outCondition' => $sheet->getCell('B17')->getCalculatedValue(),
-                                'category' => $sheet->getCell('B18')->getCalculatedValue(),
-                                'code_range' => $sheet->getCell('B19')->getCalculatedValue(),
-                                'reference' => $sheet->getCell('B20')->getCalculatedValue(),
-                                'standardsUsed' => $sheet->getCell('B21')->getCalculatedValue(),
-                                'validation' => $sheet->getCell('B24')->getCalculatedValue(),
-                                'validatedBy' => $sheet->getCell('B25')->getCalculatedValue(),
-                                'temperature' => $sheet->getCell('B26')->getCalculatedValue(),
-                                'humidity' => $sheet->getCell('B27')->getCalculatedValue(),
+                                'code_range' => $sheet->getCell('B15')->getCalculatedValue(),
+                                'reference' => $sheet->getCell('B16')->getCalculatedValue(),
+                                'standardsUsed' => $sheet->getCell('B17')->getCalculatedValue(),
+                                'validation' => $sheet->getCell('B18')->getCalculatedValue(),
+                                'validatedBy' => $sheet->getCell('B19')->getCalculatedValue(),
+                                'temperature' => $sheet->getCell('B20')->getCalculatedValue(),
+                                'humidity' => $sheet->getCell('B21')->getCalculatedValue(),
                             ];
 
                             // Update the equipment record
@@ -872,70 +874,136 @@ class EquipmentRelationManager extends RelationManager
                     ->tooltip('Download Worksheet')
                     ->label('')
                     ->icon('heroicon-m-arrow-down-tray')
-                        // ->action(function ($record) {
-                        //     $worksheetId = $record->worksheet_id;
-                        //     $worksheet = Worksheet::find($worksheetId);
-                        //     if ($record->worksheet_id) {
-                        //         $filePath = Storage::disk('public')->path($worksheet->file);
-                        //         $spreadsheet = IOFactory::load($filePath);
-
-                        //         // Check if the "IS update" sheet exists
-                        //     $sheet = $spreadsheet->getSheetByName('IS update');
-                        //     if (!$sheet) {
-                        //         // Create the "IS update" sheet if it doesn't exist
-                        //         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'IS update');
-                        //         $spreadsheet->addSheet($sheet);
-                        //     }
-                        
-                        //         $sheet->setCellValue('b1', $record->customer->name);
-                        //         // $sheet->setCellValue('b2', $record->customer->exclusive); // Tbf
-                        //         $sheet->setCellValue('b3', $record->equipment_id);
-                        //         $sheet->setCellValue('b4', $record->make);
-                        //         $sheet->setCellValue('b5', $record->model);
-                        //         $sheet->setCellValue('b6', $record->description);
-                        //         $sheet->setCellValue('b7', $record->serial);
-                        //         $sheet->setCellValue('b8', (new DateTime($record->inDate))->format('d/m/Y'));
-                        //         $sheet->setCellValue('b9', '40-' . $record->id);
-                        //         $sheet->setCellValue('b10', $record->calibrationCycle);
-                        //         $sheet->setCellValue('b11', $record->getDecisionRuleName());
-                        
-                        //         // Save the modified file
-                        //         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-                        //         $fileName = '40-' . $record->id . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
-                        //         $modifiedFilePath = public_path($fileName);
-                        //         $writer->save($modifiedFilePath);
-                        
-                        //         // Optionally, download the modified file
-                        //         return response()->download($modifiedFilePath)->deleteFileAfterSend(true);
-                              
-                        //     }
-                        //     else {
-                        //         Notification::make()
-                        //             ->title('No file available')
-                        //             ->body('Please include a worksheet file for this equipment first.')
-                        //             ->danger()
-                        //             ->send();
-                        //     }
+                    /*
                         ->action(function ($record) {
                             $worksheetId = $record->worksheet_id;
                             $worksheet = Worksheet::find($worksheetId);
-                        
-                            if ($worksheet) {
+                            if ($record->worksheet_id) {
                                 $filePath = Storage::disk('public')->path($worksheet->file);
+                                $spreadsheet = IOFactory::load($filePath);
+
+                                // Check if the "IS update" sheet exists
+                            $sheet = $spreadsheet->getSheetByName('IS update');
+                            if (!$sheet) {
+                                // Create the "IS update" sheet if it doesn't exist
+                                $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'IS update');
+                                $spreadsheet->addSheet($sheet);
+                            }
                         
-                                // Generate the download file name
+                                $sheet->setCellValue('b1', $record->customer->name);
+                                // $sheet->setCellValue('b2', $record->customer->exclusive); // Tbf
+                                $sheet->setCellValue('b3', $record->equipment_id);
+                                $sheet->setCellValue('b4', $record->make);
+                                $sheet->setCellValue('b5', $record->model);
+                                $sheet->setCellValue('b6', $record->description);
+                                $sheet->setCellValue('b7', $record->serial);
+                                $sheet->setCellValue('b8', (new DateTime($record->inDate))->format('d/m/Y'));
+                                $sheet->setCellValue('b9', '40-' . $record->id);
+                                $sheet->setCellValue('b10', $record->calibrationCycle);
+                                $sheet->setCellValue('b11', $record->getDecisionRuleName());
+                        
+                                // Save the modified file
+                                $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
                                 $fileName = '40-' . $record->id . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+                                $modifiedFilePath = public_path($fileName);
+                                $writer->save($modifiedFilePath);
                         
-                                // Return the file for download
-                                return response()->download($filePath, $fileName);
-                            } else {
+                                // Optionally, download the modified file
+                                return response()->download($modifiedFilePath)->deleteFileAfterSend(true);
+                              
+                            }
+                            else {
                                 Notification::make()
                                     ->title('No file available')
                                     ->body('Please include a worksheet file for this equipment first.')
                                     ->danger()
                                     ->send();
                             }
-                }),
+                        */
+                    ->infolist([
+                        TextEntry::make('customer.name')
+                            ->Label('')
+                            ->alignCenter(),
+                        TextEntry::make('exclusive')
+                            ->Label('')
+                            ->default('N/A')
+                            ->alignCenter(),
+                        TextEntry::make('equipment_id')
+                            ->label('')
+                            ->alignCenter(),
+                        TextEntry::make('make')
+                            ->label('')
+                            ->alignCenter(),
+                        TextEntry::make('model')
+                            ->label('')
+                            ->alignCenter(),
+                        TextEntry::make('description')
+                            ->label('')
+                            ->alignCenter(),
+                        TextEntry::make('serial')
+                            ->label('')
+                            ->alignCenter(),
+                        TextEntry::make('inDate')
+                            ->label('')
+                            ->alignCenter(),
+                        TextEntry::make('transaction_id')
+                            ->label('')
+                            ->alignCenter()
+                            ->formatStateUsing(function ($record) {
+                                return "40-{$record->transaction_id}";
+                            }),
+                        TextEntry::make('calibrationCycle')
+                            ->label('')
+                            ->alignCenter(),
+                        TextEntry::make('decisionRule')
+                            ->label('')
+                            ->alignCenter()
+                            ->formatStateUsing(function ($state) {
+                                switch ($state) {
+                                    case 'default':
+                                        return 'Simple Calibration';
+                                    case 'rule1':
+                                        return 'Binary Statement for Simple Acceptance Rule ( w = 0 )';
+                                    case 'rule2':
+                                        return 'Binary Statement with Guard Band( w = U )';
+                                    case 'rule3':
+                                        return 'Non-binary Statement with Guard Band( w = U )';
+                                }
+                            }),
+                    ])
+                    ->requiresConfirmation()
+                    ->modalHeading('Download Worksheet')
+                    ->modalSubheading('You can copy the text below to paste it on the downloaded worksheet')
+                    ->modalIcon('heroicon-o-arrow-down-tray')
+                    ->modalSubmitAction(false)
+                    ->extraModalFooterActions([
+                        Tables\Actions\Action::make('download')
+                            ->label('Download Worksheet')
+                            ->requiresConfirmation()
+                            ->modalHeading('Download Worksheet')
+                            ->modalSubheading('Confirm the download of the worksheet')
+                            ->modalIcon('heroicon-o-arrow-down-tray')
+                            ->action(function ($record) {
+                                $worksheetId = $record->worksheet_id;
+                                $worksheet = Worksheet::find($worksheetId);
+                            
+                                if ($worksheet) {
+                                    $filePath = Storage::disk('public')->path($worksheet->file);
+                            
+                                    // Generate the download file name
+                                    $fileName = '40-' . $record->id . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
+                            
+                                    // Return the file for download
+                                    return response()->download($filePath, $fileName);
+                                } else {
+                                    Notification::make()
+                                        ->title('No file available')
+                                        ->body('Please include a worksheet file for this equipment first.')
+                                        ->danger()
+                                        ->send();
+                                }
+                            }),
+                    ]), 
 
                 Tables\Actions\EditAction::make()
                     ->label('')
