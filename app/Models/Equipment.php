@@ -17,56 +17,9 @@ class Equipment extends Model
     protected $casts = [
         'inspection' => 'array',
     ];
-
-    protected $fillable = [
+    
+    protected $guarded = [
         'id',
-        'transaction_id',
-        'equipment_id',
-        'ar_id',
-        'gatePass',
-        'customer_id',
-        'worksheet_id',
-        'make',
-        'model',
-        'serial',
-        'description',
-        'inspection',
-        'laboratory',
-        'calibrationType',
-        'category',
-        'inDate',
-        'calibrationCycle',
-        'decisionRule',
-        //For Status
-        'calibrationProcedure',
-        'previousCondition',
-        'inCondition',
-        'outCondition',
-        'service',
-        'intermediateCheck',
-        'status',
-        'comments',
-        'code_range',
-        'reference',
-        'standardsUsed',
-        'validation',
-        'validatedBy',
-        'temperature',
-        'humidity',
-        'ncfReport',
-        'calibrationDate',
-        'calibrationInterval',
-        'calibrationDue',
-        'outDate',
-        'poNoCalibration',
-        'poNoRealign',
-        'poNoRepair',
-        'prNo',
-        //For Documents Update
-        'calibrationDocument',
-        'drNoDocument',
-        'documentReleasedDate',
-        'documentReceivedBy',
     ];
 
     public function customer(){
@@ -96,6 +49,7 @@ class Equipment extends Model
 
         static::creating(function ($model) {
             $model->status = 'incoming';
+            $model->transaction_id = static::withTrashed()->max('transaction_id') + 1;
         });
     }
 

@@ -41,11 +41,11 @@ class EquipmentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';
 
-    protected static ?string $recordTitleAttribute = 'id';
+    protected static ?string $recordTitleAttribute = 'transaction_id';
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['id', 'ar_id', 'equipment_id', 'make', 'model', 'serial', 'description'];
+        return ['transaction_id', 'ar_id', 'equipment_id', 'make', 'model', 'serial', 'description'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
@@ -320,7 +320,7 @@ class EquipmentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                Tables\Columns\TextColumn::make('transaction_id')
                     ->label('Transaction ID')
                     ->alignCenter()
                     ->numeric()
