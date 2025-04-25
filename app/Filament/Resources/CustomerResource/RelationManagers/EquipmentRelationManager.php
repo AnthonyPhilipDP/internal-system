@@ -678,10 +678,15 @@ class EquipmentRelationManager extends RelationManager
                             Group::make()->schema([
                                 Section::make('')->schema([
                                     Forms\Components\Grid::make(2)->schema([
-                                        Forms\Components\TextInput::make('calibrationDocument')
+                                        Forms\Components\Select::make('calibrationDocument')
                                             ->label('Calibration Document')
                                             ->nullable()
-                                            ->maxLength(255),
+                                            ->options([
+                                                'released' => 'Released',
+                                                'finalized' => 'Finalized',
+                                                'notApplicable' => 'Not Applicable',
+                                            ])
+                                            ->native(false),
                                         Forms\Components\TextInput::make('drNoDocument')
                                             ->label('Document DR No.')
                                             ->nullable()
