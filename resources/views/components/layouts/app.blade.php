@@ -10,6 +10,7 @@
       <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
   
       <!-- Styles / Scripts -->
+      @filamentStyles
       @vite(['resources/css/app.css', 'resources/js/app.js'])
   
       <!-- Custom CSS -->
@@ -24,6 +25,7 @@
             {{ $slot }}
         </main>
         @include('components.layouts.partials.footer')
+        @filamentScripts
     </body>
     <script>
         document.getElementById('menu-toggle').addEventListener('click', function() {
