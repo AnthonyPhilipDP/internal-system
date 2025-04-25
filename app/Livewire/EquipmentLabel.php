@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Customer;
+use App\Models\Equipment;
 
 class EquipmentLabel extends Component
 {
@@ -17,9 +18,13 @@ class EquipmentLabel extends Component
         $equipmentData = array_map(function ($equipment) {
             $customer = Customer::find($equipment['customer_id']);
             $equipment['customer_name'] = $customer->name;
+            // Fetch transaction_id using the equipment id
+            $equipmentModel = Equipment::find($equipment['id']);
+            $equipment['transaction_id'] = $equipmentModel->transaction_id;
+
             return $equipment;
         }, $equipmentData);
-
+ 
         // Chunk the equipment data into groups of 15
         $this->equipmentDataChunks = collect($equipmentData)->chunk(18);
     }

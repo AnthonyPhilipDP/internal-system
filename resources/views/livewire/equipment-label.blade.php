@@ -20,7 +20,7 @@
                             <div class="flex">
                                 <span class="w-[30%] text-gray-800">Certificate No</span>
                                 <span class="w-[10%]">-</span>
-                                <span class="w-[60%] truncate">40-{{ $equipment['id'] }}</span>
+                                <span class="w-[60%] truncate">40-{{ $equipment['transaction_id'] }}</span>
                             </div>
                             <div class="flex">
                                 <span class="w-[30%] text-gray-800">Date Received</span>

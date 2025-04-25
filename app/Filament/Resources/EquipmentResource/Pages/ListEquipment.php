@@ -63,6 +63,7 @@ class ListEquipment extends ListRecords
                                     if ($equipment) {
                                         $set('equipment_id', $equipment->equipment_id);
                                         $set('id', $equipment->id);
+                                        $set('transaction_id', $equipment->transaction_id);
                                     } else {
                                         $set('equipment_id', 'Equipment not found.');
                                         $set('id', 'Please try again.');
@@ -73,9 +74,13 @@ class ListEquipment extends ListRecords
                         TextInput::make('equipment_id')
                             ->label('Equipment ID')
                             ->readonly(),
-                        TextInput::make('id')
+                        TextInput::make('transaction_id')
                             ->label('Transaction ID')
                             ->readonly(),
+                        TextInput::make('id')
+                            ->label('')
+                            ->columnSpan(2)
+                            ->extraAttributes(['class' => 'hidden']),
                     ])
                     ->columns(2)
                     ->extraAttributes([
