@@ -25,6 +25,42 @@ class DatabaseSeeder extends Seeder
             'password' => 'admin',
         ]);
 
+        DB::table('customers')->insert([
+            'name' => 'Samsung Electronics',
+            'nickname' => 'smasnug',
+            'address' => "South Korea",
+            'mobile1' => '09123456789',
+            'telephone1' => '0912345678',
+            'email' => 'email@samsung.com',
+            'vat' => 'VAT',
+            'dateCertified' => now(),
+            'payment' => 'Cash on Delivery',
+            'status' => 'Active',
+            'businessStyle' => 'Electronics',
+            'businessNature' => 'Manufacturing',
+            'tin' => '1234567890',
+            'created_at' => now(),
+        ]);
+
+        DB::table('equipment')->insert([
+            'transaction_id' => '1',
+            'equipment_id' => 'Galaxy S25 Ultra',
+            'ar_id' => '1',
+            'customer_id' => '1',
+            'make' => 'Samsung',
+            'model' => 'Galaxy Series',
+            'serial' => 'GS25U123456',
+            'description' => 'Smartphone',
+            'inspection' => json_encode(['no visible damage']),
+            'laboratory' => 'electrical',
+            'calibrationType' => 'Active',
+            'category' => 'electrical',
+            'inDate' => now(),
+            'calibrationCycle' => '12',
+            'decisionRule' => 'simple',
+            'created_at' => now(),
+        ]);
+
         // User::factory()->create([
         //     'name' => 'Philip',
         //     'email' => null,
@@ -32,20 +68,5 @@ class DatabaseSeeder extends Seeder
         //     'password' => 'admin',
         // ]);
 
-        // DB::table('customers')->insert([
-        //     'name' => 'Precision Measurement Specialists, Inc.',
-        //     'address' => "B1 L3 Macaria Business Center, Governor's Dr., Carmona, 4116 Cavite, Philippines",
-        //     'mobile1' => '09974106031',
-        //     'telephone1' => '0468890673',
-        //     'email' => 'admin@email.com',
-        //     'vat' => 'VAT',
-        //     'certifyingBody' => 'Sample',
-        //     'dateCertified' => '2025-01-30',
-        //     'payment' => 'Cash on Delivery',
-        //     'status' => 'Active',
-        //     'businessStyle' => 'Measurement Services',
-        //     'businessNature' => 'Metrology',
-        //     'tin' => '123456',
-        // ]);
     }
 }
