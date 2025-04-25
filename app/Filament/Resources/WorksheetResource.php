@@ -64,7 +64,7 @@ class WorksheetResource extends Resource
                         ->uploadingMessage('Uploading worksheet...')
                         ->directory('worksheets')
                         ->disk('public')
-                        ->preserveFilenames()
+                        ->storeFileNamesIn('file_name')
                         ->acceptedFileTypes(['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']),
                 ]),
             ])->columns(4);

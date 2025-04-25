@@ -12,19 +12,17 @@ class Worksheet extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = [
-        'name',
-        'file',
-        'revision',
+    protected $guarded = [
+        'id',
     ];
 
     protected static function boot()
     {
         parent::boot();
 
-        static::deleting(function ($capability) {
-            if ($capability->file) {
-                Storage::disk('public')->delete($capability->file);
+        static::forceDeleting(function ($worksheet) {
+            if ($worksheet->file) {
+                Storage::disk('public')->delete($worksheet->file);
             }
         });
 

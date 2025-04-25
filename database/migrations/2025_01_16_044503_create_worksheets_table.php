@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('worksheets', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('file');
             $table->string('revision');
+            $table->string('file');
+            $table->string('file_name');
             $table->softDeletes();
             $table->timestamps();
         });
