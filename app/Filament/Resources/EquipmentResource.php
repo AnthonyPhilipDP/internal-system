@@ -18,6 +18,7 @@ use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Grid;
 use Endroid\QrCode\Writer\PngWriter;
 use Filament\Forms\Components\Group;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\Button;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
@@ -538,12 +539,52 @@ class EquipmentResource extends Resource
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
+                Tables\Actions\BulkAction::make('printCertificate')
+                    ->label('Print Certificate')
+                    ->requiresConfirmation()
+                    ->modalHeading('Print Certificate for Selected Equipment')
+                    ->modalSubheading('Still on process')
+                    ->modalButton('Confirm')
+                    ->modalIcon('heroicon-o-printer')
+                    ->icon('heroicon-o-printer')
+                    ->color('primary')
+                    ->action(function ($records) {
+                        $equipmentData = $records->map(function ($record) {
+                            $customer = Customer::find($record->customer_id);
+                            return [
+                                'id' => $record->id,
+                                'transaction_id' => $record->transaction_id,
+                                'customer_id' => $record->customer_id,
+                                'customer_name' => $customer->name,
+                                'customer_address' => $customer->address,
+                                'equipment_id' => $record->equipment_id,
+                                'make' => $record->make,
+                                'model' => $record->model,
+                                'description' => $record->description,
+                                'serial' => $record->serial,
+                                'inDate' => $record->inDate,
+                                'calibrationDate' => $record->calibrationDate,
+                                'calibrationDue' => $record->calibrationDue,
+                                'calibrationProcedure' => $record->calibrationProcedure,
+                                'temperature' => $record->temperature,
+                                'humidity' => $record->humidity,
+                                'validation' => $record->validation,
+                                'inCondition' => $record->inCondition,
+                                'outCondition' => $record->outCondition,
+                            ];
+                        })->toArray();
+                
+                        session(['selectedCertificateData' => $equipmentData]);
+                
+                        return redirect('/equipment/certificate');
+                    }),
                 Tables\Actions\BulkAction::make('printLabel')
                 ->label('Print Label')
                 ->action(function ($records) {
                     $equipmentData = $records->map(function ($record) {
                         return [
                             'id' => $record->id,
+                            'transaction_id' => $record->transaction_id,
                             'customer_id' => $record->customer_id,
                             'equipment_id' => $record->equipment_id,
                             'inDate' => $record->inDate,
