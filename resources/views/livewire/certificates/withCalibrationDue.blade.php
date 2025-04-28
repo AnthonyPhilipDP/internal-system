@@ -98,23 +98,76 @@
                 ">
                     Condition of Instrument
                 </h1>
+                @php
+                    // Define a mapping for the inCondition values
+                    $inCondition = [
+                        'asFound' => 'As Found',
+                        'inTolerance' => 'In Tolerance',
+                        'outOfTolerance' => 'Out of Tolerance',
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
+                        'damaged' => 'Damaged',
+                        'rejected' => 'Rejected',
+                        'returned' => 'Returned',
+                        'defective' => 'Defective',
+                        'inoperative' => 'Inoperative',
+                        'malfunctioning' => 'Malfunctioning',
+                        'brokenDisplay' => 'Broken Display',
+                        'calibrated' => 'Calibrated',
+                        'forRepair' => 'For Repair',
+                        'forEvaluation' => 'For Evaluation',
+                        'initialCalibration' => 'Initial Calibration',
+                        'limitedCalibration' => 'Limited Calibration',
+                        'overdueCalibration' => 'Overdue Calibration',
+                        'referToReport' => 'Refer to Report',
+                        'seeRemarks' => 'See Remarks',
+                    ];
+                    // Define a mapping for the outCondition values
+                    $outCondition = [
+                        'asLeft' => 'As Left',
+                        'limitedCalibration' => 'Limited Calibration',
+                        'inTolerance' => 'In Tolerance',
+                        'outOfTolerance' => 'Out of Tolerance',
+                        'pullOut' => 'Pull Out',
+                        'brokenDisplay' => 'Broken Display',
+                        'calBeforeUse' => 'Calibrated Before Use',
+                        'conditionalCal' => 'Conditional Calibration',
+                        'defective' => 'Defective',
+                        'disposed' => 'Disposed',
+                        'ejected' => 'Ejected',
+                        'evaluation' => 'Evaluation',
+                        'verification' => 'Verification',
+                        'forReference' => 'For Reference',
+                        'forRepair' => 'For Repair',
+                        'forSale' => 'For Sale',
+                        'forSpareParts' => 'For SpParts',
+                        'inoperative' => 'Inoperative',
+                        'missing' => 'Missing',
+                        'operational' => 'Operational',
+                        'noCapability' => 'Rejected - No Capability',
+                        'returned' => 'Rejected - Returned',
+                        'disposed' => 'Rejected - Disposed',
+                        'referToReport' => 'Refer to Report',
+                        'seeRemarks' => 'See Remarks',
+                    ];
+                @endphp
                 <div class="flex flex-col items-center">
                     <div class="flex w-full justify-center">
                         <p class="w-[50%] font-semibold uppercase text-sm text-right mr-[20px]">Condition In: </p>
-                        <p class="w-[50%] text-sm">{{ $equipment['inCondition'] }}</p>
+                        <p class="w-[50%] text-sm">{{ $inCondition[$equipment['inCondition']] ?? '' }}</p>
                     </div>
                     <div class="flex w-full justify-center">
                         <p class="w-[50%] font-semibold uppercase text-sm text-right mr-[20px]">Condition Out: </p>
-                        <p class="w-[50%] text-sm">{{ $equipment['outCondition'] }}</p>
+                        <p class="w-[50%] text-sm">{{ $outCondition[$equipment['outCondition']] ?? '' }}</p>
                     </div>
                 </div>
-                <p class="text-xs text-justify pt-2">
+                <p class="text-xs text-gray-800 text-justify pt-2">
                     Precision Measurement Specialists, inc. (PMSi) certifies that the instrument specified above was calibrated according to PMSi's Management System which is intended to meet PNS ISO/IEC 17025:2017.
                     This instrument was calibrated with working standards whose measurement results are traceable to either the National Institute of Standards and Technology (NIST, USA), to Philippine ITDI-NML
-                    (National Metrology Lab), to other international accredited metrology labs, to NIST accepted intrinsic standards of measurement, to fundamental or phtsical constants, or by comparison or consensus standards.
+                    (National Metrology Lab), to other international accredited metrology labs, to NIST accepted intrinsic standards of measurement, to fundamental or physical constants, or by comparison or consensus standards.
                     Calibration data or report is issued under separate cover that includes specific or applicable traceability
                 </p>
-                <p class="text-xs text-justify pt-2">
+                <p class="text-xs text-gray-800 text-justify pt-2">
                     Precision Measurement Specialists, inc. maintains traceability records on all instruments under contract. Records are on file, available for inspection by authorized representatives of the contracting
                     party and/or representatives of the cognizant government agency.
                 </p>
@@ -124,31 +177,37 @@
             </div>
             <div class="grid grid-cols-1 text-xs uppercase italic font-semibold">
                 <div class="flex">
-                    <p class="pl-48 text-[9px]">May not be published or reproduced except in full without written authorization from PMSi</p>
+                    <p class="pl-48 text-[9px]">May not be published or reproduced except in full without written authorization from PMS<span class="lowercase">i</span></p>
                 </div>
                 <div class="flex">
-                    <p class="pl-48 text-[9px]">May not be used to claim endorsement by PMSi and by accrediting or traceability organizations mentioned</p>
+                    <p class="pl-48 text-[9px]">May not be used to claim endorsement by PMS<span class="lowercase">i</span> and by accrediting or traceability organizations mentioned</p>
                 </div>
             </div>
             <div class="absolute bottom-16 left-0 w-full flex justify-around px-12">
                 <div class="flex w-full justify-around">
                     <div class="flex flex-col items-center">
-                        <p class="text-[11px] font-semibold text-gray-700">&emsp;</p>
-                        <p class="text-[11px] font-semibold text-gray-700 overline">Calibrated By:</p>
+                        <p class="text-xs font-semibold text-gray-700">&emsp;</p>
+                        <p class="text-xs font-semibold text-gray-700 overline">&emsp;Calibrated By&emsp;</p>
                     </div>
                     <div class="flex flex-col items-start">
                     </div>
                     <div class="flex flex-col items-center">
-                        <p class="text-[11px] font-semibold text-gray-700">{{ now()->format('F j, Y') }}</p>
-                        <p class="text-[11px] font-semibold text-gray-700 overline">&emsp;&emsp;&emsp;Date&emsp;&emsp;&emsp;</p>
+                        <p class="text-xs font-semibold text-gray-700">{{ now()->format('F j, Y') }}</p>
+                        <p class="text-xs font-semibold text-gray-700 overline">&emsp;&emsp;&emsp;Date&emsp;&emsp;&emsp;</p>
                     </div>
                     <div class="flex flex-col items-start">
                     </div>
                     <div class="flex flex-col items-center">
-                        <p class="text-[11px] font-semibold text-gray-700">&emsp;</p>
-                        <p class="text-[11px] font-semibold text-gray-700 overline">Reviewed By: {{ Auth::user()->name }}</p>
+                        <p class="text-xs font-semibold text-gray-700">&emsp;</p>
+                        <p class="text-xs font-semibold text-gray-700 overline">&emsp;Reviewed By {{ Auth::user()->name }}&emsp;</p>
                     </div>
                 </div>
+            </div>
+            <div class="absolute bottom-6 left-12 text-left text-[11px] font-sans font-semibold text-gray-800">
+                DCN 5-5.10.2-3 rev.3
+            </div>
+            <div class="absolute bottom-6 right-12 text-right text-[11px] font-sans font-semibold text-gray-800">
+                Page 1 of 1 
             </div>
         </div>
     @endforeach

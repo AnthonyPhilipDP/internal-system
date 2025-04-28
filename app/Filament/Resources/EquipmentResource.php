@@ -543,20 +543,38 @@ class EquipmentResource extends Resource
                     ->label('Print Certificate')
                     ->requiresConfirmation()
                     ->modalHeading('Print Certificate for Selected Equipment')
-                    ->modalSubheading('Still on process')
+                    ->modalSubheading('Choose the options below to customize your certificate printing. The selections will be applied to all selected equipment.')
                     ->modalButton('Confirm')
                     ->modalIcon('heroicon-o-printer')
                     ->icon('heroicon-o-printer')
                     ->color('primary')
-                    ->action(function ($records) {
-                        $equipmentData = $records->map(function ($record) {
-                            $customer = Customer::find($record->customer_id);
+                    ->modalWidth(MaxWidth::Large)
+                    ->form([
+                        Forms\Components\Group::make([
+                            Forms\Components\Toggle::make('withPabLogo')
+                                ->onIcon('heroicon-m-bolt')
+                                ->offIcon('heroicon-m-bolt-slash')
+                                ->onColor('success')
+                                ->offColor('danger')
+                                ->label('With PAB Logo')
+                                ->default(true),
+                            Forms\Components\Toggle::make('withCalibrationDue')
+                                ->onIcon('heroicon-m-bolt')
+                                ->offIcon('heroicon-m-bolt-slash')
+                                ->onColor('success')
+                                ->offColor('danger')
+                                ->label('With Calibration Due')
+                                ->default(true),
+                        ])->columns(1)
+                    ])
+                    ->action(function ($records, $data) {
+                        $equipmentData = $records->map(function ($record) use ($data) {
                             return [
                                 'id' => $record->id,
                                 'transaction_id' => $record->transaction_id,
                                 'customer_id' => $record->customer_id,
-                                'customer_name' => $customer->name,
-                                'customer_address' => $customer->address,
+                                'customer_name' => $record->customer->name,
+                                'customer_address' => $record->customer->address,
                                 'equipment_id' => $record->equipment_id,
                                 'make' => $record->make,
                                 'model' => $record->model,
@@ -571,6 +589,8 @@ class EquipmentResource extends Resource
                                 'validation' => $record->validation,
                                 'inCondition' => $record->inCondition,
                                 'outCondition' => $record->outCondition,
+                                'withPabLogo' => $data['withPabLogo'],
+                                'withCalibrationDue' => $data['withCalibrationDue'],
                             ];
                         })->toArray();
                 
