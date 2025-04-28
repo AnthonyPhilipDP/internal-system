@@ -84,7 +84,7 @@
                         @foreach ($equipmentChunk as $record)
                             <tr>
                                 <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words text-center">
-                                    {{ $record->id }}
+                                    {{ $record->transaction_id }}
                                 </td>
                                 <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
                                     {{ $record->make }}
