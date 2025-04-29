@@ -93,8 +93,8 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Social Media')
                     ->icon('heroicon-m-rectangle-group'),
                 NavigationGroup::make()
-                    ->label('Settings')
-                    ->icon('heroicon-m-cog-6-tooth'),
+                    ->label('Tools')
+                    ->icon('heroicon-m-wrench-screwdriver'),
             ])
             ->navigationItems([
                 NavigationItem::make('Facebook')
@@ -119,7 +119,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->userMenuItems([
                 //
-            ]);
+            ])
+            ->viteTheme('resources/css/filament/admin/theme.css');
 
     }
 }

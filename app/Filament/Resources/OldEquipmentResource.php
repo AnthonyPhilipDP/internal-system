@@ -17,7 +17,7 @@ class OldEquipmentResource extends Resource
 {
     protected static ?string $model = OldEquipment::class;
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Tools';
 
     protected static ?string $navigationIcon = 'heroicon-o-cube-transparent';
 

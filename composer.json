@@ -12,6 +12,7 @@
         "khanamiryan/qrcode-detector-decoder": "^2.0",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "livewire/volt": "^1.7",
         "maatwebsite/excel": "^3.1"
     },
     "require-dev": {

@@ -8,7 +8,7 @@
                     target="_blank"
                     class="font-bold"
                 >
-                    Precision Measurement Specialists,<span class="italic"> inc.</span> - Internal Website
+                    Precision Measurement Specialists,<span class="italic text-red-500"> i</span>nc. - Internal Website
                 </a>
 
                 <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -24,7 +24,7 @@
                     icon="heroicon-m-book-open"
                     icon-alias="panels::widgets.filament-info.open-documentation-button"
                 >
-                    {{ __('Release Notes') }}
+                    <span class="text-emerald-500">{{ __('Release Notes') }}</span>
                 </x-filament::link>
 
                 <x-filament::link
@@ -32,7 +32,7 @@
                     href=""
                     icon="heroicon-m-shield-check"
                 >
-                    {{ __('Alpha Test') }}
+                <span class="text-emerald-500">{{ __('Alpha Test') }}</span>
                 </x-filament::link>
             </div>
         </div>
