@@ -60,26 +60,64 @@ new class extends Component {
                 Please select desired month and year to recall the equipment
             </p>
         @else
-            <table class="table-auto w-full border-collapse border border-gray-300">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="border border-gray-300 px-4 py-2">Equipment ID</th>
-                        <th class="border border-gray-300 px-4 py-2">Make</th>
-                        <th class="border border-gray-300 px-4 py-2">Model</th>
-                        <th class="border border-gray-300 px-4 py-2">Calibration Due</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($equipment as $item)
-                        <tr>
-                            <td class="border border-gray-300 px-4 py-2">{{ $item->equipment_id }}</td>
-                            <td class="border border-gray-300 px-4 py-2">{{ $item->make }}</td>
-                            <td class="border border-gray-300 px-4 py-2">{{ $item->model }}</td>
-                            <td class="border border-gray-300 px-4 py-2">{{ \Carbon\Carbon::parse($item->calibrationDue)->format('F j, Y') }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="flex flex-col">
+                <div class="-m-1.5 overflow-x-auto">
+                  <div class="p-1.5 min-w-full inline-block align-middle">
+                    <div class="border border-gray-200 rounded-lg divide-y divide-gray-200 dark:border-neutral-700 dark:divide-neutral-700">
+                      <div class="py-3 px-4">
+                        <div class="relative max-w-xs">
+                          <label for="hs-table-search" class="sr-only">Search</label>
+                          <input type="text" name="hs-table-search" id="hs-table-search" class="py-1.5 sm:py-2 px-3 ps-9 block w-full border-gray-200 shadow-2xs rounded-lg sm:text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600" placeholder="Search for items">
+                          <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3">
+                            <svg class="size-4 text-gray-400 dark:text-neutral-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <circle cx="11" cy="11" r="8"></circle>
+                              <path d="m21 21-4.3-4.3"></path>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                          <thead class="bg-gray-50 dark:bg-neutral-700">
+                            <tr>
+                              <th scope="col" class="py-3 px-4 pe-0">
+                                <div class="flex items-center h-5">
+                                  <input id="hs-table-search-checkbox-all" type="checkbox" class="border-gray-200 rounded-sm text-blue-600 focus:ring-blue-500 dark:bg-neutral-700 dark:border-neutral-500 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
+                                  <label for="hs-table-search-checkbox-all" class="sr-only">Checkbox</label>
+                                </div>
+                              </th>
+                              <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Equipment</th>
+                              <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Make</th>
+                              <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Model</th>
+                              <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Calibration Due</th>
+                              <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase dark:text-neutral-500"></th>
+                            </tr>
+                          </thead>
+                          <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
+                            @foreach ($equipment as $item)
+                                <tr>
+                                <td class="py-3 ps-4">
+                                    <div class="flex items-center h-5">
+                                    <input id="hs-table-search-checkbox-1" type="checkbox" class="border-gray-200 rounded-sm text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
+                                    <label for="hs-table-search-checkbox-1" class="sr-only">Checkbox</label>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">{{ $item->equipment_id }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ $item->make }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ $item->model }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ \Carbon\Carbon::parse($item->calibrationDue)->format('F j, Y') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400 dark:focus:text-blue-400">Print</button>
+                                </td>
+                                </tr>
+                            @endforeach
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
         @endif
     </div>
 </div>
