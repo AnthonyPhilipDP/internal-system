@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Tables\Actions\Action;
 use Filament\Forms;
 use Filament\Tables;
 use Spatie\Color\Rgb;
@@ -29,7 +30,6 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
-use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\EquipmentResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EquipmentResource\RelationManagers;
@@ -433,8 +433,73 @@ class EquipmentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])->defaultSort('id', 'desc')
             ->filters([
-                Tables\Filters\TrashedFilter::make(), 
+                Tables\Filters\TrashedFilter::make()
+                    ->native(false), 
+                Tables\Filters\Filter::make('calibrationDue')
+                    ->form([
+                        Section::make('Recall Equipment')
+                        ->description('Month and Year must have a selection to filter properly')
+                        ->schema([
+                            Forms\Components\Select::make('month')
+                                ->label('Month')
+                                ->options([
+                                    '01' => 'January',
+                                    '02' => 'February',
+                                    '03' => 'March',
+                                    '04' => 'April',
+                                    '05' => 'May',
+                                    '06' => 'June',
+                                    '07' => 'July',
+                                    '08' => 'August',
+                                    '09' => 'September',
+                                    '10' => 'October',
+                                    '11' => 'November',
+                                    '12' => 'December',
+                                ])
+                                ->native(false)
+                                ->required(),
+                            Forms\Components\Select::make('year')
+                                ->label('Year')
+                                ->options(function () {
+                                    $currentYear = now()->year + 1;
+                                    $years = [];
+                                    for ($i = $currentYear; $i >= $currentYear - 28; $i--) {
+                                        $years[$i] = $i;
+                                    }
+                                    return $years;
+                                })
+                                ->preload()
+                                ->native(false)
+                                ->required(),
+                        ]),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query->when(
+                            $data['month'] && $data['year'],
+                            fn ($query) => $query
+                            ->whereMonth('calibrationDue', $data['month'])
+                            ->whereYear('calibrationDue', $data['year'])
+                        );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                    
+                        if ($data['month'] ?? null) {
+                            $indicators['month'] = 'Month: ' . \Carbon\Carbon::create()->month((int) $data['month'])->format('F');
+                        }
+                    
+                        if ($data['year'] ?? null) {
+                            $indicators['year'] = 'Year: ' . $data['year'];
+                        }
+                    
+                        return $indicators;
+                    }),
             ])
+            ->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Filter'),
+            )
             ->actions([
                 // ActionGroup::make([
                     
@@ -539,6 +604,44 @@ class EquipmentResource extends Resource
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
+                Tables\Actions\BulkAction::make('calibrationRecall')
+                    ->label('Calibration Recall')
+                    ->action(function ($records) {
+                        $equipmentData = $records->map(function ($record) {
+                            return [
+                                'id' => $record->id,
+                                'transaction_id' => $record->transaction_id,
+                                'customer_id' => $record->customer_id,
+                                'customer_name' => $record->customer->name,
+                                'customer_address' => $record->customer->address,
+                                'equipment_id' => $record->equipment_id,
+                                'make' => $record->make,
+                                'model' => $record->model,
+                                'description' => $record->description,
+                                'serial' => $record->serial,
+                                'inDate' => $record->inDate,
+                                'calibrationDate' => $record->calibrationDate,
+                                'calibrationDue' => $record->calibrationDue,
+                                'calibrationProcedure' => $record->calibrationProcedure,
+                                'temperature' => $record->temperature,
+                                'humidity' => $record->humidity,
+                                'validation' => $record->validation,
+                                'inCondition' => $record->inCondition,
+                                'outCondition' => $record->outCondition,
+                            ];
+                        })->toArray();
+                
+                        session(['selectedEquipmentData' => $equipmentData]);
+                
+                        return redirect('/equipment/recall');
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Calibration Recall for Selected Equipment')
+                    ->modalSubheading('The calibration recall process is now automated to enhance efficiency and accuracy. Simply confirm the selected equipments to proceed seamlessly')
+                    ->modalButton('Confirm')
+                    ->modalIcon('heroicon-o-printer')
+                    ->icon('heroicon-o-printer')
+                    ->color('primary'),
                 Tables\Actions\BulkAction::make('printCertificate')
                     ->label('Print Certificate')
                     ->requiresConfirmation()

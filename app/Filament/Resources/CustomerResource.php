@@ -553,6 +553,53 @@ class CustomerResource extends Resource
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
+                Tables\Actions\BulkAction::make('calibrationRecall')
+                    ->label('Calibration Recall')
+                    ->action(function ($records) {
+                        // Fetch the selected customers and their associated equipment and active contact persons
+                        $customerData = $records->load(['equipment', 'activeContactPerson'])->map(function ($customer) {
+                            return [
+                                'name' => $customer->name,
+                                'telephone' => $customer->telephone1, // Replace with the actual field name
+                                'mobile' => $customer->mobile1,       // Replace with the actual field name
+                                'email' => $customer->email,
+                                'contact_persons' => $customer->activeContactPerson->map(function ($contactPerson) {
+                                    return [
+                                        'name' => $contactPerson->name,
+                                        'department' => $contactPerson->department,
+                                        'position' => $contactPerson->position,
+                                        'contact1' => $contactPerson->contact1,
+                                        'contact2' => $contactPerson->contact2,
+                                        'email' => $contactPerson->email,
+                                    ];
+                                })->toArray(),
+                                'equipment' => $customer->equipment->map(function ($equipment) {
+                                    return [
+                                        'equipment_id' => $equipment->equipment_id,
+                                        'transaction_id' => $equipment->transaction_id,
+                                        'make' => $equipment->make,
+                                        'model' => $equipment->model,
+                                        'serial' => $equipment->serial,
+                                        'description' => $equipment->description,
+                                        'calibrationDue' => $equipment->calibrationDue,
+                                    ];
+                                })->toArray(),
+                            ];
+                        })->toArray();
+
+                        // Store the data in the session
+                        session()->put('calibrationRecallData', $customerData);
+
+                        // Redirect to the Livewire component
+                        return redirect()->route('recallCalibration');
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Calibration Recall for Selected Equipment')
+                    ->modalSubheading('The calibration recall process is now automated to enhance efficiency and accuracy. Simply confirm the selected equipment to proceed seamlessly.')
+                    ->modalButton('Confirm')
+                    ->modalIcon('heroicon-o-printer')
+                    ->icon('heroicon-o-printer')
+                    ->color('primary'),
             ])
             ->defaultPaginationPageOption(5)
             ->paginated([5, 10, 20, 40])
