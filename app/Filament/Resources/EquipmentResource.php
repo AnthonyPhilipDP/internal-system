@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Tables\Actions\Action;
 use Filament\Forms;
 use Filament\Tables;
 use Spatie\Color\Rgb;
@@ -17,12 +16,14 @@ use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Grid;
+use Filament\Tables\Actions\Action;
 use Endroid\QrCode\Writer\PngWriter;
 use Filament\Forms\Components\Group;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\Button;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Filament\Notifications\Notification;
@@ -48,6 +49,13 @@ class EquipmentResource extends Resource
     {
         return ['transaction_id', 'ar_id', 'equipment_id', 'make', 'model', 'serial', 'description'];
     }
+
+    public static function getNavigationBadge(): ?string
+        {
+            return static::getModel()::where('status', 'incoming')->count();
+        }
+
+    protected static ?string $navigationBadgeTooltip = 'Incoming Equipments';
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
@@ -375,6 +383,9 @@ class EquipmentResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label('Customer Name')
+                    ->weight(FontWeight::Bold)
+                    ->color('primary')
+                    ->words(3)
                     ->alignCenter()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('worksheet.name')
@@ -433,67 +444,7 @@ class EquipmentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])->defaultSort('id', 'desc')
             ->filters([
-                Tables\Filters\TrashedFilter::make()
-                    ->native(false), 
-                Tables\Filters\Filter::make('calibrationDue')
-                    ->form([
-                        Section::make('Recall Equipment')
-                        ->description('Month and Year must have a selection to filter properly')
-                        ->schema([
-                            Forms\Components\Select::make('month')
-                                ->label('Month')
-                                ->options([
-                                    '01' => 'January',
-                                    '02' => 'February',
-                                    '03' => 'March',
-                                    '04' => 'April',
-                                    '05' => 'May',
-                                    '06' => 'June',
-                                    '07' => 'July',
-                                    '08' => 'August',
-                                    '09' => 'September',
-                                    '10' => 'October',
-                                    '11' => 'November',
-                                    '12' => 'December',
-                                ])
-                                ->native(false)
-                                ->required(),
-                            Forms\Components\Select::make('year')
-                                ->label('Year')
-                                ->options(function () {
-                                    $currentYear = now()->year + 1;
-                                    $years = [];
-                                    for ($i = $currentYear; $i >= $currentYear - 28; $i--) {
-                                        $years[$i] = $i;
-                                    }
-                                    return $years;
-                                })
-                                ->preload()
-                                ->native(false)
-                                ->required(),
-                        ]),
-                    ])
-                    ->query(function (Builder $query, array $data) {
-                        return $query->when(
-                            $data['month'] && $data['year'],
-                            fn ($query) => $query
-                            ->whereMonth('calibrationDue', $data['month'])
-                            ->whereYear('calibrationDue', $data['year'])
-                        );
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-                    
-                        if ($data['month'] ?? null) {
-                            $indicators['month'] = 'Month: ' . \Carbon\Carbon::create()->month((int) $data['month'])->format('F');
-                        }
-                    
-                        if ($data['year'] ?? null) {
-                            $indicators['year'] = 'Year: ' . $data['year'];
-                        }
-                    
-                        return $indicators;
-                    }),
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->filtersTriggerAction(
                 fn (Action $action) => $action
@@ -501,15 +452,14 @@ class EquipmentResource extends Resource
                     ->label('Filter'),
             )
             ->actions([
-                // ActionGroup::make([
-                    
+                ActionGroup::make([
                     Tables\Actions\EditAction::make()
-                        ->label('')
-                        ->tooltip('Edit')
+                        ->label('Edit')
                         ->icon('heroicon-m-pencil-square')
-                        ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
+                        // ->color(Color::hex(Rgb::fromString('rgb('.Color::Pink[500].')')->toHex())),
+                        ->color('warning'),
                     Tables\Actions\Action::make('duplicate')
-                        ->label('')
+                        ->label('Replicate')
                         ->action(function (Equipment $record, $data) {
                             if ($data['with_accessories']) {
                                 // Replicate the Equipment record
@@ -554,11 +504,9 @@ class EquipmentResource extends Resource
                         ->modalHeading('Replicate Equipment')
                         ->modalSubheading('Do you want to replicate this equipment with accessories?')
                         ->modalButton('Replicate')
-                        ->tooltip('Replicate')
-                        ->color('primary'),
+                        ->color('info'),
                     Tables\Actions\DeleteAction::make()
-                        ->label('')
-                        ->tooltip('Delete')
+                        ->label('Delete')
                         ->modalIcon('heroicon-o-trash')
                         ->modalHeading(fn (Equipment $record) => 'Remove ' . $record->make)
                         ->modalDescription(fn (Equipment $record) => 'Are you sure you want to remove ' . $record->make . ' equipment?')
@@ -595,53 +543,15 @@ class EquipmentResource extends Resource
                                 ->title('Equipment Restored')
                                 ->body('The equipment has been restored succesfully.'),
                         ),
-                // ])
-                // ->icon('heroicon-o-cog-6-tooth')
-                // ->tooltip('Options') 
-                // ->color('danger')
+                ])
+                ->icon('heroicon-o-ellipsis-horizontal-circle')
+                ->tooltip('Options') 
+                ->color('danger')
                 ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
-                Tables\Actions\BulkAction::make('calibrationRecall')
-                    ->label('Calibration Recall')
-                    ->action(function ($records) {
-                        $equipmentData = $records->map(function ($record) {
-                            return [
-                                'id' => $record->id,
-                                'transaction_id' => $record->transaction_id,
-                                'customer_id' => $record->customer_id,
-                                'customer_name' => $record->customer->name,
-                                'customer_address' => $record->customer->address,
-                                'equipment_id' => $record->equipment_id,
-                                'make' => $record->make,
-                                'model' => $record->model,
-                                'description' => $record->description,
-                                'serial' => $record->serial,
-                                'inDate' => $record->inDate,
-                                'calibrationDate' => $record->calibrationDate,
-                                'calibrationDue' => $record->calibrationDue,
-                                'calibrationProcedure' => $record->calibrationProcedure,
-                                'temperature' => $record->temperature,
-                                'humidity' => $record->humidity,
-                                'validation' => $record->validation,
-                                'inCondition' => $record->inCondition,
-                                'outCondition' => $record->outCondition,
-                            ];
-                        })->toArray();
-                
-                        session(['selectedEquipmentData' => $equipmentData]);
-                
-                        return redirect('/equipment/recall');
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Calibration Recall for Selected Equipment')
-                    ->modalSubheading('The calibration recall process is now automated to enhance efficiency and accuracy. Simply confirm the selected equipments to proceed seamlessly')
-                    ->modalButton('Confirm')
-                    ->modalIcon('heroicon-o-printer')
-                    ->icon('heroicon-o-printer')
-                    ->color('primary'),
                 Tables\Actions\BulkAction::make('printCertificate')
                     ->label('Print Certificate')
                     ->requiresConfirmation()
@@ -650,7 +560,7 @@ class EquipmentResource extends Resource
                     ->modalButton('Confirm')
                     ->modalIcon('heroicon-o-printer')
                     ->icon('heroicon-o-printer')
-                    ->color('primary')
+                    ->color('info')
                     ->modalWidth(MaxWidth::Large)
                     ->form([
                         Forms\Components\Group::make([
@@ -725,7 +635,7 @@ class EquipmentResource extends Resource
                 ->modalButton('Confirm')
                 ->modalIcon('heroicon-o-printer')
                 ->icon('heroicon-o-printer')
-                ->color('primary'),
+                ->color('info'),
             ])
             ->defaultPaginationPageOption(5)
             ->paginated([5, 10, 20, 40])

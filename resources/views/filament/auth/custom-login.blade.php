@@ -42,9 +42,9 @@
             }
         }
         body {
-            background: radial-gradient(circle, #d1f1e2, #deebfc, #fceed5, #daf7e1, #f6f8d8);
-            background-size: 400% 400%;
-            animation: gradient 5s linear infinite;
+            background: radial-gradient(circle, #f1d1d1, #fcdef7, #fcdabb, #f0b9b9, #f8dede);
+            background-size: 300% 300%;
+            animation: gradient 15s linear(0 0%, 0 1.8%, 0.01 3.6%, 0.03 6.35%, 0.07 9.1%, 0.13 11.4%, 0.19 13.4%, 0.27 15%, 0.34 16.1%, 0.54 18.35%, 0.66 20.6%, 0.72 22.4%, 0.77 24.6%, 0.81 27.3%, 0.85 30.4%, 0.88 35.1%, 0.92 40.6%, 0.94 47.2%, 0.96 55%, 0.98 64%, 0.99 74.4%, 1 86.4%, 1 100%) infinite;
         }
 
         @media screen and (min-width: 1024px) {
@@ -59,7 +59,7 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: radial-gradient(circle, #affdd9, #f2bcfd, #f7daa9, #acfabe, #f1f7a5);
+                background: radial-gradient(circle, #fdafaf, #ff4a4a, #949494, #facbac, #ff3f3f);
                 background-size: 300% 300%;
                 animation: gradient 10s linear infinite;
                 border-radius: 12px;

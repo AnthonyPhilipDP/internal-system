@@ -30,11 +30,11 @@
                     <form wire:submit="save" class="mt-6 sm:mt-8">
                         {{ $this->form }}
 
-                        <div class="mt-6 sm:mt-8 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-4">
+                        <div class="mt-6 sm:mt-8 sm:grid sm:grid-flow-row-dense sm:grid-cols-1 sm:gap-4">
                             <x-filament::button type="submit" class="me-2 mb-2">
                                 Save
                             </x-filament::button>
-                            <x-filament::button type="button" wire:click="skip" color="info" class="mt-3 sm:col-start-1 sm:mt-0">
+                            <x-filament::button type="button" wire:click="skip" color="warning" class="mt-3 sm:col-start-1 sm:mt-0">
                                 Do this later
                             </x-filament::button>
                         </div>

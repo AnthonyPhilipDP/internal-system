@@ -24,7 +24,7 @@
                     icon="heroicon-m-book-open"
                     icon-alias="panels::widgets.filament-info.open-documentation-button"
                 >
-                    <span class="text-emerald-500">{{ __('Release Notes') }}</span>
+                    <span class="text-red-500">{{ __('Release Notes') }}</span>
                 </x-filament::link>
 
                 <x-filament::link
@@ -32,7 +32,7 @@
                     href=""
                     icon="heroicon-m-shield-check"
                 >
-                <span class="text-emerald-500">{{ __('Alpha Test') }}</span>
+                <span class="text-red-500">{{ __('Alpha Test') }}</span>
                 </x-filament::link>
             </div>
         </div>

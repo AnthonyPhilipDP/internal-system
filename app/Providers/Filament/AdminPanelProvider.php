@@ -38,13 +38,14 @@ class AdminPanelProvider extends PanelProvider
             // ->brandName('Basic')
             // ->font('Quicksand')
             ->font('Space Grotesk')
-            ->brandLogo(asset('images/Site Logo.png'))
-            ->darkModeBrandLogo(asset('images/Site Logo - Dark Mode.png'))
+            ->brandLogo(asset('images/brandLogoLight.png'))
+            ->brandLogoHeight('2.5rem')
+            ->darkModeBrandLogo(asset('images/brandLogoDark.png'))
             ->favicon(asset('images/PMSi Logo(transparent).png'))
             ->sidebarCollapsibleOnDesktop()
             //->sidebarFullyCollapsibleOnDesktop()
             ->spa(true)
-            ->topNavigation(false)
+            ->topNavigation(true)
             //->unsavedChangesAlerts()
             ->id('admin')
             ->path('admin')
@@ -56,7 +57,12 @@ class AdminPanelProvider extends PanelProvider
             ->globalSearchFieldKeyBindingSuffix()
             ->breadcrumbs(true)
             ->colors([
-                'primary' => Color::Emerald,
+                'primary' => Color::Red,
+                'secondary' => Color::Slate,
+                'info' => '#4169E1',
+                'warning' => '#ec4899',
+                'success' => Color::Emerald,
+                'danger' => '#800020',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
