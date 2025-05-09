@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Tables\Actions\Action;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Infolists;
@@ -44,6 +45,13 @@ class CustomerResource extends Resource
     {
         return ['id', 'address', 'email', 'mobile1', 'telephone1', 'name', 'nickname'];
     }
+
+    public static function getNavigationBadge(): ?string
+        {
+            return static::getModel()::count();
+        }
+
+    protected static ?string $navigationBadgeTooltip = 'Total Customers';
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
@@ -500,13 +508,79 @@ class CustomerResource extends Resource
             ])->defaultSort('id', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\Filter::make('calibrationDue')
+                    ->form([
+                        Section::make('Recall Equipment')
+                        ->description('Month and Year must have a selection to filter properly')
+                        ->schema([
+                            Forms\Components\Select::make('month')
+                                ->label('Month')
+                                ->options([
+                                    '01' => 'January',
+                                    '02' => 'February',
+                                    '03' => 'March',
+                                    '04' => 'April',
+                                    '05' => 'May',
+                                    '06' => 'June',
+                                    '07' => 'July',
+                                    '08' => 'August',
+                                    '09' => 'September',
+                                    '10' => 'October',
+                                    '11' => 'November',
+                                    '12' => 'December',
+                                ])
+                                ->native(false)
+                                ->required(),
+                            Forms\Components\Select::make('year')
+                                ->label('Year')
+                                ->options(function () {
+                                    $currentYear = now()->year + 1;
+                                    $years = [];
+                                    for ($i = $currentYear; $i >= $currentYear - 28; $i--) {
+                                        $years[$i] = $i;
+                                    }
+                                    return $years;
+                                })
+                                ->preload()
+                                ->native(false)
+                                ->required(),
+                        ]),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query->whereHas('equipment', function (Builder $equipmentQuery) use ($data) {
+                            $equipmentQuery->when(
+                                $data['month'] && $data['year'],
+                                fn ($query) => $query
+                                    ->whereMonth('calibrationDue', $data['month'])
+                                    ->whereYear('calibrationDue', $data['year'])
+                            );
+                        });
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                    
+                        if ($data['month'] ?? null) {
+                            $indicators['month'] = 'Month: ' . \Carbon\Carbon::create()->month((int) $data['month'])->format('F');
+                        }
+                    
+                        if ($data['year'] ?? null) {
+                            $indicators['year'] = 'Year: ' . $data['year'];
+                        }
+                    
+                        return $indicators;
+                    }),
             ])
+            ->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Filter'),
+            )
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make()
-                        ->color('warning'),
-                    Tables\Actions\EditAction::make()
                         ->color('info'),
+                    Tables\Actions\EditAction::make()
+                        ->color('warning'),
                     Tables\Actions\DeleteAction::make()
                         ->modalIcon('heroicon-o-user-minus')
                         ->modalHeading(fn (Customer $record) => 'Remove ' . $record->name)
@@ -545,7 +619,7 @@ class CustomerResource extends Resource
                                 ->body('The customer has been restored succesfully.'),
                         ),
                 ])
-                ->icon('heroicon-o-cog-6-tooth')
+                ->icon('heroicon-o-ellipsis-horizontal-circle')
                 ->tooltip('Options')
                 ->color('danger')
                 ], position: ActionsPosition::BeforeColumns)
