@@ -6,6 +6,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Infolists;
+use Filament\Forms\Get;
 use App\Models\Customer;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -95,6 +96,7 @@ class CustomerResource extends Resource
                                 ->columnSpan(2),
                             Forms\Components\TextInput::make('nickname')
                                 ->validationAttribute('nickname')
+                                ->placeholder('PMSi')
                                 ->nullable()
                                 ->maxLength(20)
                                 ->columnSpan(2),
@@ -112,34 +114,66 @@ class CustomerResource extends Resource
                                 ->nullable()
                                 ->default(now())
                                 ->columnSpan(1),
+                            Forms\Components\TextInput::make('tradeName')
+                                ->validationAttribute('trade name')
+                                ->label('Trade Name')
+                                ->nullable()
+                                ->columnSpan(2),
                             Forms\Components\TextInput::make('qualifyingSystem')
                                 ->validationAttribute('qualifying system')
                                 ->label('Qualifying System')
                                 ->nullable()
-                                ->columnSpan(2),
+                                ->columnSpan(1),
                             Forms\Components\TextInput::make('certifyingBody')
                                 ->validationAttribute('certifying body')
                                 ->label('Certifying Body')
                                 ->nullable()
-                                ->columnSpan(2),
+                                ->columnSpan(1),
                             Forms\Components\TextArea::make('remarks')
                                 ->rows(1)   
                                 ->autosize()
                                 ->nullable()
-                                ->columnSpan(4),
+                                ->columnSpan(3),
+                            Forms\Components\TextInput::make('referredBy')
+                                ->validationAttribute('referrer')
+                                ->label('Referred By')
+                                ->nullable()
+                                ->columnSpan(1)
                         ])->columns(4)
                         ->icon('heroicon-o-identification')
                         ->completedIcon('heroicon-m-identification'),
                     Wizard\Step::make('BIR Information')
-                        ->schema([
+                    ->schema([
                             Forms\Components\TextInput::make('tin')
                                 ->validationAttribute('TIN')
-                                ->label('Taxpayer Identification Number')
+                                ->label('Taxpayer Identification Number (TIN)')
                                 ->validationAttribute('TIN')
-                                ->required(),
+                                ->required()
+                                ->columnSpan(4),
                             Forms\Components\TextInput::make('sec')
-                                ->label('SEC Reg no.')
-                                ->required(),
+                                ->label('SEC')
+                                ->nullable()
+                                ->columnSpan(4),
+                            Forms\Components\TextInput::make('businessNature')
+                                ->validationAttribute('business nature')
+                                ->label('Nature of Business')
+                                ->required()
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('businessStyle')
+                                ->validationAttribute('business style')
+                                ->label('Business Style')
+                                ->required()
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('industry')
+                                ->validationAttribute('Line of Business / Industry')
+                                ->label('Line of Business / Industry')
+                                ->required()
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('withHoldingTax')
+                                ->label('With Holding Tax')
+                                ->nullable()
+                                ->columnSpan(1)
+                                ->columnSpan(2),
                             Forms\Components\Select::make('vat')
                                 ->validationAttribute('VAT')
                                 ->label('VAT')
@@ -148,19 +182,42 @@ class CustomerResource extends Resource
                                     'Non-VAT' => 'Non-VAT',
                                 ])
                                 ->native(false)
-                                ->required(),
-                            Forms\Components\TextInput::make('withHoldingTax')
-                                ->label('With Holding Tax')
-                                ->required(),
-                            Forms\Components\TextInput::make('businessNature')
-                                ->validationAttribute('business nature')
-                                ->label('Nature of Business')
-                                ->required(),
-                            Forms\Components\TextInput::make('businessStyle')
-                                ->validationAttribute('business style')
-                                ->label('Business Style')
-                                ->required(),
-                        ])->columns(2)
+                                ->nullable(fn (Get $get): bool => $get('othersCheckBox') || $get('vatExempt'))
+                                ->disabled(fn (Get $get): bool => $get('othersCheckBox') || $get('vatExempt'))
+                                ->columnSpan(2),
+                            Forms\Components\Toggle::make('vatExempt')
+                                ->label('VAT Exempt')
+                                ->live()
+                                ->inline(false)
+                                ->extraAttributes(['class' => 'mt-2'])
+                                ->disabled(fn (Get $get): bool => $get('othersCheckBox'))
+                                ->columnSpan(1),
+                            Forms\Components\Toggle::make('othersCheckBox')
+                                ->label('Others')
+                                ->live()
+                                ->inline(false)
+                                ->extraAttributes(['class' => 'mt-2'])
+                                ->disabled(fn (Get $get): bool => $get('vatExempt'))
+                                ->columnSpan(1),
+                            Forms\Components\TextInput::make('otherVat')
+                                ->validationAttribute('others VAT')
+                                ->label('Please specify')
+                                ->hidden(fn (Get $get): bool => ! $get('othersCheckBox'))
+                                ->required()
+                                ->columnSpan(4),
+                            Forms\Components\TextInput::make('vatExemptCertificateNo')
+                                ->validationAttribute('Certificate No.')
+                                ->label('Certificate No.')
+                                ->hidden(fn (Get $get): bool => ! $get('vatExempt'))
+                                ->required()
+                                ->columnSpan(2),
+                            Forms\Components\TextInput::make('vatExemptValidity')
+                                ->validationAttribute('validity')
+                                ->label('Validity')
+                                ->hidden(fn (Get $get): bool => ! $get('vatExempt'))
+                                ->required()
+                                ->columnSpan(2),
+                        ])->columns(8)
                         ->icon('heroicon-o-newspaper')
                         ->completedIcon('heroicon-m-newspaper'),
                     Wizard\Step::make('Contact Details')
@@ -303,103 +360,6 @@ class CustomerResource extends Resource
                         ->icon('heroicon-o-device-phone-mobile')
                         ->completedIcon('heroicon-m-device-phone-mobile'),
                     ])->skippable(),
-                // Group::make()->schema([
-                //     Section::make([
-                //         Forms\Components\TextInput::make('name')
-                //             ->placeholder('Precision Measurement Specialists, Inc.')
-                //             ->required()
-                //             ->maxLength(255),
-                //         Forms\Components\TextArea::make('address')
-                //             ->placeholder("B1 L3 Macaria Business Center. Governor's Dr., Carmona, 4116 Cavite, Philippines")
-                //             ->autosize()
-                //             ->maxLength(255)    
-                //             ->required(),
-                //         Forms\Components\TextInput::make('qualifyingSystem')
-                //             ->label('Qualifying System')
-                //             ->nullable(),
-                //         Forms\Components\TextInput::make('certifyingBody')
-                //             ->label('Certifying Body')
-                //             ->required(),
-                //         Forms\Components\DatePicker::make('dateCertified')
-                //             ->label('Date Certified')
-                //             ->required(),
-                //         Forms\Components\TextArea::make('remarks')
-                //             ->rows(2)   
-                //             ->autosize()
-                //             ->nullable(),
-                //     ]),
-                // ])->columnSpan(2),
-
-                // Group::make()->schema([
-                //     Section::make([
-                //         Forms\Components\TextInput::make('tin')
-                //             ->label('TIN No.')
-                //             ->required(),
-                //         Forms\Components\TextInput::make('sec')
-                //             ->label('SEC Reg no.')
-                //             ->nullable(),
-                //         Forms\Components\Select::make('vat')
-                //             ->label('VAT')
-                //             ->options([
-                //                 'VAT' => 'VAT',
-                //                 'Non-VAT' => 'Non-VAT',
-                //             ])
-                //             ->required(),
-                //         Forms\Components\TextInput::make('wht')
-                //             ->label('With Holding Tax')
-                //             ->nullable(),
-                //         Forms\Components\TextInput::make('businessNature')
-                //             ->label('Nature of Business')
-                //             ->required(),
-                //         Forms\Components\TextInput::make('businessStyle')
-                //             ->label('Business Style')
-                //             ->required(),
-                //     ]),
-                // ])->columnSpan(1),
-
-                // Group::make()->schema([
-                //     Section::make([ 
-                //         PhoneInput::make('phone')
-                //             ->defaultCountry('PH')
-                //             ->initialCountry('PH')
-                //             ->default('+639')
-                //             // ->separateDialCode()
-                //             ->strictMode()
-                //             ->formatAsYouType(false)
-                //             ->required(),
-                //         PhoneInput::make('landline')
-                //             ->nullable()
-                //             ->showFlags(false)
-                //             ->disallowDropdown()
-                //             ->onlyCountries(['AF']),
-                //         Forms\Components\TextInput::make('email')
-                //             ->placeholder('pmsical@yahoo.com')
-                //             ->email()
-                //             ->required(),
-                //         Forms\Components\TextInput::make('website')
-                //             ->placeholder('www.pmsi-cal.com')
-                //             ->label('Website')
-                //             ->nullable(),
-                //         Forms\Components\Select::make('payment')
-                //             ->options([
-                //                 'Cash on Delivery' => 'Cash on Delivery',
-                //                 'Net 7 days' => 'Net 7 days',
-                //                 'Net 15 days' => 'Net 15 days',
-                //                 'Net 30 days' => 'Net 30 days',
-                //                 'Net 60 days' => 'Net 60 days',
-                //             ])
-                //             ->default('cod')
-                //             ->required(),
-                //         Forms\Components\Select::make('status')
-                //             ->options([
-                //                 'Active' => 'Active',
-                //                 'Potential' => 'Potential',
-                //             ])
-                //             ->default('Active')
-                //             ->required(),
-                //     ])
-                // ])->columnSpan(1)
-                
                 ])->columns(1);
     }
 
