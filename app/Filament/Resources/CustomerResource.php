@@ -511,64 +511,63 @@ class CustomerResource extends Resource
                 Tables\Filters\Filter::make('calibrationDue')
                     ->form([
                         Section::make('Recall Equipment')
-                        ->description('Month and Year must have a selection to filter properly')
-                        ->schema([
-                            Forms\Components\Select::make('month')
-                                ->label('Month')
-                                ->options([
-                                    '01' => 'January',
-                                    '02' => 'February',
-                                    '03' => 'March',
-                                    '04' => 'April',
-                                    '05' => 'May',
-                                    '06' => 'June',
-                                    '07' => 'July',
-                                    '08' => 'August',
-                                    '09' => 'September',
-                                    '10' => 'October',
-                                    '11' => 'November',
-                                    '12' => 'December',
-                                ])
-                                ->native(false)
-                                ->required(),
-                            Forms\Components\Select::make('year')
-                                ->label('Year')
-                                ->options(function () {
-                                    $currentYear = now()->year + 1;
-                                    $years = [];
-                                    for ($i = $currentYear; $i >= $currentYear - 28; $i--) {
-                                        $years[$i] = $i;
-                                    }
-                                    return $years;
-                                })
-                                ->preload()
-                                ->native(false)
-                                ->required(),
+                            ->description('Month and Year must have a selection to filter properly')
+                            ->schema([
+                                Forms\Components\Select::make('month')
+                                    ->label('Month')
+                                    ->options([
+                                        '01' => 'January',
+                                        '02' => 'February',
+                                        '03' => 'March',
+                                        '04' => 'April',
+                                        '05' => 'May',
+                                        '06' => 'June',
+                                        '07' => 'July',
+                                        '08' => 'August',
+                                        '09' => 'September',
+                                        '10' => 'October',
+                                        '11' => 'November',
+                                        '12' => 'December',
+                                    ])
+                                    ->native(false)
+                                    ->required(),
+                                Forms\Components\Select::make('year')
+                                    ->label('Year')
+                                    ->options(function () {
+                                        $currentYear = now()->year + 1;
+                                        $years = [];
+                                        for ($i = $currentYear; $i >= $currentYear - 28; $i--) {
+                                            $years[$i] = $i;
+                                        }
+                                        return $years;
+                                    })
+                                    ->preload()
+                                    ->native(false)
+                                    ->required(),
                         ]),
                     ])
                     ->query(function (Builder $query, array $data) {
-                        return $query->whereHas('equipment', function (Builder $equipmentQuery) use ($data) {
-                            $equipmentQuery->when(
-                                $data['month'] && $data['year'],
-                                fn ($query) => $query
+                        if (!empty($data['month']) && !empty($data['year'])) {
+                            $query->whereHas('equipment', function (Builder $equipmentQuery) use ($data) {
+                                $equipmentQuery
                                     ->whereMonth('calibrationDue', $data['month'])
-                                    ->whereYear('calibrationDue', $data['year'])
-                            );
-                        });
+                                    ->whereYear('calibrationDue', $data['year']);
+                            });
+                        }
                     })
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
-                    
-                        if ($data['month'] ?? null) {
+
+                        if (!empty($data['month'])) {
                             $indicators['month'] = 'Month: ' . \Carbon\Carbon::create()->month((int) $data['month'])->format('F');
                         }
-                    
-                        if ($data['year'] ?? null) {
+
+                        if (!empty($data['year'])) {
                             $indicators['year'] = 'Year: ' . $data['year'];
                         }
-                    
+
                         return $indicators;
-                    }),
+                        }),
             ])
             ->filtersTriggerAction(
                 fn (Action $action) => $action
