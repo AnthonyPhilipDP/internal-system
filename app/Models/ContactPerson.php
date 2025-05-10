@@ -11,23 +11,16 @@ class ContactPerson extends Model
 
     use HasFactory;
 
-    protected $fillable = [
-        'id',
-        'equipment_id',
-        'name',
-        'department',
-        'position',
-        'contact1',
-        'contact2',
-        'email',
-        'isActive',
+    protected $guarded = [
+        'id'
     ];
 
     protected $casts = [
         'isActive' => 'boolean',
     ];
 
-    public function customer(){
+    public function customer()
+    {
         return $this->belongsTo(Customer::class);
     }
 

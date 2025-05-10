@@ -41,6 +41,7 @@ return new class extends Migration
             $table->string('industry')->nullable();
             $table->string('referredBy')->nullable();
             $table->string('otherVat')->nullable();
+            $table->string('otherPayment')->nullable();
             $table->string('vatExemptCertificateNo')->nullable();
             $table->string('vatExemptValidity')->nullable();
         });

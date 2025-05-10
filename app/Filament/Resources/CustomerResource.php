@@ -153,27 +153,26 @@ class CustomerResource extends Resource
                             Forms\Components\TextInput::make('sec')
                                 ->label('SEC')
                                 ->nullable()
-                                ->columnSpan(4),
+                                ->columnSpan(3),
+                            Forms\Components\TextInput::make('withHoldingTax')
+                                ->label('With Holding Tax')
+                                ->nullable()
+                                ->columnSpan(2),
                             Forms\Components\TextInput::make('businessNature')
                                 ->validationAttribute('business nature')
                                 ->label('Nature of Business')
                                 ->required()
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             Forms\Components\TextInput::make('businessStyle')
                                 ->validationAttribute('business style')
                                 ->label('Business Style')
                                 ->required()
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             Forms\Components\TextInput::make('industry')
                                 ->validationAttribute('Line of Business / Industry')
                                 ->label('Line of Business / Industry')
                                 ->required()
-                                ->columnSpan(2),
-                            Forms\Components\TextInput::make('withHoldingTax')
-                                ->label('With Holding Tax')
-                                ->nullable()
-                                ->columnSpan(1)
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             Forms\Components\Select::make('vat')
                                 ->validationAttribute('VAT')
                                 ->label('VAT')
@@ -190,9 +189,9 @@ class CustomerResource extends Resource
                                 ->live()
                                 ->inline(false)
                                 ->extraAttributes(['class' => 'mt-2'])
-                                ->disabled(fn (Get $get): bool => $get('othersCheckBox'))
+                                ->disabled(fn (Get $get): bool => $get('othersForVat'))
                                 ->columnSpan(1),
-                            Forms\Components\Toggle::make('othersCheckBox')
+                            Forms\Components\Toggle::make('othersForVat')
                                 ->label('Others')
                                 ->live()
                                 ->inline(false)
@@ -202,22 +201,22 @@ class CustomerResource extends Resource
                             Forms\Components\TextInput::make('otherVat')
                                 ->validationAttribute('others VAT')
                                 ->label('Please specify')
-                                ->hidden(fn (Get $get): bool => ! $get('othersCheckBox'))
+                                ->hidden(fn (Get $get): bool => ! $get('othersForVat'))
                                 ->required()
-                                ->columnSpan(4),
+                                ->columnSpan(5),
                             Forms\Components\TextInput::make('vatExemptCertificateNo')
                                 ->validationAttribute('Certificate No.')
                                 ->label('Certificate No.')
                                 ->hidden(fn (Get $get): bool => ! $get('vatExempt'))
                                 ->required()
-                                ->columnSpan(2),
+                                ->columnSpan(3),
                             Forms\Components\TextInput::make('vatExemptValidity')
                                 ->validationAttribute('validity')
                                 ->label('Validity')
                                 ->hidden(fn (Get $get): bool => ! $get('vatExempt'))
                                 ->required()
                                 ->columnSpan(2),
-                        ])->columns(8)
+                        ])->columns(9)
                         ->icon('heroicon-o-newspaper')
                         ->completedIcon('heroicon-m-newspaper'),
                     Wizard\Step::make('Contact Details')
@@ -243,14 +242,16 @@ class CustomerResource extends Resource
                                 ->placeholder('Start with 09')
                                 ->prefix('Enter 11 digits')
                                 ->tel()
-                                ->nullable(),
+                                ->nullable()
+                                ->columnSpan(4),
                             Forms\Components\TextInput::make('telephone1')
                                 ->validationAttribute('telephone number')
                                 ->tel()
                                 ->label('Telephone Number (Primary)')
                                 ->prefix('Enter 10 digits')
                                 ->length(10)
-                                ->nullable(),
+                                ->nullable()
+                                ->columnSpan(4),
                             Forms\Components\TextInput::make('mobile2')
                                 ->label('Mobile Number (Secondary)')
                                 ->validationAttribute('mobile number')
@@ -258,30 +259,48 @@ class CustomerResource extends Resource
                                 ->length(11)
                                 ->prefix('Enter 11 digits')
                                 ->tel()
-                                ->nullable(),
+                                ->nullable()
+                                ->columnSpan(4),
                             Forms\Components\TextInput::make('telephone2')
                                 ->tel()
                                 ->label('Telephone Number (Secondary)')
                                 ->validationAttribute('telephone number')
                                 ->prefix('Enter 10 digits')
                                 ->length(10)
-                                ->nullable(),
+                                ->nullable()
+                                ->columnSpan(4),
                             Forms\Components\TextInput::make('email')
                                 ->validationAttribute('email')
                                 ->placeholder('pmsical@yahoo.com')
                                 ->email()
-                                ->required(),
+                                ->required()
+                                ->columnSpan(4),
                             Forms\Components\TextInput::make('website')
                                 ->placeholder('pmsi-cal.com')
                                 ->label('Website')
-                                ->prefix('www')
+                                ->prefix('www.')
                                 ->suffixIcon('heroicon-m-globe-alt')
                                 ->suffixIconColor('primary')
-                                ->nullable(),
+                                ->nullable()
+                                ->columnSpan(4),
+                            Forms\Components\Select::make('status')
+                                ->label('Status')
+                                ->options([
+                                    'Active' => 'Active',
+                                    'Inactive' => 'Inactive',
+                                    'Potential' => 'Potential',
+                                    'Defunct' => 'Defunct',
+                                ])
+                                ->default('Active')
+                                ->native(false)
+                                ->required()
+                                ->columnSpan(4),
                             Forms\Components\Select::make('payment')
                                 ->validationAttribute('payment')
                                 ->options([
-                                    'Cash on Delivery' => 'Cash on Delivery',
+                                    'Cash on Delivery' => 'COD (Cash on Delivery)',
+                                    'Cash upon Completion' => 'CUC (Cash upon Completion)',
+                                    'Payment in Advance' => 'PIA (Payment in Advance)',
                                     'Net 7 days' => 'Net 7 days',
                                     'Net 15 days' => 'Net 15 days',
                                     'Net 30 days' => 'Net 30 days',
@@ -289,17 +308,22 @@ class CustomerResource extends Resource
                                 ])
                                 ->default('Cash on Delivery')
                                 ->native(false)
-                                ->required(),
-                            Forms\Components\Select::make('status')
-                                ->label('Status')
-                                ->options([
-                                    'Active' => 'Active',
-                                    'Potential' => 'Potential',
-                                ])
-                                ->default('Active')
-                                ->native(false)
-                                ->required(),
-                        ])->columns(2)
+                                ->disabled(fn (Get $get): bool => $get('othersForPayment'))
+                                ->required()
+                                ->columnSpan(2),
+                            Forms\Components\Toggle::make('othersForPayment')
+                                ->label('Others')
+                                ->live()
+                                ->inline(false)
+                                ->extraAttributes(['class' => 'mt-2'])
+                                ->columnSpan(1),
+                            Forms\Components\TextInput::make('otherPayment')
+                                ->validationAttribute('other payment')
+                                ->label('Please specify')
+                                ->hidden(fn (Get $get): bool => ! $get('othersForPayment'))
+                                ->required()
+                                ->columnSpan(1),
+                        ])->columns(8)
                         ->icon('heroicon-o-document-text')
                         ->completedIcon('heroicon-m-document-text'),
                     Wizard\Step::make('Contact Person')
@@ -310,11 +334,21 @@ class CustomerResource extends Resource
                                     ->label('')
                                     ->relationship()
                                     ->schema([
+                                    Forms\Components\Select::make('identity')
+                                        ->validationAttribute('identification')
+                                        ->label('Identify As')
+                                        ->columnSpan(1)
+                                        ->required()
+                                        ->options([
+                                            'male' => 'Mr',
+                                            'female' => 'Ms',
+                                        ])
+                                        ->native(false),
                                     Forms\Components\TextInput::make('name')
                                         ->validationAttribute('name')
                                         ->label('Contact Name')
                                         ->placeholder('Name of the contact person')
-                                        ->columnSpan(2)
+                                        ->columnSpan(3)
                                         ->required(),
                                     Forms\Components\TextInput::make('contact1')
                                         ->validationAttribute('primary contact number')
@@ -322,22 +356,22 @@ class CustomerResource extends Resource
                                         ->placeholder('Main phone number')
                                         ->length(11)
                                         ->tel()
-                                        ->columnSpan(2)
+                                        ->columnSpan(4)
                                         ->required(),
                                     Forms\Components\TextInput::make('department')
                                         ->label('Department')
                                         ->placeholder('Department of the contact person within the company')
-                                        ->columnSpan(2),
+                                        ->columnSpan(4),
                                     Forms\Components\TextInput::make('contact2')
                                         ->label('Secondary Contact Number')
                                         ->placeholder('Alternative phone number')
-                                        ->columnSpan(2),
+                                        ->columnSpan(4),
                                     Forms\Components\TextInput::make('position')
                                         ->label('Position')
                                         ->placeholder('Position or title of the contact person within the company')
-                                        ->columnSpan(2),
+                                        ->columnSpan(4),
                                     Forms\Components\TextInput::make('email')
-                                        ->columnSpan(2)
+                                        ->columnSpan(4)
                                         ->email(),
                                     Forms\Components\Toggle::make('isActive')
                                         ->label('Active Status')
@@ -353,7 +387,7 @@ class CustomerResource extends Resource
                                     ->reorderableWithDragAndDrop()
                                     ->collapsible()
                                     ->addActionLabel('Add Contact Person')
-                                    ->columns(4)
+                                    ->columns(8)
                                 ]),
                             ]),
                         ])
@@ -427,7 +461,7 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('vat')
                     ->label('VAT'),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('wht')
+                Tables\Columns\TextColumn::make('withHoldingTax')
                     ->label('With Holding Tax')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
