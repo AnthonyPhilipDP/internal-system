@@ -6,7 +6,27 @@
         @endphp
 
         @foreach ($equipmentChunks as $chunkIndex => $equipmentChunk)
-            <div class="relative w-[8.5in] h-[11in] bg-white px-12 print:page-break pt-[180px] bg-cover bg-no-repeat mx-auto" style="background-image: url('{{ asset('images/templates/CalibrationRecall.jpg') }}');">
+            <div class="border relative w-[8.5in] h-[11in] bg-white px-12 print:page-break pt-[180px] bg-cover bg-no-repeat mx-auto">
+                <div class="absolute top-[45px] inset-0 flex flex-col items-center tracking-normal -space-y-1" style="font-family: 'Times New Roman', Times, serif;">
+                    <div class="flex">
+                        <h1 class="text-[26px] text-center font-bold">Precision Measurement Specialists, <span class="italic text-red-500">i</span>nc.</h1>
+                    </div>
+                    <div class="flex">
+                        <p class="text-[12px] text-center font-semibold italic">'a metrology company'</p>
+                    </div>
+                    <div class="flex">
+                        <p class="text-[12px] text-center font-semibold italic">( since 1998 )</p>
+                    </div>
+                    <div class="flex">
+                        <p class="text-[11px] text-center font-semibold mt-1">B1 L3 Macaria Business Center, Governor's Dr., Carmona, Cavite, 4116 Philippines</p>
+                    </div>
+                    <div class="flex">
+                        <p class="text-[11px] text-center font-semibold">Telefax:(046) 889-0673 | Mobile: (0997) 410-6031</p>
+                    </div>
+                    <div class="flex">
+                        <p class="text-[11px] text-center font-semibold">E-mail: info@pmsi-cal.com ~ pmsical@yahoo.com | Website: www.pmsi-cal.com</p>
+                    </div>
+                </div>
                 <div class="absolute top-[54px] left-12 w-28 h-28">
                     <img src="{{ asset('images/PMSi Logo(transparent).png') }}" alt="PMSi Logo">
                 </div>
@@ -45,33 +65,33 @@
                     Please take note that the following list of <span class="underline italic">equipment will come due</span> for calibration service. Please contact our office at your convenience to schedule calibration service of this equipment.
                 </p>
                 <div class="border-b border-white rounded-lg overflow-x-auto">
-                    <table class="min-w-full divide-y divide-white table-auto">
+                    <table class="min-w-full divide-y divide-white table-fixed">
                         @if ($equipmentChunks->count() > 1)
-                        <caption class="caption-bottom text-xs text-gray-500 font-mono mt-4">
+                        <caption class="caption-bottom text-xs text-gray-500 font-mono mt-2">
                             Number of equipment in this page: {{ $equipmentChunk->count() }}
                         </caption>
                     @endif
                         <thead class="bg-gray-700 text-center">
                             <tr>
-                                <th scope="col" class="px-4 py-2 text-[10px] font-medium text-white uppercase tracking-wider w-2/14 text-nowrap">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
                                     Cal Due
                                 </th>
-                                <th scope="col" class="px-4 py-2 text-[10px] font-medium text-white uppercase tracking-wider w-2/14 text-nowrap">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
                                     Equipment ID
                                 </th>
-                                <th scope="col" class="px-4 py-2 text-[10px] font-medium text-white uppercase tracking-wider w-2/14 text-nowrap">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider truncate">
                                     Make
                                 </th>
-                                <th scope="col" class="px-4 py-2 text-[10px] font-medium text-white uppercase tracking-wider w-2/14 text-nowrap">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
                                     Model
                                 </th>
-                                <th scope="col" class="px-4 py-2 text-[10px] font-medium text-white uppercase tracking-wider w-2/14 text-nowrap">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
                                     Description
                                 </th>
-                                <th scope="col" class="px-4 py-2 text-[10px] font-medium text-white uppercase tracking-wider w-2/14 text-nowrap">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
                                     Serial
                                 </th>
-                                <th scope="col" class="px-4 py-2 text-[10px] font-medium text-white uppercase tracking-wider w-2/14 text-nowrap">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
                                     Owner
                                 </th>
                             </tr>
@@ -79,27 +99,27 @@
                         <tbody class="bg-white divide-y divide-gray-200 text-left">
                             @foreach ($equipmentChunk as $equipment)
                                 <tr class="items-center">
-                                    <td class="px-2 py-2 text-[10px] text-gray-800 w-2/14">
+                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2 text-center">
                                         @if ($equipment['calibrationDue'])
                                             {{ \Carbon\Carbon::parse($equipment['calibrationDue'])->format('M j, Y') }}
                                         @endif
                                     </td>
-                                    <td class="px-2 py-2 text-[10px] text-gray-800 w-2/14">
+                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
                                         {{ $equipment['equipment_id'] }}
                                     </td>
-                                    <td class="px-2 py-2 text-[10px] text-gray-800 w-2/14">
+                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
                                         {{ $equipment['make'] }}
                                     </td>
-                                    <td class="px-2 py-2 text-[10px] text-gray-800 w-2/14">
+                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
                                         {{ $equipment['model'] }}
                                     </td>
-                                    <td class="px-2 py-2 text-[10px] text-gray-800 w-2/14">
+                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
                                         {{ $equipment['description'] }}
                                     </td>
-                                    <td class="px-2 py-2 text-[10px] text-gray-800 w-2/14">
+                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
                                         {{ $equipment['serial'] }}
                                     </td>
-                                    <td class="px-2 py-2 text-[10px] text-gray-800 w-2/14">
+                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2 text-center">
                                         40-{{ $equipment['transaction_id'] }}
                                     </td>
                                 </tr>
@@ -112,7 +132,7 @@
                 <div>
                     @if (count($customer['equipment']) > 1)
                     <p class="text-xs mt-2 text-gray-700 text-center">
-                        Total number of equipment in this page: <span class="font-semibold">{{ count($customer['equipment']) }}</span>
+                        Total number of equipments: <span class="font-semibold">{{ count($customer['equipment']) }}</span>
                     </p>
                     @else
                     <p class="text-xs mt-2 text-gray-700 text-center">
@@ -122,7 +142,7 @@
                 </div>
                 @endif
                 
-                <div class="space-y-2 text-sm text-gray-800 my-2 absolute bottom-9 left-12 right-12 text-justify">
+                <div class="space-y-2 text-sm text-gray-800 my-2 absolute bottom-12 left-12 right-12 text-justify">
                     <div class="pb-2">
                         We at PMS<span class="text-red-500 italic">i</span> are commited to provide an impartial high-quality calibration, maintenance and repair service of test and measurement equipment. We offer an OEM level of service & expertise at a competitive rate.
                     </div>
@@ -142,10 +162,11 @@
                     </div>
                 </div>
                 <!-- Footer -->
-                <div class="absolute bottom-6 left-12 text-left text-[11px] font-sans font-semibold text-gray-800">
-                    DCN 5-5.10.2-3 rev.3
+                <hr class="absolute left-12 right-12 bottom-12 border-gray-800 mb-1">
+                <div class="absolute bottom-9 left-12 text-left text-[11px] font-[500] text-gray-800" style="font-family: 'Times New Roman', Times, serif;">
+                    DCN 5-5.10.4.4-3 rev.1
                 </div>
-                <div class="absolute bottom-6 right-12 text-right text-[11px] font-sans font-semibold text-gray-800">
+                <div class="absolute bottom-9 right-12 text-right text-[11px] font-[500] text-gray-800" style="font-family: 'Times New Roman', Times, serif;">
                     Page {{ $chunkIndex + 1 }} of {{ $equipmentChunks->count() }}
                 </div>
             </div>

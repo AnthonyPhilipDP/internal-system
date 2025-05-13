@@ -542,6 +542,12 @@ class CustomerResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data) {
                         if (!empty($data['month']) && !empty($data['year'])) {
+                            // Store the filter data in the session
+                            session()->put('calibrationRecallFilter', [
+                                'month' => $data['month'],
+                                'year' => $data['year'],
+                            ]);
+
                             $query->whereHas('equipment', function (Builder $equipmentQuery) use ($data) {
                                 $equipmentQuery
                                     ->whereMonth('calibrationDue', $data['month'])
@@ -561,7 +567,7 @@ class CustomerResource extends Resource
                         }
 
                         return $indicators;
-                        }),
+                    }),
             ])
             ->filtersTriggerAction(
                 fn (Action $action) => $action
@@ -627,8 +633,8 @@ class CustomerResource extends Resource
                         $customerData = $records->load(['equipment', 'activeContactPerson'])->map(function ($customer) {
                             return [
                                 'name' => $customer->name,
-                                'telephone' => $customer->telephone1, // Replace with the actual field name
-                                'mobile' => $customer->mobile1,       // Replace with the actual field name
+                                'telephone' => $customer->telephone1,
+                                'mobile' => $customer->mobile1,
                                 'email' => $customer->email,
                                 'contact_persons' => $customer->activeContactPerson->map(function ($contactPerson) {
                                     return [
