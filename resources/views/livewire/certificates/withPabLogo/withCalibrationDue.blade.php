@@ -199,9 +199,9 @@
                 <div class="absolute bottom-[170px] left-16 right-16">
                     <p class="text-xs text-gray-800 text-justify pt-2">
                         Precision Measurement Specialists, inc. (PMSi) certifies that the instrument specified above was calibrated according to PMSi's Management System which is intended to meet PNS ISO/IEC 17025:2017.
-                        This instrument was calibrated with working standards whose measurement results are traceable to either the National Institute of Standards and Technology (NIST, USA), to Philippine ITDI-NML
-                        (National Metrology Lab), to other international accredited metrology labs, to NIST accepted intrinsic standards of measurement, to fundamental or physical constants, or by comparison or consensus standards.
-                        Calibration data or report is issued under separate cover that includes specific or applicable traceability
+                        This instrument was calibrated with working standards whose measurement results are traceable to either the National Institute of Standards and Technology (NIST, USA), to National Metrology Laboratory of the Philippines (NML), 
+                        to other international accredited metrology labs, to NIST accepted intrinsic standards of measurement, to fundamental or physical constants, or by comparison to consensus standards.
+                        Calibration data or report is issued under separate cover that includes specific or applicable traceability.
                     </p>
                     <p class="text-xs text-gray-800 text-justify pt-2">
                         Precision Measurement Specialists, inc. maintains traceability records on all instruments under contract. Records are on file, available for inspection by authorized representatives of the contracting
@@ -225,7 +225,7 @@
                 <hr class="border border-red-600">
             </div>
             <div class="absolute bottom-[130px] w-full">
-                <h1 class="text-center text-xs border border-gray-800 mx-64">Certificate not valid without emobssed dry seal.</h1>
+                <h1 class="text-center text-xs border border-gray-800 mx-64">Certificate not valid without embossed dry seal.</h1>
             </div>
             <div class="absolute bottom-[75px] left-0 w-full flex justify-around px-12">
                 <div class="flex w-full justify-around">
