@@ -10,10 +10,8 @@ class DeliveryPerson extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'id',
-        'ar_id',
-        'name',
+    protected $guarded = [
+        'id'
     ];
 
     public function customer(){

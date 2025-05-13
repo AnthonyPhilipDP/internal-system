@@ -12,11 +12,8 @@ class Accessory extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'id',
-        'equipment_id',
-        'name',
-        'quantity'
+    protected $guarded = [
+        'id'
     ];
 
     public function equipment(){

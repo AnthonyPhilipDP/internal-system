@@ -8,9 +8,5 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class OldEquipment extends Model
 {
-
     use HasFactory, SoftDeletes;
-    
-    protected $fillable = [
-    ];
 }
