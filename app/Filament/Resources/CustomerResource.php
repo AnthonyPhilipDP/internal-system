@@ -638,6 +638,7 @@ class CustomerResource extends Resource
                                 'email' => $customer->email,
                                 'contact_persons' => $customer->activeContactPerson->map(function ($contactPerson) {
                                     return [
+                                        'identity' => $contactPerson->identity,
                                         'name' => $contactPerson->name,
                                         'department' => $contactPerson->department,
                                         'position' => $contactPerson->position,

@@ -34,7 +34,11 @@
                 <div class="flex justify-between mb-4">
                     <div class="flex flex-col gap-1 w-[60%]">
                         @if (!empty($customer['contact_persons']))
-                            <p class="text-sm font-semibold text-gray-700 truncate capitalize">{{ $customer['contact_persons'][0]['name'] }}</p>
+                            @if ( $customer['contact_persons'][0]['identity'] == 'male' )
+                                <p class="text-sm font-semibold text-gray-700 truncate capitalize">Mr. {{ $customer['contact_persons'][0]['name'] }}</p>
+                            @else
+                                <p class="text-sm font-semibold text-gray-700 truncate capitalize">Ms. {{ $customer['contact_persons'][0]['name'] }}</p>
+                            @endif
                         @endif
                         <p class="text-sm font-bold text-gray-700 truncate">Client: <span class="uppercase">{{ $customer['name'] }}</span></p>
                         @if (!empty($customer['telephone']))

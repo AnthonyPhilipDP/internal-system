@@ -1,18 +1,22 @@
 <div>
     @foreach ($equipmentChunks as $chunkIndex => $equipmentChunk)
-        <div class="relative w-[11in] h-[8.5in] bg-cover bg-no-repeat pt-[11.25rem] mx-auto px-12" style="background-image: url('{{ asset('images/templates/AcknowledgmentReceipt - Landscape.jpg') }}');">
+        <div class="border relative w-[11in] h-[8.5in] bg-cover bg-no-repeat pt-[11.25rem] mx-auto px-12" style="background-image: url('{{ asset('images/templates/AcknowledgmentReceipt - Landscape.jpg') }}');">
             <hr class="mb-2 border-t-1 border-gray-700">
             <!-- Display customer and equipment details -->
             <div class="flex w-full justify-between mb-2">
                 <div class="flex flex-col items-start gap-1 max-w-sm">
                     <p class="text-xs font-bold text-gray-700">Client: <span class="underline uppercase">{{ $equipmentChunk->first()->customer->name }}</span></p>
                     @php
-                        $activeContactPerson = $equipmentChunk->first()->customer->contactPerson->filter(function($contact) {
-                            return $contact->is_active;
-                        })->last();
+                        $activeContactPerson = $equipmentChunk->first()->customer->contactPerson->filter(fn($contact) => $contact->isActive)->first();
                     @endphp
                     @if ($activeContactPerson)
-                        <p class="text-xs font-semibold text-gray-700">Attention of: <span class="uppercase">{{ $activeContactPerson->name }}</span></p>
+                        <p class="text-xs font-semibold text-gray-700">Attention of: 
+                            @if ( $activeContactPerson->identity == 'male')
+                                <span class="uppercase">Mr. {{ $activeContactPerson->name }}</span>   
+                            @else
+                                <span class="uppercase">Ms. {{ $activeContactPerson->name }}</span>   
+                            @endif
+                        </p>
                     @endif
                     @if (!is_null($equipmentChunk->first()->customer->telephone1) && $equipmentChunk->first()->customer->telephone1 !== 'N/A' 
                         && $equipmentChunk->first()->customer->telephone1 !== '' && $equipmentChunk->first()->customer->telephone1 !== 'n/a')
