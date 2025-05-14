@@ -89,18 +89,21 @@ class CustomerResource extends Resource
                     Wizard\Step::make('Basic Information')
                         ->schema([
                             Forms\Components\TextInput::make('name')
+                                ->autocomplete(false)
                                 ->validationAttribute('name')
                                 ->placeholder('Precision Measurement Specialists, Inc.')
                                 ->required()
                                 ->maxLength(255)
                                 ->columnSpan(2),
                             Forms\Components\TextInput::make('nickname')
+                                ->autocomplete(false)
                                 ->validationAttribute('nickname')
                                 ->placeholder('PMSi')
                                 ->nullable()
                                 ->maxLength(20)
                                 ->columnSpan(2),
                             Forms\Components\TextArea::make('address')
+                                ->autocomplete(false)
                                 ->validationAttribute('address')
                                 ->rows(1) 
                                 ->placeholder("B1 L3 Macaria Business Center. Governor's Dr., Carmona, 4116 Cavite, Philippines")
@@ -115,26 +118,31 @@ class CustomerResource extends Resource
                                 ->default(now())
                                 ->columnSpan(1),
                             Forms\Components\TextInput::make('tradeName')
+                                ->autocomplete(false)
                                 ->validationAttribute('trade name')
                                 ->label('Trade Name')
                                 ->nullable()
                                 ->columnSpan(2),
                             Forms\Components\TextInput::make('qualifyingSystem')
+                                ->autocomplete(false)
                                 ->validationAttribute('qualifying system')
                                 ->label('Qualifying System')
                                 ->nullable()
                                 ->columnSpan(1),
                             Forms\Components\TextInput::make('certifyingBody')
+                                ->autocomplete(false)
                                 ->validationAttribute('certifying body')
                                 ->label('Certifying Body')
                                 ->nullable()
                                 ->columnSpan(1),
                             Forms\Components\TextArea::make('remarks')
+                                ->autocomplete(false)
                                 ->rows(1)   
                                 ->autosize()
                                 ->nullable()
                                 ->columnSpan(3),
                             Forms\Components\TextInput::make('referredBy')
+                                ->autocomplete(false)
                                 ->validationAttribute('referrer')
                                 ->label('Referred By')
                                 ->nullable()
@@ -145,28 +153,34 @@ class CustomerResource extends Resource
                     Wizard\Step::make('BIR Information')
                     ->schema([
                             Forms\Components\TextInput::make('tin')
+                                ->autocomplete(false)
                                 ->validationAttribute('TIN')
                                 ->label('Taxpayer Identification Number (TIN)')
                                 ->validationAttribute('TIN')
                                 ->required()
                                 ->columnSpan(4),
                             Forms\Components\TextInput::make('sec')
+                                ->autocomplete(false)
                                 ->label('SEC')
                                 ->nullable()
                                 ->columnSpan(3),
                             Forms\Components\TextInput::make('withHoldingTax')
+                                ->autocomplete(false)
                                 ->label('With Holding Tax')
                                 ->nullable()
                                 ->columnSpan(2),
                             Forms\Components\TextInput::make('businessNature')
+                                ->autocomplete(false)
                                 ->validationAttribute('business nature')
                                 ->label('Nature of Business')
                                 ->columnSpan(3),
                             Forms\Components\TextInput::make('businessStyle')
+                                ->autocomplete(false)
                                 ->validationAttribute('business style')
                                 ->label('Business Style')
                                 ->columnSpan(3),
                             Forms\Components\TextInput::make('industry')
+                                ->autocomplete(false)
                                 ->validationAttribute('Line of Business / Industry')
                                 ->label('Line of Business / Industry')
                                 ->columnSpan(3),
@@ -234,6 +248,7 @@ class CustomerResource extends Resource
                             //     ->disallowDropdown()
                             //     ->onlyCountries(['AF']),
                             Forms\Components\TextInput::make('mobile1')
+                                ->autocomplete(false)
                                 ->validationAttribute('mobile number')
                                 ->label('Mobile Number (Primary)')
                                 ->placeholder('Start with 09')
@@ -243,6 +258,7 @@ class CustomerResource extends Resource
                                 ->nullable()
                                 ->columnSpan(4),
                             Forms\Components\TextInput::make('telephone1')
+                                ->autocomplete(false)
                                 ->validationAttribute('telephone number')
                                 ->tel()
                                 ->label('Telephone Number (Primary)')
@@ -251,6 +267,7 @@ class CustomerResource extends Resource
                                 ->nullable()
                                 ->columnSpan(4),
                             Forms\Components\TextInput::make('mobile2')
+                                ->autocomplete(false)
                                 ->label('Mobile Number (Secondary)')
                                 ->validationAttribute('mobile number')
                                 ->placeholder('Start with 09')
@@ -260,6 +277,7 @@ class CustomerResource extends Resource
                                 ->nullable()
                                 ->columnSpan(4),
                             Forms\Components\TextInput::make('telephone2')
+                                ->autocomplete(false)
                                 ->tel()
                                 ->label('Telephone Number (Secondary)')
                                 ->validationAttribute('telephone number')
@@ -268,12 +286,14 @@ class CustomerResource extends Resource
                                 ->nullable()
                                 ->columnSpan(4),
                             Forms\Components\TextInput::make('email')
+                                ->autocomplete(false)
                                 ->validationAttribute('email')
                                 ->placeholder('pmsical@yahoo.com')
                                 ->email()
                                 ->required()
                                 ->columnSpan(4),
                             Forms\Components\TextInput::make('website')
+                                ->autocomplete(false)
                                 ->placeholder('www.pmsi-cal.com')
                                 ->label('Website')
                                 ->suffixIcon('heroicon-m-globe-alt')
@@ -342,12 +362,14 @@ class CustomerResource extends Resource
                                         ])
                                         ->native(false),
                                     Forms\Components\TextInput::make('name')
+                                        ->autocomplete(false)
                                         ->validationAttribute('name')
                                         ->label('Contact Name')
                                         ->placeholder('Name of the contact person')
                                         ->columnSpan(3)
                                         ->required(),
                                     Forms\Components\TextInput::make('contact1')
+                                        ->autocomplete(false)
                                         ->validationAttribute('primary contact number')
                                         ->label('Primary Contact Number')
                                         ->placeholder('Main phone number')
@@ -356,18 +378,22 @@ class CustomerResource extends Resource
                                         ->columnSpan(4)
                                         ->required(),
                                     Forms\Components\TextInput::make('department')
+                                        ->autocomplete(false)
                                         ->label('Department')
                                         ->placeholder('Department of the contact person within the company')
                                         ->columnSpan(4),
                                     Forms\Components\TextInput::make('contact2')
+                                        ->autocomplete(false)
                                         ->label('Secondary Contact Number')
                                         ->placeholder('Alternative phone number')
                                         ->columnSpan(4),
                                     Forms\Components\TextInput::make('position')
+                                        ->autocomplete(false)
                                         ->label('Position')
                                         ->placeholder('Position or title of the contact person within the company')
                                         ->columnSpan(4),
                                     Forms\Components\TextInput::make('email')
+                                        ->autocomplete(false)
                                         ->columnSpan(4)
                                         ->email(),
                                     Forms\Components\Toggle::make('isActive')
