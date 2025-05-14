@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('equipment_id')->nullable();
             $table->string('ar_id')->nullable();
             $table->string('gatePass')->nullable();
-            $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->cascadeOnDelete();
             $table->unsignedBigInteger('worksheet_id')->nullable();
             $table->string('make')->nullable();
             $table->string('model')->nullable();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('laboratory')->nullable();
             $table->string('calibrationType')->nullable();
             $table->string('category')->nullable();
-            $table->string('inDate');
+            $table->string('inDate')->nullable();
             $table->string('calibrationCycle')->nullable();
             $table->string('decisionRule')->nullable();
             //For Status

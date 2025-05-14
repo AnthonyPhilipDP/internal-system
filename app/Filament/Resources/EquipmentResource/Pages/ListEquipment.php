@@ -27,6 +27,45 @@ class ListEquipment extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('bulkCreate')
+                ->label('Add On-site Equipment')
+                ->requiresConfirmation()
+                ->icon('iconoir-multiple-pages-plus')
+                ->modalHeading('Add On-site Equipment')
+                ->modalSubheading('Specify the number of equipments to create.')
+                ->modalButton('Create')
+                ->modalIcon('iconoir-multiple-pages-plus')
+                ->form([
+                    TextInput::make('count')
+                        ->label('Number of Equipment')
+                        ->default(1)
+                        ->numeric()
+                        ->minValue(1)
+                        ->maxValue(99)
+                        ->required(),
+                ])
+                ->action(function ($data) {
+                    $count = $data['count'];
+
+                    // Get the current max transaction_id
+                    $currentMaxTransactionId = Equipment::withTrashed()->max('transaction_id') ?? 0;
+
+                    // Create the specified number of equipment records
+                    for ($i = 1; $i <= $count; $i++) {
+                        Equipment::create([
+                            'transaction_id' => $currentMaxTransactionId + $i, // Increment transaction_id for each record
+                        ]);
+                    }
+
+                    $singleEquipmentBodyMessage = "$count equipment have been created succesfully";
+                    $multipleEquipmentBodyMessage = "$count equipments have been created succesfully";
+
+                    Notification::make()
+                        ->title('On-site Equipments created')
+                        ->body(fn() => $count == 1 ? $singleEquipmentBodyMessage : $multipleEquipmentBodyMessage)
+                        ->success()
+                        ->send();
+                }),
             Action::make('qrScanner')
                 ->label('QR Code Scanner')
                 ->modalDescription('Experience seamless tracking with the QR code system. Simply capture and upload the QR code from the labeled equipment, and let our system effortlessly locate and display the item details for you')
