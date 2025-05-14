@@ -161,17 +161,14 @@ class CustomerResource extends Resource
                             Forms\Components\TextInput::make('businessNature')
                                 ->validationAttribute('business nature')
                                 ->label('Nature of Business')
-                                ->required()
                                 ->columnSpan(3),
                             Forms\Components\TextInput::make('businessStyle')
                                 ->validationAttribute('business style')
                                 ->label('Business Style')
-                                ->required()
                                 ->columnSpan(3),
                             Forms\Components\TextInput::make('industry')
                                 ->validationAttribute('Line of Business / Industry')
                                 ->label('Line of Business / Industry')
-                                ->required()
                                 ->columnSpan(3),
                             Forms\Components\Select::make('vat')
                                 ->validationAttribute('VAT')
@@ -181,8 +178,8 @@ class CustomerResource extends Resource
                                     'Non-VAT' => 'Non-VAT',
                                 ])
                                 ->native(false)
-                                ->nullable(fn (Get $get): bool => $get('othersCheckBox') || $get('vatExempt'))
-                                ->disabled(fn (Get $get): bool => $get('othersCheckBox') || $get('vatExempt'))
+                                ->nullable(fn (Get $get): bool => $get('othersForVat') || $get('vatExempt'))
+                                ->disabled(fn (Get $get): bool => $get('othersForVat') || $get('vatExempt'))
                                 ->columnSpan(2),
                             Forms\Components\Toggle::make('vatExempt')
                                 ->label('VAT Exempt')
