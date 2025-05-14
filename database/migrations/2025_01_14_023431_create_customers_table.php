@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('qualifyingSystem')->nullable();
             $table->string('certifyingBody')->nullable();
             $table->string('dateCertified')->nullable();
-            $table->string('payment');
+            $table->string('payment')->nullable();
             $table->string('status');
             $table->string('remarks', 1000)->nullable();
             $table->string('businessStyle')->nullable();
@@ -40,6 +40,11 @@ return new class extends Migration
             $table->string('tradeName')->nullable();
             $table->string('industry')->nullable();
             $table->string('referredBy')->nullable();
+            //This is just f or a toggle button (start)
+            $table->boolean('vatExempt')->default(false);
+            $table->boolean('othersForVat')->default(false);
+            $table->boolean('othersForPayment')->default(false);
+            //This is just for a toggle button (end)
             $table->string('otherVat')->nullable();
             $table->string('otherPayment')->nullable();
             $table->string('vatExemptCertificateNo')->nullable();

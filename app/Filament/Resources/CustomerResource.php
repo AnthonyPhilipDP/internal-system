@@ -210,18 +210,21 @@ class CustomerResource extends Resource
                                 ->disabled(fn (Get $get): bool => $get('vatExempt'))
                                 ->columnSpan(1),
                             Forms\Components\TextInput::make('otherVat')
+                                ->autocomplete(false)
                                 ->validationAttribute('others VAT')
                                 ->label('Please specify')
                                 ->hidden(fn (Get $get): bool => ! $get('othersForVat'))
                                 ->required()
                                 ->columnSpan(5),
                             Forms\Components\TextInput::make('vatExemptCertificateNo')
+                                ->autocomplete(false)
                                 ->validationAttribute('Certificate No.')
                                 ->label('Certificate No.')
                                 ->hidden(fn (Get $get): bool => ! $get('vatExempt'))
                                 ->required()
                                 ->columnSpan(3),
                             Forms\Components\TextInput::make('vatExemptValidity')
+                                ->autocomplete(false)
                                 ->validationAttribute('validity')
                                 ->label('Validity')
                                 ->hidden(fn (Get $get): bool => ! $get('vatExempt'))
@@ -325,8 +328,8 @@ class CustomerResource extends Resource
                                 ])
                                 ->default('Cash on Delivery')
                                 ->native(false)
+                                ->nullable(fn (Get $get): bool => $get('othersForPayment'))
                                 ->disabled(fn (Get $get): bool => $get('othersForPayment'))
-                                ->required()
                                 ->columnSpan(2),
                             Forms\Components\Toggle::make('othersForPayment')
                                 ->label('Others')
@@ -335,6 +338,7 @@ class CustomerResource extends Resource
                                 ->extraAttributes(['class' => 'mt-2'])
                                 ->columnSpan(1),
                             Forms\Components\TextInput::make('otherPayment')
+                                ->autocomplete(false)
                                 ->validationAttribute('other payment')
                                 ->label('Please specify')
                                 ->hidden(fn (Get $get): bool => ! $get('othersForPayment'))

@@ -130,4 +130,10 @@ class Customer extends Model
     public function activeContactPerson() {
         return $this->hasMany(ContactPerson::class)->where('isActive', true);
     }
+
+    protected $casts = [
+        'vatExempt' => 'boolean',
+        'othersForVat' => 'boolean',
+        'othersForPayment' => 'boolean',
+    ];
 }
