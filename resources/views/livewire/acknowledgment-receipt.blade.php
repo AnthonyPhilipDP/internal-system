@@ -20,11 +20,17 @@
                     @endif
                     @if (!is_null($equipmentChunk->first()->customer->telephone1) && $equipmentChunk->first()->customer->telephone1 !== 'N/A' 
                         && $equipmentChunk->first()->customer->telephone1 !== '' && $equipmentChunk->first()->customer->telephone1 !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Telephone: {{ $equipmentChunk->first()->customer->telephone1 }}</p>
+                        <p class="text-xs font-semibold text-gray-700">
+                            Telephone: ({{ substr($equipmentChunk->first()->customer->telephone1, 0, 3) }}) 
+                            {{ substr($equipmentChunk->first()->customer->telephone1, 3, 3) }}-{{ substr($equipmentChunk->first()->customer->telephone1, 6) }}
+                        </p>
                     @endif
                     @if (!is_null($equipmentChunk->first()->customer->mobile1) && $equipmentChunk->first()->customer->mobile1 !== 'N/A' 
                         && $equipmentChunk->first()->customer->mobile1 !== '' && $equipmentChunk->first()->customer->mobile1 !== 'n/a')
-                        <p class="text-xs font-semibold text-gray-700">Mobile: {{ $equipmentChunk->first()->customer->mobile1 }}</p>
+                        <p class="text-xs font-semibold text-gray-700">
+                            Telephone: ({{ substr($equipmentChunk->first()->customer->mobile1, 0, 4) }}) 
+                            {{ substr($equipmentChunk->first()->customer->mobile1, 4, 3) }}-{{ substr($equipmentChunk->first()->customer->mobile1, 7) }}
+                        </p>
                     @endif
                 </div>
                 <div class="flex flex-col items-start gap-1 max-w-sm">

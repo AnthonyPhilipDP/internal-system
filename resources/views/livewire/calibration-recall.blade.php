@@ -42,10 +42,14 @@
                         @endif
                         <p class="text-sm font-bold text-gray-700 truncate">Client: <span class="uppercase">{{ $customer['name'] }}</span></p>
                         @if (!empty($customer['telephone']))
-                            <p class="text-sm font-semibold text-gray-700">Telephone: {{ $customer['telephone'] }}</p>
+                            <p class="text-sm font-semibold text-gray-700">
+                                Telephone: ({{ substr($customer['telephone'], 0, 3) }}) {{ substr($customer['telephone'], 3, 3) }}-{{ substr($customer['telephone'], 6) }}
+                            </p>
                         @endif
                         @if (!empty($customer['mobile']))
-                            <p class="text-sm font-semibold text-gray-700">Mobile: {{ $customer['mobile'] }}</p>
+                            <p class="text-sm font-semibold text-gray-700">
+                                Telephone: ({{ substr($customer['mobile'], 0, 4) }}) {{ substr($customer['mobile'], 4, 3) }}-{{ substr($customer['mobile'], 7) }}
+                            </p>
                         @endif
                         @if (!empty($customer['email']))
                             <p class="text-sm font-semibold text-gray-700">Email: {{ $customer['email'] }}</p>
@@ -64,9 +68,17 @@
                 <!-- Equipment Table -->
                 <hr class="border-gray-800 my-2">
                 <p class="text-sm text-gray-800 my-2 text-justify">
-                    Dear Sir/Madam:
-                    <br><br>
-                    Please take note that the following list of <span class="underline italic">equipment will come due</span> for calibration service. Please contact our office at your convenience to schedule calibration service of this equipment.
+                    @if (!empty($customer['contact_persons']))
+                            @if ( $customer['contact_persons'][0]['identity'] == 'male' )
+                                Dear Sir,
+                            @else
+                                Dear Madam,
+                            @endif
+                    @else
+                        Dear Sir/Madam:
+                    @endif
+                        <br><br>
+                        Please take note that the following list of <span class="underline italic">equipment will come due</span> for calibration service. Please contact our office at your convenience to schedule calibration service of this equipment.
                 </p>
                 <div class="border-b border-white rounded-lg overflow-x-auto">
                     <table class="min-w-full divide-y divide-white table-fixed">
