@@ -20,50 +20,9 @@ class Customer extends Model
         'id'
     ];
 
-    public function equipment() {
-        return $this->hasMany(Equipment::class);
-    } 
-
     protected static function boot()
     {
         parent::boot();
-
-        // static::saving(function ($model) {
-        //     if (is_null($model->telephone)) {
-        //         $model->telephone = 'N/A';
-        //     }
-
-        //     if (is_null($model->website)) {
-        //         $model->website = 'N/A';
-        //     }
-
-        //     if (is_null($model->sec)) {
-        //         $model->sec = 'N/A';
-        //     }
-
-        //     if (is_null($model->wht)) {
-        //         $model->wht = 'N/A';
-        //     }
-
-        //     if (is_null($model->qualifyingSystem)) {
-        //         $model->qualifyingSystem = 'N/A';
-        //     }
-
-        //     if (is_null($model->remarks)) {
-        //         $model->remarks = 'N/A';
-        //     }
-        // });
-    }
-
-    public function getFormattedWebsiteAttribute()
-    {
-        $website = $this->attributes['website'];
-
-        if (is_null($website) || $website === '') {
-            return 'N/A';
-        }
-
-        return $website;
     }
 
     public function getDisplayDateAttribute()
@@ -82,66 +41,6 @@ class Customer extends Model
         }
     }
 
-    public function getWebsiteAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-
-    public function getSecAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-
-    public function getWithHoldingTaxAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-
-    public function getQualifyingSystemAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-
-    public function getCertifyingBodyAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-
-    public function getRemarksAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-
-    public function getEmailAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-
-    public function getStatusAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-    
-    public function getTinAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-    
-    public function getBusinessStyleAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-    
-    public function getDateCertifiedAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-    
-    public function getBusinessNatureAttribute($value)
-    {
-        return $this->formatNullableAttribute($value);
-    }
-
      public function getCreatedDateAttribute($value)
     {
         if (is_null($value) || $value === '') {
@@ -156,12 +55,6 @@ class Customer extends Model
             // Log the exception or handle it as needed
             return 'N/A';
         }
-    }
-
-    // Helper method to format nullable attributes
-    private function formatNullableAttribute($value)
-    {
-        return is_null($value) || $value === '' ? 'N/A' : $value;
     }
 
     public function getFormattedMobileAttribute()
@@ -222,6 +115,9 @@ class Customer extends Model
         return $formattedTelephones;
     }
 
+    public function equipment() {
+        return $this->hasMany(Equipment::class);
+    } 
 
     public function contactPerson() {
         return $this->hasMany(ContactPerson::class);
