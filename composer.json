@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "andreiio/blade-iconoir": "^4.7",
         "davidhsianturi/blade-bootstrap-icons": "^2.0",
         "endroid/qr-code": "^6.0",
         "filament/filament": "^3.3",
