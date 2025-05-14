@@ -240,6 +240,7 @@ class CustomerResource extends Resource
                                 ->validationAttribute('mobile number')
                                 ->label('Mobile Number (Primary)')
                                 ->placeholder('Start with 09')
+                                ->length(11)
                                 ->prefix('Enter 11 digits')
                                 ->tel()
                                 ->nullable()
@@ -276,9 +277,8 @@ class CustomerResource extends Resource
                                 ->required()
                                 ->columnSpan(4),
                             Forms\Components\TextInput::make('website')
-                                ->placeholder('pmsi-cal.com')
+                                ->placeholder('www.pmsi-cal.com')
                                 ->label('Website')
-                                ->prefix('www.')
                                 ->suffixIcon('heroicon-m-globe-alt')
                                 ->suffixIconColor('primary')
                                 ->nullable()
