@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-
         User::factory()->create([
             'name' => 'Admin',
             'username' => 'Administrator',
@@ -24,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'level' => 1,
             'password' => 'admin',
         ]);
-
+        /*
         DB::table('customers')->insert([
             'name' => 'Samsung Electronics',
             'nickname' => 'smasnug',
@@ -41,7 +40,8 @@ class DatabaseSeeder extends Seeder
             'tin' => '1234567890',
             'created_at' => now(),
         ]);
-
+        */
+        /*
         DB::table('equipment')->insert([
             'transaction_id' => '1',
             'equipment_id' => 'Galaxy S25 Ultra',
@@ -56,17 +56,9 @@ class DatabaseSeeder extends Seeder
             'calibrationType' => 'Active',
             'category' => 'electrical',
             'inDate' => now(),
-            'calibrationCycle' => '12',
             'decisionRule' => 'simple',
             'created_at' => now(),
         ]);
-
-        // User::factory()->create([
-        //     'name' => 'Philip',
-        //     'email' => null,
-        //     'level' => 1,
-        //     'password' => 'admin',
-        // ]);
-
+        */
     }
 }
