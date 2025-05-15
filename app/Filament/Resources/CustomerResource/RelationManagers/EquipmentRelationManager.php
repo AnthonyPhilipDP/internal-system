@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CustomerResource\RelationManagers;
 
 use DateTime;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use Spatie\Color\Rgb;
@@ -21,8 +22,8 @@ use Filament\Forms\Components\Section;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Filament\Notifications\Notification;
-use Filament\Tables\Actions\ActionGroup;
 
+use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Filament\Tables\Enums\ActionsPosition;
@@ -634,18 +635,49 @@ class EquipmentRelationManager extends RelationManager
                                 Section::make('')->schema([
                                     Forms\Components\Grid::make(2)->schema([
                                         Forms\Components\DatePicker::make('calibrationDate')
-                                            ->label('Calibration Date'),
+                                            ->label('Calibration Date')
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                $interval = (int) ($get('calibrationInterval') ?? 0);
+                                                if ($state && $interval > 0) {
+                                                    $due = \Carbon\Carbon::parse($state)->addMonths($interval)->toDateString();
+                                                    $set('calibrationDue', $due);
+                                                } else {
+                                                    $set('calibrationDue', null);
+                                                }
+                                            }),
                                         Forms\Components\TextInput::make('calibrationInterval')
                                             ->label('Calibration Interval')
+                                            ->validationAttribute('calibration interval')
                                             ->numeric()
                                             ->suffix('Months')
                                             ->nullable()
-                                            ->minValue(0)
-                                            ->maxValue(60),
+                                            ->minValue(1)
+                                            ->maxValue(12)
+                                            ->live(debounce: 800)
+                                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                $date = $get('calibrationDate');
+                                                $interval = (int) ($state ?? 0);
+                                                if ($date && $interval > 0) {
+                                                    $due = \Carbon\Carbon::parse($date)->addMonths($interval)->toDateString();
+                                                    $set('calibrationDue', $due);
+                                                } else {
+                                                    $set('calibrationDue', null);
+                                                }
+                                            }),
                                     ]),
                                     Forms\Components\Grid::make(2)->schema([
                                         Forms\Components\DatePicker::make('calibrationDue')
-                                            ->label('Calibration Due'),
+                                            ->label('Calibration Due')
+                                            ->readOnly()
+                                            ->dehydrateStateUsing(function ($state, callable $get) {
+                                                $date = $get('calibrationDate');
+                                                $interval = (int) ($get('calibrationInterval') ?? 0);
+                                                if ($date && $interval > 0) {
+                                                    return \Carbon\Carbon::parse($date)->addMonths($interval)->toDateString();
+                                                }
+                                                return null;
+                                            }),
                                         Forms\Components\DatePicker::make('outDate')
                                             ->label('Date Released'),
                                     ]),
