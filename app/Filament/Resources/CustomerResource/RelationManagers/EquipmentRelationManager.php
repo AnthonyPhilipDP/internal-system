@@ -246,9 +246,17 @@ class EquipmentRelationManager extends RelationManager
                                             'referToReport' => 'Refer to Report',
                                             'seeRemarks' => 'See Remarks',
                                         ]),
-                                    Forms\Components\TextInput::make('service')
-                                        ->nullable()
-                                        ->maxLength(255),
+                                    Forms\Components\Select::make('service')
+                                        ->label('Service')
+                                        ->native(false)
+                                        ->options([
+                                            'calibration' => 'Calibration',
+                                            'cal and realign' => 'Calibration and Realign',
+                                            'cal and repair' => 'Calibration and Repair',
+                                            'repair' => 'Repair',
+                                            'diagnostic' => 'Diagnostic',
+                                            'N/A' => 'Not Available',
+                                        ]),
                                     Forms\Components\Toggle::make('intermediateCheck')
                                         ->label('Intermediate Check')
                                         ->onIcon('heroicon-m-check')
