@@ -12,41 +12,41 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('equipment', function (Blueprint $table) {
-            //For Incoming
             $table->id();
             $table->unsignedBigInteger('transaction_id')->nullable();
-            $table->string('equipment_id')->nullable();
-            $table->string('ar_id')->nullable();
-            $table->string('gatePass')->nullable();
+            //Details
             $table->foreignId('customer_id')->nullable()->constrained('customers')->cascadeOnDelete();
-            $table->unsignedBigInteger('worksheet_id')->nullable();
+            $table->string('equipment_id')->nullable();
             $table->string('make')->nullable();
             $table->string('model')->nullable();
             $table->string('serial')->nullable();
             $table->string('description')->nullable();
-            $table->json('inspection')->nullable();
             $table->string('laboratory')->nullable();
             $table->string('calibrationType')->nullable();
             $table->string('category')->nullable();
+            $table->json('inspection')->nullable();
             $table->string('inDate')->nullable();
             $table->string('decisionRule')->nullable();
-            //For Status
+            $table->string('status')->nullable();
+            $table->string('ar_id')->nullable();
+            $table->string('gatePass')->nullable();
+            //Status
+            $table->unsignedBigInteger('worksheet_id')->nullable();
             $table->string('calibrationProcedure')->nullable();
             $table->string('previousCondition')->nullable();
             $table->string('inCondition')->nullable();
             $table->string('outCondition')->nullable();
             $table->string('service')->nullable();
             $table->boolean('intermediateCheck')->default(false);
-            $table->string('status')->nullable();
-            $table->string('comments')->nullable();
             $table->string('code_range')->nullable();
             $table->string('reference')->nullable();
             $table->string('standardsUsed')->nullable();
-            $table->string('validation')->nullable();
-            $table->string('validatedBy')->nullable();
             $table->string('temperature')->nullable();
             $table->string('humidity')->nullable();
+            $table->string('validation')->nullable();
+            $table->string('validatedBy')->nullable();
             $table->string('ncfReport')->nullable();
+            //Timeline
             $table->string('calibrationDate')->nullable();
             $table->string('calibrationInterval')->nullable();
             $table->string('calibrationDue')->nullable();
@@ -60,6 +60,7 @@ return new class extends Migration
             $table->string('drNoDocument')->nullable();
             $table->string('documentReleasedDate')->nullable();
             $table->string('documentReceivedBy')->nullable();
+            $table->string('comments')->nullable();
             //Timestamps
             $table->timestamps();
             $table->softDeletes();
