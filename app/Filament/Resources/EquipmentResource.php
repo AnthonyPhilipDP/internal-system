@@ -213,13 +213,6 @@ class EquipmentResource extends Resource
                                 ->label('Date Received')
                                 ->default(now())
                                 ->required(),
-                            Forms\Components\TextInput::make('calibrationCycle')
-                                ->label('Calibration Cycle')
-                                ->numeric()
-                                ->minValue(1)
-                                ->maxValue(12)
-                                ->default(12)
-                                ->required(),
                             Forms\Components\Select::make('decisionRule')
                                 ->label('Decision Rule')
                                 ->options([
