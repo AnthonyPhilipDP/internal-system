@@ -123,25 +123,16 @@ class EquipmentRelationManager extends RelationManager
                                         ->label('Status')
                                         ->searchable()
                                         ->options([
-                                            'abandoned' => 'Abandoned',
                                             'completed' => 'Completed',
                                             'delivered' => 'Delivered',
-                                            'evaluation' => 'Evaluation',
+                                            'picked-up' => 'Picked-up',
                                             'repair' => 'Repair',
-                                            'forSale' => 'For Sale',
-                                            'incoming' => 'Incoming',
-                                            'spareParts' => 'Spare Parts',
-                                            'onHold' => 'On Hold',
-                                            'onSite' => 'On Site',
-                                            'pickedUp' => 'Picked Up',
                                             'pending' => 'Pending',
-                                            'rejected' => 'Rejected',
+                                            'on-hold' => 'On-hold',
+                                            'incoming' => 'Incoming',
                                             'returned' => 'Returned',
-                                            'shippedOut' => 'Shipped Out',
-                                            'Sold' => 'Sold',
-                                            'transferred' => 'Transferred',
-                                            'unclaimed' => 'Unclaimed',
-                                            'audit' => 'ISO Audit',
+                                            'on-site' => 'On-site',
+                                            'for sale' => 'For sale',
                                         ]),
                                         Forms\Components\Select::make('decisionRule')
                                         ->label('Decision Rule')
