@@ -13,42 +13,46 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('address');
-            $table->string('mobile1')->nullable();
-            $table->string('mobile2')->nullable();
-            $table->string('telephone1')->nullable();
-            $table->string('telephone2')->nullable();
-            $table->string('email')->nullable();
-            $table->string('website')->nullable();
-            $table->string('sec')->nullable();
-            $table->string('vat')->nullable();
-            $table->string('withHoldingTax')->nullable();
-            $table->string('businessNature')->nullable();
-            $table->string('qualifyingSystem')->nullable();
-            $table->string('certifyingBody')->nullable();
-            $table->string('dateCertified')->nullable();
-            $table->string('payment')->nullable();
-            $table->string('status');
-            $table->string('remarks', 1000)->nullable();
-            $table->string('businessStyle')->nullable();
-            $table->string('tin');
-            $table->string('createdDate')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
+            $table->unsignedBigInteger('customer_id')->nullable(); //imported
+            //Basic Information
+            $table->string('name')->nullable(); //imported
             $table->string('nickname')->nullable();
+            $table->string('address')->nullable(); //imported
+            $table->string('dateCertified')->nullable(); //imported
             $table->string('tradeName')->nullable();
-            $table->string('industry')->nullable();
+            $table->string('qualifyingSystem')->nullable(); //imported
+            $table->string('certifyingBody')->nullable(); //imported
+            $table->string('remarks', 1000)->nullable(); //imported
             $table->string('referredBy')->nullable();
-            //This is just f or a toggle button (start)
+            //BIR Information
+            $table->string('tin')->nullable(); //imported
+            $table->string('sec')->nullable(); //imported
+            $table->string('withHoldingTax')->nullable(); //imported
+            $table->string('businessNature')->nullable(); //imported
+            $table->string('businessStyle')->nullable(); //imported
+            $table->string('industry')->nullable();
+            $table->string('vat')->nullable(); //imported
             $table->boolean('vatExempt')->default(false);
-            $table->boolean('othersForVat')->default(false);
-            $table->boolean('othersForPayment')->default(false);
-            //This is just for a toggle button (end)
-            $table->string('otherVat')->nullable();
-            $table->string('otherPayment')->nullable();
             $table->string('vatExemptCertificateNo')->nullable();
             $table->string('vatExemptValidity')->nullable();
+            $table->boolean('othersForVat')->default(false);
+            $table->string('otherVat')->nullable();
+            //Contact Details
+            $table->string('mobile1')->nullable();
+            $table->string('telephone1')->nullable(); //imported
+            $table->string('mobile2')->nullable();
+            $table->string('telephone2')->nullable(); //imported
+            $table->string('email')->nullable(); //imported
+            $table->string('website')->nullable(); //imported
+            $table->string('status')->nullable(); //imported
+            $table->string('payment')->nullable(); //imported
+            $table->boolean('othersForPayment')->default(false);
+            $table->string('otherPayment')->nullable();
+            //Other Imported Data
+            $table->string('createdDate')->nullable(); //imported
+            //Timestamps
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
