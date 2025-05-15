@@ -510,6 +510,48 @@ class EquipmentResource extends Resource
                         ->modalSubheading('Do you want to replicate this equipment with accessories?')
                         ->modalButton('Replicate')
                         ->color('info'),
+                    Tables\Actions\Action::make('onsite_duplicate')
+                        ->label('On-site Replicate')
+                        ->icon('heroicon-m-document-duplicate')
+                        ->requiresConfirmation()
+                        ->modalIcon('heroicon-o-document-duplicate')
+                        ->modalHeading('On-site Replicate Equipment')
+                        ->modalSubheading('This will replicate only fields needed for on-site use.')
+                        ->modalButton('On-site Replicate')
+                        ->color('primary')
+                        ->action(function (Equipment $record) {
+                            // Only replicate the specified fields
+                            $fieldsToCopy = [
+                                'equipment_id',
+                                'customer_id',
+                                'make',
+                                'model',
+                                'description',
+                                'serial',
+                                'laboratory',
+                                'category',
+                                'calibrationProcedure',
+                                'code_range',
+                                'reference',
+                            ];
+
+                            $newEquipment = new Equipment();
+                            foreach ($fieldsToCopy as $field) {
+                                $newEquipment->$field = $record->$field;
+                            }
+                            $newEquipment->save();
+
+                            // Generate QR code for the new equipment
+                            EquipmentResource::generateQrCode($newEquipment);
+
+                            // Add notification
+                            Notification::make()
+                                ->title('On-site Replication Successful')
+                                ->body('The equipment has been successfully replicated for on-site use.')
+                                ->icon('heroicon-o-document-duplicate')
+                                ->success()
+                                ->send();
+                        }),
                     Tables\Actions\DeleteAction::make()
                         ->label('Delete')
                         ->modalIcon('heroicon-o-trash')
