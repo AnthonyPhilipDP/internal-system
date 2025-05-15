@@ -47,14 +47,23 @@ class Equipment extends Model
     }
 
     public function getDecisionRuleName()
-{
-    $decisionRuleNames = [
-        'default' => 'Simple Calibration',
-        'rule1' => 'Binary Statement for Simple Acceptance Rule ( w = 0 )',
-        'rule2' => 'Binary Statement with Guard Band( w = U )',
-        'rule3' => 'Non-binary Statement with Guard Band( w = U )',
-    ];
+    {
+        $decisionRuleNames = [
+            'default' => 'Simple Calibration',
+            'rule1' => 'Binary Statement for Simple Acceptance Rule ( w = 0 )',
+            'rule2' => 'Binary Statement with Guard Band( w = U )',
+            'rule3' => 'Non-binary Statement with Guard Band( w = U )',
+        ];
 
-    return $decisionRuleNames[$this->decisionRule] ?? '';
-}
+        return $decisionRuleNames[$this->decisionRule] ?? '';
+    }
+
+    public function getValidationAttribute($value)
+    {
+        // Only pad if it's a single digit (0-9)
+        if (is_numeric($value) && $value >= 0 && $value < 10) {
+            return str_pad($value, 2, '0', STR_PAD_LEFT);
+        }
+        return $value;
+    }
 }
