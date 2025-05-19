@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'level' => 1,
             'password' => 'admin',
         ]);
-        /*
+    
         DB::table('customers')->insert([
             'name' => 'Samsung Electronics',
             'nickname' => 'smasnug',
@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             'tin' => '1234567890',
             'created_at' => now(),
         ]);
-        */
+        
         /*
         DB::table('equipment')->insert([
             'transaction_id' => '1',

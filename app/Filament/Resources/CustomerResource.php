@@ -293,7 +293,6 @@ class CustomerResource extends Resource
                                 ->validationAttribute('email')
                                 ->placeholder('pmsical@yahoo.com')
                                 ->email()
-                                ->required()
                                 ->columnSpan(4),
                             Forms\Components\TextInput::make('website')
                                 ->autocomplete(false)
@@ -428,7 +427,7 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                Tables\Columns\TextColumn::make('customer_id')
                     ->label('Customer ID')
                     ->copyable()
                     ->copyMessage('Customer ID No. copied')
