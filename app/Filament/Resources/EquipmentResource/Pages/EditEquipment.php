@@ -67,30 +67,48 @@ class EditEquipment extends EditRecord
                     Section::make('')->schema([
                         Select::make('customer_id')
                             ->required()
-                            ->relationship('customer', 'name')
-                            ->searchable(['name', 'id'])
+                            ->label('Customer')
+                            ->searchable()
                             ->preload()
                             ->prefixIcon('heroicon-o-user')
                             ->prefixIconColor('primary')
                             ->reactive()
+                            ->options(function () {
+                                return Customer::query()
+                                    ->latest('created_at')
+                                    ->pluck('name', 'customer_id')
+                                    ->toArray();
+                            })
+                            ->getSearchResultsUsing(function (string $search) {
+                                return Customer::query()
+                                    ->where(function ($query) use ($search) {
+                                        $query->where('name', 'like', "%{$search}%")
+                                            ->orWhere('nickname', 'like', "%{$search}%")
+                                            ->orWhere('customer_id', 'like', "%{$search}%");
+                                    })
+                                    ->pluck('name', 'customer_id')
+                                    ->toArray();
+                            })
+                            ->getOptionLabelUsing(function ($value) {
+                                $customer = Customer::where('customer_id', $value)->first();
+                                return $customer ? $customer->name : null;
+                            })
                             ->afterStateHydrated(function (?string $state, callable $get, callable $set): void {
-                                // Set the customerAddress based on the initial customer_id
-                                if ($state) {
-                                    $customer = Customer::find($state);
+                                $customerId = $get('customer_id');
+                                if ($customerId) {
+                                    $customer = Customer::where('customer_id', $customerId)->first();
                                     if ($customer) {
                                         $set('customerAddress', $customer->address);
                                     }
                                 }
                             })
                             ->afterStateUpdated(function (?string $state, callable $get, callable $set): void {
-                                // Update the customerAddress when customer_id changes
                                 if ($state) {
-                                    $customer = Customer::find($state);
+                                    $customer = Customer::where('customer_id', $state)->first();
                                     if ($customer) {
                                         $set('customerAddress', $customer->address);
                                     }
                                 } else {
-                                    // Clear the customerAddress if customer_id is removed
                                     $set('customerAddress', '');
                                 }
                             }),
@@ -127,17 +145,6 @@ class EditEquipment extends EditRecord
                             'repair' => 'Repair',
                         ])
                         ->default('electrical')
-                        ->native(false)
-                        ->searchable()
-                        ->required(),
-                        Select::make('calibrationType')
-                        ->label('Calibration Type')
-                        ->options([
-                            'iso' => 'ISO 17025',
-                            'ansi' => 'ANSI Z540',
-                            'milstd' => 'Military Standard',
-                        ])
-                        ->default('iso')
                         ->native(false)
                         ->searchable()
                         ->required(),

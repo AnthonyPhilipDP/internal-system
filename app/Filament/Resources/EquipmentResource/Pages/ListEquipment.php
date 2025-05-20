@@ -213,8 +213,11 @@ class ListEquipment extends ListRecords
                         ->searchingMessage('Searching DR number, please wait ...')
                         ->noSearchResultsMessage('No DR number found.')
                         ->getSearchResultsUsing(function (string $search) {
-                            return Equipment::where('ar_id', 'like', "%{$search}%")
+                            return Equipment::whereRaw('ar_id REGEXP "^[0-9]+$"')
+                                ->where('ar_id', 'like', "%{$search}%")
+                                ->orderByRaw('CAST(ar_id AS UNSIGNED) DESC')
                                 ->pluck('ar_id')
+                                ->unique()
                                 ->mapWithKeys(function ($arId) {
                                     return [$arId => '401-' . $arId];
                                 });
@@ -222,10 +225,18 @@ class ListEquipment extends ListRecords
                         ->getOptionLabelUsing(function ($value) {
                             return '401-' . $value;
                         })
-                        ->options(Equipment::pluck('ar_id')->unique()->mapWithKeys(function ($arId) {
-                            return [$arId => '401-' . $arId];
-                        }))
-                        ->default(Equipment::max('ar_id'))
+                        ->options(
+                            Equipment::whereRaw('ar_id REGEXP "^[0-9]+$"')
+                                ->orderByRaw('CAST(ar_id AS UNSIGNED) DESC')
+                                ->pluck('ar_id')
+                                ->unique()
+                                ->mapWithKeys(function ($arId) {
+                                    return [$arId => '401-' . $arId];
+                                })
+                        )
+                        ->default(
+                            Equipment::whereNotNull('ar_id')->latest('created_at')->value('ar_id')
+                        )
                         ->required()
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set) {
@@ -233,7 +244,7 @@ class ListEquipment extends ListRecords
                                 $deliveryPerson = DeliveryPerson::where('ar_id', $state)->first();
                                 $set('name', $deliveryPerson ? $deliveryPerson->name : '');
                             } else {
-                                $set('name', null); // Clear the name if no ar_id is selected
+                                $set('name', null);
                             }
                         }),
                 ])

@@ -79,43 +79,48 @@ class EquipmentResource extends Resource
                         Section::make('')->schema([
                             Forms\Components\Select::make('customer_id')
                                 ->required()
-                                ->relationship('customer', 'name')
-                                ->searchable(['name', 'id', 'nickname'])
+                                ->label('Customer')
+                                ->searchable()
                                 ->preload()
                                 ->prefixIcon('heroicon-o-user')
                                 ->prefixIconColor('primary')
                                 ->reactive()
+                                ->options(function () {
+                                    return Customer::query()
+                                        ->latest('created_at')
+                                        ->pluck('name', 'customer_id')
+                                        ->toArray();
+                                })
+                                ->getSearchResultsUsing(function (string $search) {
+                                    return Customer::query()
+                                        ->where(function ($query) use ($search) {
+                                            $query->where('name', 'like', "%{$search}%")
+                                                ->orWhere('nickname', 'like', "%{$search}%")
+                                                ->orWhere('customer_id', 'like', "%{$search}%");
+                                        })
+                                        ->pluck('name', 'customer_id')
+                                        ->toArray();
+                                })
+                                ->getOptionLabelUsing(function ($value) {
+                                    $customer = Customer::where('customer_id', $value)->first();
+                                    return $customer ? $customer->name : null;
+                                })
                                 ->afterStateHydrated(function (?string $state, callable $get, callable $set): void {
-                                    $maxAr = Equipment::query()
-                                        ->selectRaw('MAX(CAST(ar_id AS UNSIGNED)) as max')
-                                        ->value('max') ?? 0;
-                                    $toggle = $get('sameToggle');
-
-                                    // Ensure customer_id is set based on maxAr if toggle is off (default)
-                                    if (!$toggle) {
-                                        $customerId = Equipment::query()
-                                            ->where('ar_id', $maxAr)
-                                            ->value('customer_id');
-                                        $set('customer_id', $customerId);
-
-                                        // Fetch and set the customer's address based on the customer_id
-                                        if ($customerId) {
-                                            $customer = Customer::find($customerId);
-                                            if ($customer) {
-                                                $set('customerAddress', $customer->address);
-                                            }
+                                    $customerId = $get('customer_id');
+                                    if ($customerId) {
+                                        $customer = Customer::where('customer_id', $customerId)->first();
+                                        if ($customer) {
+                                            $set('customerAddress', $customer->address);
                                         }
                                     }
                                 })
                                 ->afterStateUpdated(function (?string $state, callable $get, callable $set): void {
-                                    // Fetch and set the customer's address when customer_id changes
                                     if ($state) {
-                                        $customer = Customer::find($state);
+                                        $customer = Customer::where('customer_id', $state)->first();
                                         if ($customer) {
                                             $set('customerAddress', $customer->address);
                                         }
                                     } else {
-                                        // Clear the customerAddress if customer_id is removed
                                         $set('customerAddress', '');
                                     }
                                 }),

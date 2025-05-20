@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('transaction_id')->nullable(); //imported
             //Details
-            $table->foreignId('customer_id')->nullable()->constrained('customers')->cascadeOnDelete(); //imported
+            $table->unsignedBigInteger('customer_id')->nullable(); //imported
             $table->string('equipment_id')->nullable(); //imported
             $table->string('make')->nullable(); //imported
             $table->string('model')->nullable(); //imported
@@ -56,7 +56,6 @@ return new class extends Migration
             $table->string('poNoRepair')->nullable(); //imported
             $table->string('prNo')->nullable(); //imported
             //For Documents Update
-            $table->string('calibrationDocument')->nullable();
             $table->string('drNoDocument')->nullable(); //DocDR //imported
             $table->string('documentReleasedDate')->nullable(); //DocDateReleased //imported
             $table->string('documentReceivedBy')->nullable(); //PersonReceivedDoc

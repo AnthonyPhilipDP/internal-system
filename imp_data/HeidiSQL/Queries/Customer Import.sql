@@ -44,4 +44,4 @@ SET foreign_key_checks = 1;
 	-- Ensure IDs are numeric only—remove any special characters if present.
 	
 #Others
-	-- Delete in the CSV file the blank customer number 614
+	-- Remove the parenthesis of the telephone numbers.

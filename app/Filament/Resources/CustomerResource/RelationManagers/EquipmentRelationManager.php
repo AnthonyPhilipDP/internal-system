@@ -380,16 +380,16 @@ class EquipmentRelationManager extends RelationManager
                             Group::make()->schema([
                                 Section::make('')->schema([
                                     Forms\Components\Grid::make(2)->schema([
-                                        Forms\Components\Select::make('calibrationDocument')
+                                        Forms\Components\Select::make('drNoDocument')
                                             ->label('Calibration Document')
                                             ->nullable()
                                             ->options([
-                                                'released' => 'Released',
-                                                'finalized' => 'Finalized',
-                                                'notApplicable' => 'Not Applicable',
+                                                '(Documents Released)' => 'Released',
+                                                '(Cal report and certificate)' => 'Finalized',
+                                                'Not Applicable' => 'Not Applicable',
                                             ])
                                             ->native(false),
-                                        Forms\Components\TextInput::make('drNoDocument')
+                                        Forms\Components\TextInput::make('DrNoDocReleased')
                                             ->label('Document DR No.')
                                             ->nullable()
                                             ->maxLength(255),
@@ -449,10 +449,11 @@ class EquipmentRelationManager extends RelationManager
                     ->copyable(),
                 Tables\Columns\TextColumn::make('worksheet')
                     ->label('Worksheet')
-                    ->alignCenter()
-                    ->formatStateUsing(function ($record) {
-                        return "{$record->worksheet->name} Rev. {$record->worksheet->revision}";
-                    }),
+                    ->alignCenter(),
+                    // The code will be continued upon confirming the algorithm of worksheets
+                    // ->formatStateUsing(function ($record) {
+                    //     return "{$record->worksheet->name} Rev. {$record->worksheet->revision}";
+                    // }),
             ])->defaultSort('id', 'desc')
             ->filters([
                 //

@@ -11,6 +11,7 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class StatsOverview extends BaseWidget
 {
+    protected static ?string $pollingInterval = '2s';
 
     protected static ?int $sort = 3;
 
@@ -31,6 +32,7 @@ class StatsOverview extends BaseWidget
             Stat::make('Clients', Customer::count()),
             Stat::make('Total Equipments', Equipment::count()),
             Stat::make('Pending Equipments', Equipment::where('status', 'pending')->count()),
+            Stat::make('Last Acknowledgment Receipt ID', Equipment::whereNotNull('ar_id')->latest('created_at')->value('ar_id')),
         ];
     }
 }
