@@ -42,3 +42,6 @@ SET foreign_key_checks = 1;
 	-- Set all values to TEXT format, except for date and ID fields.
 	-- Dates must remain unchanged.
 	-- Ensure IDs are numeric only—remove any special characters if present.
+	
+#Others
+	-- Delete in the CSV file the blank customer number 614

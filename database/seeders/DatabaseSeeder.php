@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         ]);
     
         DB::table('customers')->insert([
+            'customer_id' => '1',
             'name' => 'Samsung Electronics',
             'nickname' => 'smasnug',
             'address' => "South Korea",
