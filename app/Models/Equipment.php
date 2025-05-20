@@ -22,8 +22,9 @@ class Equipment extends Model
         'id',
     ];
 
+    //equipment.customer_id matches customers.customer_id (not id)
     public function customer(){
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
     }
 
     public function worksheet(){

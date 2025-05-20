@@ -23,6 +23,10 @@ class Customer extends Model
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($model) {
+            $model->customer_id = static::withTrashed()->max('customer_id') + 1;
+        });
     }
 
     public function getDisplayDateAttribute()
@@ -115,9 +119,10 @@ class Customer extends Model
         return $formattedTelephones;
     }
 
-    public function equipment() {
-        return $this->hasMany(Equipment::class);
-    } 
+    // equipment.customer_id matches customers.customer_id (not id)
+    public function equipment(){
+        return $this->hasMany(Equipment::class, 'customer_id', 'customer_id');
+    }
 
     public function contactPerson() {
         return $this->hasMany(ContactPerson::class);
