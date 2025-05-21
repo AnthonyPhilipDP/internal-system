@@ -40,9 +40,18 @@ class Equipment extends Model
     {
         parent::boot();
 
+
+        static::saving(function ($model) {
+
+            if (empty($model->inspection)) {
+                $model->inspection = ['no visible damage'];
+            }
+
+        });
+
+
         static::creating(function ($model) {
             $model->transaction_id = static::withTrashed()->max('transaction_id') + 1;
-            $model->inspection = $model->inspection ?? ['no visible damage'];
             $model->status = $model->status ?? 'incoming';
         });
     }
