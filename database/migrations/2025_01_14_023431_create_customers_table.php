@@ -50,6 +50,8 @@ return new class extends Migration
             $table->string('otherPayment')->nullable();
             //Other Imported Data
             $table->string('createdDate')->nullable(); //imported
+            //Identifier if the customer is imported
+            $table->boolean('isCustomerImported')->default(false); 
             //Timestamps
             $table->timestamps();
             $table->softDeletes();

@@ -81,7 +81,9 @@ return new class extends Migration
             $table->boolean('RP')->default(false);                                                    
             $table->boolean('rep')->default(false);                                                    
             $table->boolean('certify')->default(false);                                                    
-            $table->boolean('DAILY_rep')->default(false);                                                    
+            $table->boolean('DAILY_rep')->default(false);      
+            //Identifier if the equipment is imported
+            $table->boolean('isEquipmentImported')->default(false);                                              
             //Timestamps
             $table->timestamps();
             $table->softDeletes();
