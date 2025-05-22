@@ -1,10 +1,20 @@
-<div>
-    @foreach ($customerData as $customerIndex => $customer)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ $customer['name'] }}</title>
+    {{-- <script src="https://cdn.tailwindcss.com"></script> --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body style="margin:0; padding:0;">
+    <div style="width:100vw; min-height:100vh;">
         @php
             // Chunk the equipment into pages of 8 items each
             $equipmentChunks = collect($customer['equipment'])->chunk(8);
         @endphp
-
+    
         @foreach ($equipmentChunks as $chunkIndex => $equipmentChunk)
             <div class="border relative w-[8.5in] h-[11in] bg-white px-12 print:page-break pt-[180px] bg-cover bg-no-repeat mx-auto">
                 <div class="absolute top-[45px] inset-0 flex flex-col items-center tracking-normal -space-y-1" style="font-family: 'Times New Roman', Times, serif;">
@@ -28,7 +38,7 @@
                     </div>
                 </div>
                 <div class="absolute top-[54px] left-12 w-28 h-28">
-                    <img src="{{ asset('images/PMSi Logo(transparent).png') }}" alt="PMSi Logo">
+                    <img src="https://i.ibb.co/fdh0S6YF/pmsi-logo-copyright.png" alt="PMSi Logo (copyright)">
                 </div>
                 <!-- Customer Details -->
                 <div class="flex justify-between mb-4">
@@ -64,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-
+    
                 <!-- Equipment Table -->
                 <hr class="border-gray-800 my-2">
                 <p class="text-sm text-gray-800 my-2 text-justify">
@@ -143,7 +153,7 @@
                         </tbody>
                     </table>
                 </div>
-
+    
                 @if ($chunkIndex === $equipmentChunks->count() - 1)
                 <div>
                     @if (count($customer['equipment']) > 1)
@@ -187,16 +197,6 @@
                 </div>
             </div>
         @endforeach
-    @endforeach
-    <style>
-        @media print {
-            @page {
-                size: Letter portrait;
-                margin: 0.5in;
-            }
-            .print\:page-break {
-                page-break-after: always;
-            }
-        }
-    </style>
-</div>
+    </div>
+</body>
+</html>
