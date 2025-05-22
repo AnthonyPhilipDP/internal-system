@@ -14,6 +14,7 @@ use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
+use App\Filament\Widgets\StatsOverview;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -26,10 +27,19 @@ class EditEquipment extends EditRecord
 {
     protected static string $resource = EquipmentResource::class;
 
+    public function getSubheading(): string
+    {   
+        if ($this->record->isEquipmentImported) {
+            return __('Note: This equipment is imported. You may want to change some fields.');
+        }
+
+        return '';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()->color(Color::hex(Rgb::fromString('rgb('.Color::Red[500].')')->toHex())),
+            Actions\DeleteAction::make(),
             Actions\ForceDeleteAction::make(),
             Actions\RestoreAction::make(),
        

@@ -583,6 +583,21 @@ class EquipmentResource extends Resource
                                 Forms\Components\TextInput::make('gatePass')
                                     ->label('Gate Pass')
                                     ->maxLength(255),
+                                Forms\Components\TextArea::make('oldInspection')
+                                    ->readOnly()
+                                    ->label('Old Inspection Findings')
+                                    ->autosize()
+                                    ->rows(1)
+                                    ->extraAttributes(['class' => 'bg-emerald-50 dark:bg-emerald-900'])
+                                    ->visible(fn ($get) => $get('isEquipmentImported') == 1),
+                                Forms\Components\TextArea::make('oldAccessories')
+                                    ->readOnly()
+                                    ->label('Old Accessories')
+                                    ->autosize()
+                                    ->rows(1)
+                                    ->extraAttributes(['class' => 'bg-emerald-50 dark:bg-emerald-900'])
+                                    ->helperText('Old accessories and visual inspection will be shown here - UNEDITABLE.')
+                                    ->visible(fn ($get) => $get('isEquipmentImported') == 1),
                                 Forms\Components\Repeater::make('accessory')
                                     ->relationship()
                                     ->schema([
@@ -591,17 +606,17 @@ class EquipmentResource extends Resource
                                     Forms\Components\TextInput::make('quantity')
                                         ->numeric()
                                         ->columnSpan(2),
-                                ])
-                                ->reorderable()
-                                ->reorderableWithButtons()
-                                ->reorderableWithDragAndDrop()
-                                ->collapsible()
-                                ->addActionLabel(function (callable $get) {
-                                    $accessories = $get('accessory');
-                                    return empty($accessories) ? 'Add Accessory' : 'Add Another Accessory';
-                                })
-                                ->defaultItems(0)
-                                ->columns(4),
+                                    ])
+                                    ->reorderable()
+                                    ->reorderableWithButtons()
+                                    ->reorderableWithDragAndDrop()
+                                    ->collapsible()
+                                    ->addActionLabel(function (callable $get) {
+                                        $accessories = $get('accessory');
+                                        return empty($accessories) ? 'Add Accessory' : 'Add Another Accessory';
+                                    })
+                                    ->defaultItems(0)
+                                    ->columns(4),
                             ]),
                         ]),
                     ])->columns(3),
