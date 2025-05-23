@@ -16,8 +16,8 @@
 
     @foreach ($customerData as $customerIndex => $customer)
         @php
-            // Chunk the equipment into pages of 8 items each
-            $equipmentChunks = collect($customer['equipment'])->chunk(8);
+            // Chunk the equipment into pages of 12 items each
+            $equipmentChunks = collect($customer['equipment'])->chunk(9);
         @endphp
 
         @foreach ($equipmentChunks as $chunkIndex => $equipmentChunk)
@@ -82,6 +82,7 @@
 
                 <!-- Equipment Table -->
                 <hr class="border-gray-800 my-2">
+                @if ($chunkIndex === 0)
                 <p class="text-sm text-gray-800 my-2 text-justify">
                     @if (!empty($customer['contact_persons']))
                             @if ( $customer['contact_persons'][0]['identity'] == 'male' )
@@ -95,6 +96,7 @@
                         <br><br>
                         Please take note that the following list of <span class="underline italic">equipment will come due</span> for calibration service. Please contact our office at your convenience to schedule calibration service of this equipment.
                 </p>
+                @endif
                 <div class="border-b border-white rounded-lg overflow-x-auto">
                     <table class="min-w-full divide-y divide-white table-fixed">
                         @if ($equipmentChunks->count() > 1)
@@ -151,7 +153,7 @@
                                         {{ $equipment['serial'] }}
                                     </td>
                                     <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate pl-2 pr-4">
-                                        40-{{ $equipment['transaction_id'] }}
+                                        Not Applicable
                                     </td>
                                 </tr>
                             @endforeach
@@ -171,11 +173,10 @@
                     </p>
                     @endif
                 </div>
-                @endif
-                
+                <!-- Letter Content -->
                 <div class="space-y-2 text-sm text-gray-800 my-2 absolute bottom-12 left-12 right-12 text-justify">
                     <div class="pb-2">
-                        We at PMS<span class="text-red-500 italic">i</span> are commited to provide an impartial high-quality calibration, maintenance and repair service of test and measurement equipment. We offer an OEM level of service & expertise at a competitive rate.
+                        We at PMS<span class="text-red-500 italic">i</span> are committed to provide an impartial high-quality calibration, maintenance and repair service of test and measurement equipment. We offer an OEM level of service & expertise at a competitive rate.
                     </div>
                     <div class="pb-2">
                         For other capabilities, questions, or a quote, please contact us at <span class="font-semibold italic">(046) 889-0673</span> or <span class="font-semibold italic">(0997) 410 6031</span>.<br>
@@ -192,6 +193,15 @@
                         <span class="underline">PMS<span class="text-red-500 italic">i</span></span>
                     </div>
                 </div>
+                @endif
+
+                <!-- Continued Message -->
+                @if ($chunkIndex < $equipmentChunks->count() - 1)
+                <div class="text-center text-sm text-gray-500 mt-4">
+                    (Continued on the next page)
+                </div>
+                @endif
+                
                 <!-- Footer -->
                 <hr class="absolute left-12 right-12 bottom-12 border-gray-800 mb-1">
                 <div class="absolute bottom-9 left-12 text-left text-[11px] font-[500] text-gray-800" style="font-family: 'Times New Roman', Times, serif;">
