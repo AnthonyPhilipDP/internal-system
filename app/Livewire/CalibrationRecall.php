@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Livewire;
-
+ini_set('memory_limit', '-1');
+ini_set('max_execution_time', 0);
 use Spatie\LaravelPdf\Facades\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -74,37 +75,41 @@ class CalibrationRecall extends Component
         } else {
             mkdir($storageFolder, 0777, true);
         }
-
+                
         try {
+
+            $monthName = Carbon::createFromFormat('m', $this->filteredMonth)->format('F');
             foreach ($this->customerData as $customer) {
-                $filename = Str::slug($customer['name']) . '-Recall.html';
+                $filename = $customer['name'] . ' ' . $monthName . '-' . $this->filteredYear . '.html';
                 $filePath = $storageFolder . '/' . $filename;
 
                 $html = view('livewire.calibration-recall.layout', ['customer' => $customer])->render();
                 file_put_contents($filePath, $html);
 
                 // Convert the saved HTML file to PDF
-                $pdfFilename = Str::slug($customer['name']) . '-Recall.pdf';
+                $pdfFilename = $customer['name'] . ' ' . $monthName . '-' . $this->filteredYear . '.pdf';
                 $pdfPath = $storageFolder . '/' . $pdfFilename;
 
                 \Spatie\Browsershot\Browsershot::html($html)
                     ->showBackground()
                     ->format('Letter')
+                    ->disableCaptureURLs()
+                    ->ignoreHttpsErrors()
                     ->margins(0, 0, 0, 0)
-                    ->timeout(60)
+                    ->timeout(900)
                     ->scale(1)
                     ->save($pdfPath);
             }
 
             // If only one PDF, download directly
             if (count($this->customerData) === 1) {
-                $pdfPath = $storageFolder . '/' . Str::slug($this->customerData[0]['name']) . '-Recall.pdf';
+                $pdfPath = $storageFolder . '/' . $pdfFilename;
                 $this->dispatch('download-complete');
                 return response()->download($pdfPath)->deleteFileAfterSend(true);
             }
 
             // If multiple PDFs, zip only the PDFs
-            $zipFileName = 'calibration-recall-' . now()->format('Y-m-d_H-i-s') . '.zip';
+            $zipFileName = 'calibration-recall-' . now()->format('Y-m-d') . '.zip';
             $zipFilePath = $storageFolder . '/' . $zipFileName;
             $zip = new \ZipArchive();
             if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
