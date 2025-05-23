@@ -1,8 +1,19 @@
 <div>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <button wire:click="downloadFiles" class="absolute top-4 left-4 bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
-        Download
+    <button wire:loading.attr="disabled" wire:click="downloadFiles" class="absolute top-4 left-4 bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
+        <span wire:loading.remove wire:target="downloadFiles">
+            <svg class="h-5 w-5 mr-2 inline" viewBox="0 0 24 24">
+                {{ svg('css-software-download') }}
+            </svg>
+        </span>
+        <div wire:loading>
+            <svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24">
+                {{ svg('css-spinner') }}
+            </svg>
+        </div>
+        <span>Download</span>
     </button>
+
     @foreach ($customerData as $customerIndex => $customer)
         @php
             // Chunk the equipment into pages of 8 items each
@@ -47,12 +58,12 @@
                         <p class="text-sm font-bold text-gray-700 truncate">Client: <span class="uppercase">{{ $customer['name'] }}</span></p>
                         @if (!empty($customer['telephone']))
                             <p class="text-sm font-semibold text-gray-700">
-                                Telephone: ({{ substr($customer['telephone'], 0, 3) }}) {{ substr($customer['telephone'], 3, 3) }}-{{ substr($customer['telephone'], 6) }}
+                                Telephone: {{ $customer['telephone'] }}
                             </p>
                         @endif
                         @if (!empty($customer['mobile']))
                             <p class="text-sm font-semibold text-gray-700">
-                                Telephone: ({{ substr($customer['mobile'], 0, 4) }}) {{ substr($customer['mobile'], 4, 3) }}-{{ substr($customer['mobile'], 7) }}
+                                Mobile: {{ $customer['mobile']}}
                             </p>
                         @endif
                         @if (!empty($customer['email']))
@@ -90,28 +101,28 @@
                         <caption class="caption-bottom text-xs text-gray-500 font-mono mt-2">
                             Number of equipment in this page: {{ $equipmentChunk->count() }}
                         </caption>
-                    @endif
-                        <thead class="bg-gray-700 text-center">
+                        @endif
+                        <thead class="bg-gray-700">
                             <tr>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 pl-4 pr-2 text-left">
                                     Cal Due
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Equipment ID
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider truncate">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Make
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Model
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Description
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
-                                    Serial
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
+                                    Serial No.
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left pl-2 pr-4">
                                     Owner
                                 </th>
                             </tr>
@@ -119,9 +130,9 @@
                         <tbody class="bg-white divide-y divide-gray-200 text-left">
                             @foreach ($equipmentChunk as $equipment)
                                 <tr class="items-center">
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2 text-center">
+                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate pl-4 pr-2">
                                         @if ($equipment['calibrationDue'])
-                                            {{ \Carbon\Carbon::parse($equipment['calibrationDue'])->format('M j, Y') }}
+                                            {{ \Carbon\Carbon::parse($equipment['calibrationDue'])->format('d-M-Y') }}
                                         @endif
                                     </td>
                                     <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
@@ -139,7 +150,7 @@
                                     <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
                                         {{ $equipment['serial'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2 text-center">
+                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate pl-2 pr-4">
                                         40-{{ $equipment['transaction_id'] }}
                                     </td>
                                 </tr>
@@ -167,7 +178,7 @@
                         We at PMS<span class="text-red-500 italic">i</span> are commited to provide an impartial high-quality calibration, maintenance and repair service of test and measurement equipment. We offer an OEM level of service & expertise at a competitive rate.
                     </div>
                     <div class="pb-2">
-                        For outher capabilities, questions, or a quote, please contact us at <span class="font-semibold italic">(046) 889-0679</span> or <span class="font-semibold italic">(0997) 410 6031</span>.<br>
+                        For other capabilities, questions, or a quote, please contact us at <span class="font-semibold italic">(046) 889-0673</span> or <span class="font-semibold italic">(0997) 410 6031</span>.<br>
                         You may also email us at <span class="font-semibold italic">info@pmsi-cal.com</span> or <span class="font-semibold italic">pmsical@yahoo.com</span>.
                     </div>
                     <div class="pb-4">
