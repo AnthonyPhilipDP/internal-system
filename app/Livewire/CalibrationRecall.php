@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 ini_set('memory_limit', '-1');
-ini_set('max_execution_time', 0);
+ini_set('max_execution_time', 900);
 use Spatie\LaravelPdf\Facades\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;

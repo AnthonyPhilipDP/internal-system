@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ $customer['name'] }}</title>
-    {{-- <script src="https://cdn.tailwindcss.com"></script> --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body style="margin:0; padding:0;">
     <div style="width:100vw; min-height:100vh;">
         @php
-            // Chunk the equipment into pages of 8 items each
-            $equipmentChunks = collect($customer['equipment'])->chunk(8);
+            // Chunk the equipment into pages of 9 items each
+            $equipmentChunks = collect($customer['equipment'])->chunk(9);
         @endphp
-    
+
         @foreach ($equipmentChunks as $chunkIndex => $equipmentChunk)
             <div class="border relative w-[8.5in] h-[11in] bg-white px-12 print:page-break pt-[180px] bg-cover bg-no-repeat mx-auto">
                 <div class="absolute top-[45px] inset-0 flex flex-col items-center tracking-normal -space-y-1" style="font-family: 'Times New Roman', Times, serif;">
@@ -53,12 +52,12 @@
                         <p class="text-sm font-bold text-gray-700 truncate">Client: <span class="uppercase">{{ $customer['name'] }}</span></p>
                         @if (!empty($customer['telephone']))
                             <p class="text-sm font-semibold text-gray-700">
-                                Telephone: ({{ substr($customer['telephone'], 0, 3) }}) {{ substr($customer['telephone'], 3, 3) }}-{{ substr($customer['telephone'], 6) }}
+                                Telephone: {{ $customer['telephone'] }}
                             </p>
                         @endif
                         @if (!empty($customer['mobile']))
                             <p class="text-sm font-semibold text-gray-700">
-                                Telephone: ({{ substr($customer['mobile'], 0, 4) }}) {{ substr($customer['mobile'], 4, 3) }}-{{ substr($customer['mobile'], 7) }}
+                                Mobile: {{ $customer['mobile']}}
                             </p>
                         @endif
                         @if (!empty($customer['email']))
@@ -69,15 +68,16 @@
                         <div class="items-center">
                             <div class="text-3xl font-bold text-gray-700 text-center">Calibration Recall</div>
                             <div class="mt-4 text-lg text-center font-bold text-gray-800 border border-red-400 bg-yellow-400 py-4 px-12">
-                                DUE: {{ \Carbon\Carbon::parse($equipmentChunk->first()['calibrationDue'])->format('F, Y') }}
+                                DUE: {{ \Carbon\Carbon::parse($equipmentChunk->first()['calibrationDue'])->format('F Y') }}
                             </div>
                         </div>
                     </div>
                 </div>
-    
+
                 <!-- Equipment Table -->
                 <hr class="border-gray-800 my-2">
-                <p class="text-sm text-gray-800 my-2 text-justify">
+                @if ($chunkIndex === 0)
+                <p class="text-xs text-gray-800 my-2 text-justify">
                     @if (!empty($customer['contact_persons']))
                             @if ( $customer['contact_persons'][0]['identity'] == 'male' )
                                 Dear Sir,
@@ -90,34 +90,35 @@
                         <br><br>
                         Please take note that the following list of <span class="underline italic">equipment will come due</span> for calibration service. Please contact our office at your convenience to schedule calibration service of this equipment.
                 </p>
+                @endif
                 <div class="border-b border-white rounded-lg overflow-x-auto">
                     <table class="min-w-full divide-y divide-white table-fixed">
                         @if ($equipmentChunks->count() > 1)
                         <caption class="caption-bottom text-xs text-gray-500 font-mono mt-2">
                             Number of equipment in this page: {{ $equipmentChunk->count() }}
                         </caption>
-                    @endif
-                        <thead class="bg-gray-700 text-center">
+                        @endif
+                        <thead class="bg-gray-700">
                             <tr>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 pl-4 pr-2 text-left">
                                     Cal Due
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Equipment ID
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider truncate">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Make
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Model
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-24 min-w-24 px-2 text-left">
                                     Description
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
-                                    Serial
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
+                                    Serial No.
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left pl-2 pr-4">
                                     Owner
                                 </th>
                             </tr>
@@ -125,35 +126,35 @@
                         <tbody class="bg-white divide-y divide-gray-200 text-left">
                             @foreach ($equipmentChunk as $equipment)
                                 <tr class="items-center">
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2 text-center">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 pl-4 pr-2">
                                         @if ($equipment['calibrationDue'])
-                                            {{ \Carbon\Carbon::parse($equipment['calibrationDue'])->format('M j, Y') }}
+                                            {{ \Carbon\Carbon::parse($equipment['calibrationDue'])->format('d-M-Y') }}
                                         @endif
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
                                         {{ $equipment['equipment_id'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
                                         {{ $equipment['make'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
                                         {{ $equipment['model'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-24 min-w-24 px-2">
                                         {{ $equipment['description'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
                                         {{ $equipment['serial'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2 text-center">
-                                        40-{{ $equipment['transaction_id'] }}
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 pl-2 pr-4">
+                                        Not Applicable
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-    
+
                 @if ($chunkIndex === $equipmentChunks->count() - 1)
                 <div>
                     @if (count($customer['equipment']) > 1)
@@ -166,14 +167,13 @@
                     </p>
                     @endif
                 </div>
-                @endif
-                
-                <div class="space-y-2 text-sm text-gray-800 my-2 absolute bottom-12 left-12 right-12 text-justify">
+                <!-- Letter Content -->
+                <div class="space-y-2 text-xs text-gray-800 my-2 absolute bottom-12 left-12 right-12 text-justify">
                     <div class="pb-2">
-                        We at PMS<span class="text-red-500 italic">i</span> are commited to provide an impartial high-quality calibration, maintenance and repair service of test and measurement equipment. We offer an OEM level of service & expertise at a competitive rate.
+                        We at PMS<span class="text-red-500 italic">i</span> are committed to provide an impartial high-quality calibration, maintenance and repair service of test and measurement equipment. We offer an OEM level of service & expertise at a competitive rate.
                     </div>
                     <div class="pb-2">
-                        For outher capabilities, questions, or a quote, please contact us at <span class="font-semibold italic">(046) 889-0679</span> or <span class="font-semibold italic">(0997) 410 6031</span>.<br>
+                        For other capabilities, questions, or a quote, please contact us at <span class="font-semibold italic">(046) 889-0673</span> or <span class="font-semibold italic">(0997) 410 6031</span>.<br>
                         You may also email us at <span class="font-semibold italic">info@pmsi-cal.com</span> or <span class="font-semibold italic">pmsical@yahoo.com</span>.
                     </div>
                     <div class="pb-4">
@@ -187,6 +187,15 @@
                         <span class="underline">PMS<span class="text-red-500 italic">i</span></span>
                     </div>
                 </div>
+                @endif
+
+                <!-- Continued Message -->
+                @if ($chunkIndex < $equipmentChunks->count() - 1)
+                <div class="text-center text-sm text-gray-500 mt-4">
+                    (Continued on the next page)
+                </div>
+                @endif
+                
                 <!-- Footer -->
                 <hr class="absolute left-12 right-12 bottom-12 border-gray-800 mb-1">
                 <div class="absolute bottom-9 left-12 text-left text-[11px] font-[500] text-gray-800" style="font-family: 'Times New Roman', Times, serif;">
@@ -200,3 +209,5 @@
     </div>
 </body>
 </html>
+
+{{-- Make sure the img are not from assets --}}

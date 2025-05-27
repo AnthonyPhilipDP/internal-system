@@ -16,7 +16,7 @@
 
     @foreach ($customerData as $customerIndex => $customer)
         @php
-            // Chunk the equipment into pages of 12 items each
+            // Chunk the equipment into pages of 9 items each
             $equipmentChunks = collect($customer['equipment'])->chunk(9);
         @endphp
 
@@ -74,7 +74,7 @@
                         <div class="items-center">
                             <div class="text-3xl font-bold text-gray-700 text-center">Calibration Recall</div>
                             <div class="mt-4 text-lg text-center font-bold text-gray-800 border border-red-400 bg-yellow-400 py-4 px-12">
-                                DUE: {{ \Carbon\Carbon::parse($equipmentChunk->first()['calibrationDue'])->format('F, Y') }}
+                                DUE: {{ \Carbon\Carbon::parse($equipmentChunk->first()['calibrationDue'])->format('F Y') }}
                             </div>
                         </div>
                     </div>
@@ -83,7 +83,7 @@
                 <!-- Equipment Table -->
                 <hr class="border-gray-800 my-2">
                 @if ($chunkIndex === 0)
-                <p class="text-sm text-gray-800 my-2 text-justify">
+                <p class="text-xs text-gray-800 my-2 text-justify">
                     @if (!empty($customer['contact_persons']))
                             @if ( $customer['contact_persons'][0]['identity'] == 'male' )
                                 Dear Sir,
@@ -118,7 +118,7 @@
                                 <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Model
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-24 min-w-24 px-2 text-left">
                                     Description
                                 </th>
                                 <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
@@ -132,27 +132,27 @@
                         <tbody class="bg-white divide-y divide-gray-200 text-left">
                             @foreach ($equipmentChunk as $equipment)
                                 <tr class="items-center">
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate pl-4 pr-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 pl-4 pr-2">
                                         @if ($equipment['calibrationDue'])
                                             {{ \Carbon\Carbon::parse($equipment['calibrationDue'])->format('d-M-Y') }}
                                         @endif
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
                                         {{ $equipment['equipment_id'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
                                         {{ $equipment['make'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
                                         {{ $equipment['model'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-24 min-w-24 px-2">
                                         {{ $equipment['description'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate px-2">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
                                         {{ $equipment['serial'] }}
                                     </td>
-                                    <td class="py-2 text-[10px] text-gray-800 max-w-16 min-w-16 truncate pl-2 pr-4">
+                                    <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 pl-2 pr-4">
                                         Not Applicable
                                     </td>
                                 </tr>
@@ -174,7 +174,7 @@
                     @endif
                 </div>
                 <!-- Letter Content -->
-                <div class="space-y-2 text-sm text-gray-800 my-2 absolute bottom-12 left-12 right-12 text-justify">
+                <div class="space-y-2 text-xs text-gray-800 my-2 absolute bottom-12 left-12 right-12 text-justify">
                     <div class="pb-2">
                         We at PMS<span class="text-red-500 italic">i</span> are committed to provide an impartial high-quality calibration, maintenance and repair service of test and measurement equipment. We offer an OEM level of service & expertise at a competitive rate.
                     </div>
