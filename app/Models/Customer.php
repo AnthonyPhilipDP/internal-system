@@ -94,29 +94,63 @@ class Customer extends Model
     {
         $telephone1 = $this->attributes['telephone1'];
         $telephone2 = $this->attributes['telephone2'];
+        $areaCodeTelephone1 = $this->attributes['areaCodeTelephone1'];
+        $areaCodeTelephone2 = $this->attributes['areaCodeTelephone2'];
 
         if (is_null($telephone1) || $telephone1 === '') {
             return 'N/A';
         }
 
-        // Format telephone numbers (example format: (046) 430-1666)
-        $formattedTelephone1 = sprintf('(%s) %s-%s',
-            substr($telephone1, 0, 3),
-            substr($telephone1, 3, 3),
-            substr($telephone1, 6)
-        );
+        // Format the first telephone number
+        $formattedTelephone1 = $this->formatTelephone($areaCodeTelephone1, $telephone1);
 
         $formattedTelephones = $formattedTelephone1;
         if (!is_null($telephone2) && $telephone2 !== '') {
-            $formattedTelephone2 = sprintf('(%s) %s-%s',
-                substr($telephone2, 0, 3),
-                substr($telephone2, 3, 3),
-                substr($telephone2, 6)
-            );
+            // Format the second telephone number
+            $formattedTelephone2 = $this->formatTelephone($areaCodeTelephone2, $telephone2);
             $formattedTelephones .= "<br>" . $formattedTelephone2;
         }
 
         return $formattedTelephones;
+    }
+
+    private function formatTelephone($areaCode, $telephone)
+    {
+        $length = strlen($telephone);
+
+        // Check if the telephone number is not exactly 7 or 8 digits
+        if ($length !== 7 && $length !== 8) {
+            return $telephone; // Return the original text if not exactly 7 or 8 digits
+        }
+
+        // Format the telephone number with or without area code
+        if ($areaCode) {
+            if ($length === 7) {
+                return sprintf('(%s) %s-%s',
+                    $areaCode,
+                    substr($telephone, 0, 3),
+                    substr($telephone, 3)
+                );
+            } else { // length is 8
+                return sprintf('(%s) %s-%s',
+                    $areaCode,
+                    substr($telephone, 0, 4),
+                    substr($telephone, 4)
+                );
+            }
+        } else {
+            if ($length === 7) {
+                return sprintf('%s-%s',
+                    substr($telephone, 0, 3),
+                    substr($telephone, 3)
+                );
+            } else { // length is 8
+                return sprintf('%s-%s',
+                    substr($telephone, 0, 4),
+                    substr($telephone, 4)
+                );
+            }
+        }
     }
 
     // equipment.customer_id matches customers.customer_id (not id)

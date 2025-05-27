@@ -39,8 +39,10 @@ return new class extends Migration
             $table->string('otherVat')->nullable();
             //Contact Details
             $table->string('mobile1')->nullable();
+            $table->string('areaCodeTelephone1')->nullable();
             $table->string('telephone1')->nullable(); //imported
             $table->string('mobile2')->nullable();
+            $table->string('areaCodeTelephone2')->nullable();
             $table->string('telephone2')->nullable(); //imported
             $table->string('email')->nullable(); //imported
             $table->string('website')->nullable(); //imported

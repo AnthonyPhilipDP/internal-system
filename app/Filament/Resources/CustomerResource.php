@@ -255,39 +255,61 @@ class CustomerResource extends Resource
                                 ->validationAttribute('mobile number')
                                 ->label('Mobile Number (Primary)')
                                 ->placeholder('Start with 09')
-                                ->length(11)
+                                ->minLength(8)
+                                ->maxLength(11)
                                 ->prefix('Enter 11 digits')
                                 ->tel()
                                 ->nullable()
                                 ->columnSpan(4),
+                            Forms\Components\TextInput::make('areaCodeTelephone1')
+                                ->autocomplete(false)
+                                ->placeholder('e.g., 02')
+                                ->validationAttribute('area code')
+                                ->label('Area Code')
+                                ->minLength(2)
+                                ->maxLength(3)
+                                ->nullable()
+                                ->columnSpan(1),
                             Forms\Components\TextInput::make('telephone1')
                                 ->autocomplete(false)
+                                ->placeholder('e.g., 1234567')
                                 ->validationAttribute('telephone number')
                                 ->tel()
                                 ->label('Telephone Number (Primary)')
-                                ->prefix('Enter 10 digits')
-                                ->length(10)
+                                ->minLength(7)
+                                ->maxLength(8)
                                 ->nullable()
-                                ->columnSpan(4),
+                                ->columnSpan(3),
                             Forms\Components\TextInput::make('mobile2')
                                 ->autocomplete(false)
                                 ->label('Mobile Number (Secondary)')
                                 ->validationAttribute('mobile number')
                                 ->placeholder('Start with 09')
-                                ->length(11)
+                                ->minLength(8)
+                                ->maxLength(11)
                                 ->prefix('Enter 11 digits')
                                 ->tel()
                                 ->nullable()
                                 ->columnSpan(4),
+                            Forms\Components\TextInput::make('areaCodeTelephone2')
+                                ->autocomplete(false)
+                                ->placeholder('e.g., 02')
+                                ->validationAttribute('area code')
+                                ->label('Area Code')
+                                ->minLength(2)
+                                ->maxLength(3)
+                                ->nullable()
+                                ->columnSpan(1),
                             Forms\Components\TextInput::make('telephone2')
                                 ->autocomplete(false)
+                                ->placeholder('e.g., 1234567')
                                 ->tel()
                                 ->label('Telephone Number (Secondary)')
                                 ->validationAttribute('telephone number')
-                                ->prefix('Enter 10 digits')
-                                ->length(10)
+                                ->minLength(7)
+                                ->maxLength(8)
                                 ->nullable()
-                                ->columnSpan(4),
+                                ->columnSpan(3),
                             Forms\Components\TextInput::make('email')
                                 ->autocomplete(false)
                                 ->validationAttribute('email')
@@ -659,8 +681,8 @@ class CustomerResource extends Resource
                         $customerData = $records->load(['equipment', 'activeContactPerson'])->map(function ($customer) {
                             return [
                                 'name' => $customer->name,
-                                'telephone' => $customer->telephone1,
-                                'mobile' => $customer->mobile1,
+                                'telephone' => $customer->formatted_telephone,
+                                'mobile' => $customer->formatted_mobile,
                                 'email' => $customer->email,
                                 'contact_persons' => $customer->activeContactPerson->map(function ($contactPerson) {
                                     return [

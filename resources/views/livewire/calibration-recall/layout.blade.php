@@ -51,13 +51,21 @@
                         @endif
                         <p class="text-sm font-bold text-gray-700 truncate">Client: <span class="uppercase">{{ $customer['name'] }}</span></p>
                         @if (!empty($customer['telephone']))
+                            @php
+                                // Extract the first telephone number before any <br> tag
+                                $firstTelephone = explode('<br>', $customer['telephone'])[0];
+                            @endphp
                             <p class="text-sm font-semibold text-gray-700">
-                                Telephone: {{ $customer['telephone'] }}
+                                Telephone: {{ $firstTelephone }}
                             </p>
                         @endif
                         @if (!empty($customer['mobile']))
+                            @php
+                                // Extract the first telephone number before any <br> tag
+                                $firstMobile = explode('<br>', $customer['mobile'])[0];
+                            @endphp
                             <p class="text-sm font-semibold text-gray-700">
-                                Mobile: {{ $customer['mobile']}}
+                                Mobile: {{ $firstMobile }}
                             </p>
                         @endif
                         @if (!empty($customer['email']))
