@@ -67,7 +67,7 @@
                     <div class="flex flex-col w-[40%] items-end">
                         <div class="items-center">
                             <div class="text-3xl font-bold text-gray-700 text-center">Calibration Recall</div>
-                            <div class="mt-4 text-lg text-center font-bold text-gray-800 border border-red-400 bg-yellow-400 py-4 px-12">
+                            <div class="mt-4 text-lg text-center font-bold text-gray-800 border border-red-400 bg-yellow-300 py-4 px-12">
                                 DUE: {{ \Carbon\Carbon::parse($equipmentChunk->first()['calibrationDue'])->format('F Y') }}
                             </div>
                         </div>
@@ -98,27 +98,27 @@
                             Number of equipment in this page: {{ $equipmentChunk->count() }}
                         </caption>
                         @endif
-                        <thead class="bg-gray-700">
+                        <thead class="bg-gray-200">
                             <tr>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 pl-4 pr-2 text-left">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 pl-4 pr-2 text-left">
                                     Cal Due
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Equipment ID
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Make
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Model
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-24 min-w-24 px-2 text-left">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-24 min-w-24 px-2 text-left">
                                     Description
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
                                     Serial No.
                                 </th>
-                                <th scope="col" class="py-2 text-[10px] font-medium text-white uppercase tracking-wider max-w-16 min-w-16 px-2 text-left pl-2 pr-4">
+                                <th scope="col" class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left pl-2 pr-4">
                                     Owner
                                 </th>
                             </tr>
