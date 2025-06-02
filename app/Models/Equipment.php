@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Models\Customer;
 use App\Models\Accessory;
+use App\Models\NcfReport;
 use App\Models\Worksheet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Equipment extends Model
@@ -49,6 +51,11 @@ class Equipment extends Model
 
         });
 
+        // Change the status of the ncf report when the equipment is saved
+        static::saved(function ($equipment) {
+            NcfReport::where('transaction_id', $equipment->transaction_id)
+                ->update(['status' => $equipment->status]);
+        });
 
         static::creating(function ($model) {
             $model->transaction_id = static::withTrashed()->max('transaction_id') + 1;
@@ -75,5 +82,10 @@ class Equipment extends Model
             return str_pad($value, 2, '0', STR_PAD_LEFT);
         }
         return $value;
+    }
+
+    public function ncfReport(): HasOne
+    {
+        return $this->hasOne(NcfReport::class, 'transaction_id', 'transaction_id');
     }
 }
