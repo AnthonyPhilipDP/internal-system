@@ -10,6 +10,7 @@ use App\Models\NcfReport;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\NonConformityReportResource\Pages;
 use App\Filament\Resources\NonConformityReportResource\RelationManagers;
@@ -46,12 +47,15 @@ class NonConformityReportResource extends Resource
                                         ->with(['customer', 'customer.contactPerson'])
                                         ->first();
                         
+                                    $contactPerson = $equipment->customer->contactPerson->first();
+                                    $identity = $contactPerson ? $contactPerson->identity : null;
+                                    $prefix = ($identity === 'male') ? 'Mr.' : 'Ms.';
+
                                     if ($equipment) {
-                                        \Log::info('Name found:' . $equipment->customer->name);
                                         $set('transaction_id', $equipment->transaction_id);
                                         $set('customerName', $equipment->customer->name);
-                                        $set('contactPersonName', $equipment->customer->contactPerson->first()->name ?? 'N/A');
-                                        $set('contactPersonEmail', $equipment->customer->contactPerson->first()->email ?? 'N/A');
+                                        $set('contactPersonName', $prefix . ' ' . $contactPerson->name ?? null);
+                                        $set('contactPersonEmail', $equipment->customer->contactPerson->first()->email ?? null);
                                         $set('ncfNumber', $equipment->transaction_id);
                                         $set('equipment_id', $equipment->equipment_id);
                                         $set('make', $equipment->make);
@@ -182,8 +186,6 @@ class NonConformityReportResource extends Resource
                             Forms\Components\TextInput::make('diagnosticFee')
                             ->validationAttribute('diagnostic fee')
                             ->label('Diagnostic Fee')
-                            ->numeric()
-                            ->prefix('PHP')
                             ->required()
                             ->columnSpan(1),
                             Forms\Components\Radio::make('conditionalFee')
@@ -198,11 +200,17 @@ class NonConformityReportResource extends Resource
                             Forms\Components\TextInput::make('conditionalFeeAmount')
                             ->validationAttribute('repair or realignment fee')
                             ->label('Fee')
-                            ->numeric()
-                            ->prefix('PHP')
                             ->required()
                             ->columnSpan(1),
                         ]),
+                        Forms\Components\TextInput::make('ncfReportedBy')
+                        ->label('Reported By')
+                        ->required()
+                        ->hiddenOn('create'),
+                        Forms\Components\TextInput::make('ncfReviewedBy')
+                        ->label('Reviewed By')
+                        ->required()
+                        ->hiddenOn('create'),
                     ]),
                 Forms\Components\Wizard\Step::make('Handler')
                     ->description('Who manages the NCF report')
@@ -326,19 +334,73 @@ class NonConformityReportResource extends Resource
                 Tables\Columns\TextColumn::make('isCalibrationCompleted')
                     ->label('Calibration Completed')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function ($state) {
+                        return match ($state) {
+                            '100' => 'Yes, 100%',
+                            '75' => 'No, approximately 75%',
+                            '50' => 'No, approximately 50%',
+                            '25' => 'No, approximately 25%',
+                            '0' => 'No',
+                            default => '',
+                        };
+                    }),
                 Tables\Columns\TextColumn::make('isCurrentChargeableItem')
                     ->label('Current Chargeable Item')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function ($state) {
+                        return match ($state) {
+                            'yes' => 'Yes',
+                            '50' => '50% Calibration Fee',
+                            'no' => 'No',
+                            default => '',
+                        };
+                    }),
                 Tables\Columns\TextColumn::make('troubleshootingStatus')
                     ->label('Troubleshooting Status')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function ($state) {
+                        return $state ? 'Yes' : 'No';
+                    }),
                 Tables\Columns\TextColumn::make('correctiveAction')
                     ->label('Corrective Action')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function (NcfReport $record) {
+                        // Define the mapping of action keys to descriptions
+                        $actionDescriptions = [
+                            'action1' => 'Attempt Realignment',
+                            'action2' => 'Attempt Troubleshooting',
+                            'action3' => 'Limit Instrument',
+                            'action4' => 'Reject Instrument',
+                            'action5' => 'Provide "as found-as left" data - do not limit',
+                            'action6' => 'Beyond Economical Repair (BER) - replace unit',
+                        ];
+
+                        // Decode the correctiveAction JSON if it's not already an array
+                        $record->correctiveAction = is_array($record->correctiveAction) ? $record->correctiveAction : json_decode($record->correctiveAction, true);
+
+                        // Map the action keys to their descriptions
+                        $descriptions = array_map(function ($action) use ($actionDescriptions) {
+                            return $actionDescriptions[$action] ?? $action;
+                        }, $record->correctiveAction);
+
+                        // Return the descriptions as a comma-separated string
+                        return implode(', ', $descriptions);
+                    }),
+                    // ->formatStateUsing(function ($state) {
+                    //     return match ($state) {
+                    //         'action1' => 'Attempt Realignment',
+                    //         'action2' => 'Attempt Troubleshooting',
+                    //         'action3' => 'Limit Instrument',
+                    //         'action4' => 'Reject Instrument',
+                    //         'action5' => 'Provide "as found-as left" data - do not limit',
+                    //         'action6' => 'Beyond Economical Repair (BER) - replace unit',
+                    //         default => 'Has more than one corrective action',
+                    //     };
+                    // }),
                 Tables\Columns\TextColumn::make('diagnosticFee')
                     ->label('Diagnostic Fee')
                     ->searchable()
@@ -380,8 +442,21 @@ class NonConformityReportResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                    ->label('Edit')
+                    ->icon('heroicon-m-pencil-square')
+                    ->color('warning'),
+                    Tables\Actions\Action::make('viewReport')
+                    ->label('View Report')
+                    ->url(fn ($record) => route('ncfReport', ['reportId' => $record->id]))
+                    ->icon('heroicon-m-document-check')
+                    ->color('info'),
+                ])
+                ->icon('heroicon-o-ellipsis-horizontal-circle')
+                ->tooltip('Options') 
+                ->color('danger'),
+            ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

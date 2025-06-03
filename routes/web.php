@@ -5,6 +5,7 @@ use App\Livewire\Certificate;
 use App\Livewire\ReleaseNotes;
 use App\Livewire\EquipmentLabel;
 use App\Livewire\CalibrationRecall;
+use App\Livewire\NonConformityReport;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\AcknowledgmentReceipt;
 
@@ -14,3 +15,4 @@ Route::get('/equipment/print-label', EquipmentLabel::class);
 Route::get('/acknowledgment-receipt', AcknowledgmentReceipt::class);
 Route::get('/equipment/certificate', Certificate::class);
 Route::get('/calibration-recall', CalibrationRecall::class)->name('recallCalibration');
+Route::get('/equipment/ncf-report/{reportId}', NonConformityReport::class)->name('ncfReport');
