@@ -21,6 +21,8 @@ class NonConformityReportResource extends Resource
 
     protected static ?string $label = 'Non-Conformity Report';
 
+    protected static ?string $navigationGroup = 'PMSi';
+
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
     public static function form(Form $form): Form
