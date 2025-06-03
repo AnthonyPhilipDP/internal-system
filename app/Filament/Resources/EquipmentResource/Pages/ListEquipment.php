@@ -5,9 +5,11 @@ namespace App\Filament\Resources\EquipmentResource\Pages;
 use Zxing\QrReader;
 use Filament\Actions;
 use App\Models\Equipment;
+use Endroid\QrCode\QrCode;
 use Filament\Actions\Action;
 use App\Models\DeliveryPerson;
 use Filament\Actions\CreateAction;
+use Endroid\QrCode\Writer\PngWriter;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\Alignment;
@@ -52,9 +54,21 @@ class ListEquipment extends ListRecords
 
                     // Create the specified number of equipment records
                     for ($i = 1; $i <= $count; $i++) {
-                        Equipment::create([
+                        $equipment = Equipment::create([
                             'transaction_id' => $currentMaxTransactionId + $i, // Increment transaction_id for each record
                         ]);
+
+                        // Generate QR code for each equipment
+                        $qrData = $equipment->id;
+                        $qrCode = new QrCode($qrData);
+                        $writer = new PngWriter();
+                        $result = $writer->write($qrCode);
+
+                        $fileName = 'qrcodes/equipment_' . $equipment->id . '.png';
+                        Storage::disk('public')->put($fileName, $result->getString());
+
+                        // Optionally, update the equipment record with the QR code path
+                        // $equipment->update(['qrCodePath' => $fileName]);
                     }
 
                     $singleEquipmentBodyMessage = "$count equipment have been created succesfully";
