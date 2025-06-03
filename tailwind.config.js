@@ -16,6 +16,7 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Space Grotesk', ...defaultTheme.fontFamily.sans],
+                arial: ['Arial', ...defaultTheme.fontFamily.sans],
                 // sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
         },
