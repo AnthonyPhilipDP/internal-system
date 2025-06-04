@@ -12,35 +12,35 @@
     <x-filament-panels::form id="form" wire:submit="authenticate">
         {{ $this->form }}
 
-        <x-filament-panels::form.actions
-            :actions="$this->getCachedFormActions()"
-            :full-width="$this->hasFullWidthFormActions()"
-        />
+        <x-filament-panels::form.actions :actions="$this->getCachedFormActions()" :full-width="$this->hasFullWidthFormActions()" />
     </x-filament-panels::form>
 
     {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::AUTH_LOGIN_FORM_AFTER, scopes: $this->getRenderHookScopes()) }}
 
     <!-- New right-side container -->
-    <div class="right-side-container hidden lg:block">
+    {{-- <div class="right-side-container hidden lg:block">
         <!-- Add your image or content here -->
         <img 
         src="{{ asset('images/hero-right.jpg') }}" 
         alt="Right Side Image" 
         class="w-full h-full object-cover rounded-tl-lg rounded-bl-lg">
-    </div>
+    </div> --}}
 
     <style>
         @keyframes gradient {
             0% {
                 background-position: 0% 50%;
             }
+
             50% {
                 background-position: 100% 50%;
             }
+
             100% {
                 background-position: 0% 50%;
             }
         }
+
         body {
             background: radial-gradient(circle, #f1d1d1, #fcdef7, #fcdabb, #f0b9b9, #f8dede);
             background-size: 300% 300%;
@@ -49,7 +49,8 @@
 
         @media screen and (min-width: 1024px) {
             main {
-                position: absolute; left: 125px;
+                position: absolute;
+                /* left: 125px; */
             }
 
             main:before {
