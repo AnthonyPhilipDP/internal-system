@@ -1,3 +1,3 @@
 <x-filament-panels::page>
-    <livewire:recall-equipment />
+  <livewire:recall-equipment />
 </x-filament-panels::page>
