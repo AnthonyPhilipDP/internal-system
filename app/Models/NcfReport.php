@@ -18,6 +18,8 @@ class NcfReport extends Model
     protected $casts = [
         'specificFailure' => 'array',
         'correctiveAction' => 'array',
+        'clientDecisionRecommendation' => 'array',
+        'clientDecision' => 'array',
     ];
 
     public function equipment(): BelongsTo

@@ -67,11 +67,15 @@
                 <p class="font-bold text-gray-900">
                   Attention to:
                 </p>
+              @else
+                <p>&nbsp;</p>
               @endif
               @if ($selectedReport->contactPersonEmail)
                 <p class="font-bold text-gray-900">
                   E-mail:
                 </p>
+              @else
+                <p>&nbsp;</p>
               @endif
               <p class="font-medium text-gray-900 mt-2">
                 Make:
@@ -89,11 +93,15 @@
                 <p class="font-medium text-gray-900">
                   {{ $selectedReport->contactPersonName }}
                 </p>
+              @else
+                <p>&nbsp;</p>
               @endif
               @if ($selectedReport->contactPersonEmail)
                 <p class="font-medium text-gray-900">
                   {{ $selectedReport->contactPersonEmail }}
                 </p>
+              @else
+                <p>&nbsp;</p>
               @endif
               <p class="font-medium text-gray-900 mt-2">
                 {{ $selectedReport->make }}
@@ -158,19 +166,18 @@
             <span class="font-medium text-gray-900 pl-6 font-arial">Calibration completed?</span>
             <span class="font-semibold text-gray-900 mt-2 italic font-arial">Specific Failure:</span>
             @foreach ($selectedReport->specificFailure as $item)
-              <span class="font-medium text-gray-900 pl-6 font-arial">{{ $item['specificFailure'] }}asdasdasdasdasdas
-                asdasdasd asdasdasdasdas asdasdasdasd</span>
+              <span class="font-medium text-gray-900 pl-6 font-arial">{{ $item['specificFailure'] }}</span>
             @endforeach
           </div>
         </div>
         <span
-          class="font-semibold text-gray-900 font-arial absolute top-[357px] left-[270px]">{{ $selections[$selectedReport->isCalibrationCompleted] }}</span>
-        <span class="font-semibold text-gray-900 font-arial absolute top-[380px] left-[270px]">(UUT = Unit Under
+          class="font-normal text-gray-900 font-arial absolute top-[357px] left-[270px]">{{ $selections[$selectedReport->isCalibrationCompleted] }}</span>
+        <span class="font-normal text-gray-900 font-arial absolute top-[380px] left-[270px]">(UUT = Unit Under
           Test)</span>
         @if ($selectedReport->troubleshootingStatus)
           <span class="font-semibold text-gray-900 italic font-arial absolute top-[340px] right-[170px]">Troubleshooting
             Status:</span>
-          <span class="font-medium text-gray-900 pl-6 font-arial absolute top-[357px] right-[85px]">Troubleshooting
+          <span class="font-normal text-gray-900 pl-6 font-arial absolute top-[357px] right-[85px]">Troubleshooting
             completed? &emsp;&emsp;
             {{ $selections[$selectedReport->troubleshootingStatus] }}.</span>
         @endif
@@ -193,111 +200,102 @@
           </div>
         </div> --}}
       </section>
-      <section class="mx-12 px-12 pb-1">
-        <div class="flex flex-col">
-          <span class="font-semibold text-gray-900 -mx-10 text-[12px] italic">Recommended Corrective Action:</span>
-          <div class="grid grid-cols-4">
-            @foreach ($selectedReport->correctiveAction as $item)
-              <div class="flex items-center gap-2">
-                <x-bi-asterisk class="w-1 h-1 text-gray-900 items-center justify-center" />
-                <span class="flex-1 text-[10px] font-medium text-gray-900 font-arial">{{ $selections[$item] }}</span>
+      <div class="absolute bottom-[515px]">
+        <section class="mx-12 px-12 pb-1">
+          <div class="flex flex-col">
+            <span class="font-semibold text-gray-900 -mx-10 text-[12px] italic">Recommended Corrective Action:</span>
+            <div class="flex gap-4">
+              @foreach ($selectedReport->correctiveAction as $item)
+                <div class="flex items-center gap-2">
+                  <x-bi-asterisk class="w-1 h-1 text-gray-900 items-center justify-center" />
+                  <span class="text-[10px] font-medium text-gray-900 font-arial">{{ $selections[$item] }}</span>
+                </div>
+              @endforeach
+            </div>
+          </div>
+        </section>
+        <section class="mx-12 px-12 pb-1 font-arial">
+          <div class="flex gap-8">
+            <span class="font-normal text-gray-900 text-[11px]">Reported By: <span
+                class="font-semibold">{{ $selectedReport->ncfReportedBy }}</span></span>
+            <span class="font-normal text-gray-900 text-[11px]">Reviewed By: <span
+                class="font-semibold">{{ $selectedReport->ncfReviewedBy }}</span></span>
+          </div>
+        </section>
+      </div>
+      <div class="absolute bottom-[420px] left-[49px] right-[49px]">
+        <section
+          class=" px-8 py-1 flex flex-row justify-between text-[11px] border-[.100rem] border-gray-700 text-justify">
+          <div class="font-arial">
+            <div class="flex flex-row">
+              <div class="flex flex-col">
+                <p class="font-semibold text-gray-900 -mx-6 italic text-[14px]"
+                  style="font-family: 'Times New Roman', Times, serif">Chargeable Items:</p>
+                <span class="pl-14 text-gray-900">1. Calibration Fee:</span>
+                <span class="pl-14 text-gray-900">2. Diagnostic Fee:</span>
+                @if ($selectedReport->conditionalFee == 'repair')
+                  <span class="pl-14 text-gray-900">3. Repair Fee:</span>
+                @else
+                  <span class="pl-14 text-gray-900">3. Realignment Fee:</span>
+                @endif
               </div>
-            @endforeach
-          </div>
-        </div>
-      </section>
-      <section class="mx-12 px-12 pb-1 font-arial">
-        <div class="flex gap-8">
-          <span class="font-normal text-gray-900 text-[11px]">Reported By: <span
-              class="font-semibold">{{ $selectedReport->ncfReportedBy }}</span></span>
-          <span class="font-normal text-gray-900 text-[11px]">Reviewed By: <span
-              class="font-semibold">{{ $selectedReport->ncfReviewedBy }}</span></span>
-        </div>
-      </section>
-      <section
-        class="mx-12 px-8 py-1 flex flex-row justify-between text-[11px] border-[.100rem] border-gray-700 text-justify">
-        <div class="font-arial">
-          <div class="flex flex-row">
-            <div class="flex flex-col">
-              <p class="font-semibold text-gray-900 -mx-6 italic text-[14px]"
-                style="font-family: 'Times New Roman', Times, serif">Chargeable Items:</p>
-              <span class="pl-14 text-gray-900">1. Calibration Fee:</span>
-              <span class="pl-14 text-gray-900">2. Diagnostic Fee:</span>
-              @if ($selectedReport->conditionalFee == 'repair')
-                <span class="pl-14 text-gray-900">3. Repair Fee:</span>
-              @else
-                <span class="pl-14 text-gray-900">3. Realignment Fee:</span>
-              @endif
+              <div class="flex flex-col">
+                <p class="font-semibold text-gray-900 -mx-6">&emsp;</p>
+                <span class="pl-14 text-gray-900">Yes</span>
+                <span
+                  class="pl-14 text-gray-900">{{ is_numeric($selectedReport->diagnosticFee) ? 'PHP ' . $selectedReport->diagnosticFee : $selectedReport->diagnosticFee }}</span>
+                <span
+                  class="pl-14 text-gray-900">{{ is_numeric($selectedReport->conditionalFeeAmount) ? 'PHP ' . $selectedReport->conditionalFeeAmount : $selectedReport->conditionalFeeAmount }}
+                </span>
+              </div>
+              <div class="flex flex-col">
+                <p class="font-semibold text-gray-900 -mx-6">&emsp;</p>
+                <span class="pl-14 text-gray-900">&emsp;</span>
+                <span class="pl-14 text-gray-900">( VAT - Excluded )</span>
+                <span class="pl-14 text-gray-900">( VAT - Excluded )</span>
+              </div>
             </div>
-            <div class="flex flex-col">
-              <p class="font-semibold text-gray-900 -mx-6">&emsp;</p>
-              <span class="pl-14 text-gray-900">Yes</span>
-              <span
-                class="pl-14 text-gray-900">{{ is_numeric($selectedReport->diagnosticFee) ? 'PHP ' . $selectedReport->diagnosticFee : $selectedReport->diagnosticFee }}</span>
-              <span
-                class="pl-14 text-gray-900">{{ is_numeric($selectedReport->conditionalFeeAmount) ? 'PHP ' . $selectedReport->conditionalFeeAmount : $selectedReport->conditionalFeeAmount }}
-              </span>
-            </div>
-            <div class="flex flex-col">
-              <p class="font-semibold text-gray-900 -mx-6">&emsp;</p>
-              <span class="pl-14 text-gray-900">&emsp;</span>
-              <span class="pl-14 text-gray-900">( VAT - Excluded )</span>
-              <span class="pl-14 text-gray-900">( VAT - Excluded )</span>
+            <div class="flex flex-col text-[8px]">
+              <p><span class="font-semibold">Please Note:</span> Repair price quote will be emailed upon completion of
+                the troubleshooting. Diagnostic fee is WAIVED upon approval of repair.
+              </p>
             </div>
           </div>
-          <div class="flex flex-col text-[8px]">
-            <p><span class="font-semibold">Please Note:</span> Repair price quote will be emailed upon completion of
-              the troubleshooting. Diagnostic fee is WAIVED upon approval of repair.
-            </p>
-          </div>
-        </div>
-      </section>
-      <section class="mx-12 px-8 py-1 text-[11px]">
+        </section>
+      </div>
+      @php
+        $clientDecision = [
+            'action1' => 'Attempt Realignment',
+            'action2' => 'Attempt Repair',
+            'action3' => 'Limit Instrument',
+            'action4' => 'Reject Instrument',
+            'action5' => 'Provide "As found-As left" Data',
+            'action6' => 'Beyond Economical Repair (BER)',
+        ];
+      @endphp
+      <div class="absolute bottom-[350px] left-[80px]">
         <div class="flex flex-row">
           <span class="flex-1 font-bold italic -mx-6 text-[12px]">Client Decision / Approval:</span>
-          <span class="flex-1 font-bold italic text-[12px] ml-36">Client's Instruction / Comment:</span>
         </div>
-        <div class="flex flex-row">
-          <div class="flex">
-            <div class="flex flex-row gap-3 font-arial text-[10px]">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class=" w-3 h-3 text-black border-[.100rem] border-gray-900"></span>
-                  <span>Attempt Realignment</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class=" w-3 h-3 text-black border-[.100rem] border-gray-900"></span>
-                  <span>Attempt Repair</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class=" w-3 h-3 text-black border-[.100rem] border-gray-900"></span>
-                  <span>Limit Instrument</span>
-                </div>
-              </div>
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class=" w-3 h-3 text-black border-[.100rem] border-gray-900"></span>
-                  <span>Reject Instrument</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class=" w-3 h-3 text-black border-[.100rem] border-gray-900"></span>
-                  <span>Provide "As found - As left" Data</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class=" w-3 h-3 text-black border-[.100rem] border-gray-900"></span>
-                  <span>Beyond Economical Repair (BER)</span>
-                </div>
-              </div>
+        <div class="grid grid-cols-2 gap-x-2 font-arial text-[10px]">
+          @foreach ($selectedReport->clientDecisionRecommendation as $item)
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 text-black border-[.100rem] border-gray-900"></span>
+              <span>{{ $clientDecision[$item] }}</span>
             </div>
-          </div>
-          <div class="flex flex-col font-arial italic ml-20">
-            {{-- <div class="font-bold">Client Instruction / Comment:</div> --}}
-            <div>___________________________________________</div>
-            <div>___________________________________________</div>
-            <div>___________________________________________</div>
-            <div>___________________________________________</div>
-          </div>
+          @endforeach
         </div>
+      </div>
+      <div class="absolute bottom-[330px] right-[80px]">
+        <div class="flex flex-col text-[11px]">
+          <div class="font-bold italic text-[12px]">Client's Instruction / Comment:</div>
+          <div>________________________________________________</div>
+          <div>________________________________________________</div>
+          <div>________________________________________________</div>
+          <div>________________________________________________</div>
+        </div>
+      </div>
+      <div class="absolute bottom-[195px] left-[80px]">
         <div class="text-[9px] flex flex-row -mx-4 font-arial">
           <div>
             <p class="font-semibold">Expected Turnaround time:</p>
@@ -335,7 +333,7 @@
           <h1><span class="font-bold">Note:</span> Revision of Printed Measurement Report will incur
             revision/reprinting fee</h1>
         </div>
-      </section>
+      </div>
       <div class="absolute bottom-12">
         <section class="mx-12 px-8 py-1 text-[11px]">
           <div class="flex w-full justify-around">
@@ -401,9 +399,9 @@
     </style>
   </div>
 
-  <script>
+  {{-- <script>
     window.onload = function() {
       window.print();
     };
-  </script>
+  </script> --}}
 </div>

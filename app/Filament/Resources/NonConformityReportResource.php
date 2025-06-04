@@ -49,15 +49,16 @@ class NonConformityReportResource extends Resource
                                         ->with(['customer', 'customer.contactPerson'])
                                         ->first();
                         
-                                    $contactPerson = $equipment->customer->contactPerson->first();
-                                    $identity = $contactPerson ? $contactPerson->identity : null;
-                                    $contactPersonName;
-                                    
-                                    if($identity){
-                                        $prefix = ($identity === 'male') ? 'Mr.' : 'Ms.';
-                                        $contactPersonName = $prefix . ' ' . $contactPerson->name;
+                                    if($equipment->customer->contactPerson){
+                                        $contactPerson = $equipment->customer->contactPerson->first();
+                                        $identity = $contactPerson ? $contactPerson->identity : null;
+                                        $contactPersonName;
+                                        if($identity){
+                                            $prefix = ($identity === 'male') ? 'Mr.' : 'Ms.';
+                                            $contactPersonName = $prefix . ' ' . $contactPerson->name;
+                                        }
                                     }
-
+                                    
                                     if ($equipment) {
                                         $set('transaction_id', $equipment->transaction_id);
                                         $set('customerName', $equipment->customer->name);
@@ -181,19 +182,38 @@ class NonConformityReportResource extends Resource
                         ->onColor('success')
                         ->offColor('danger')
                         ->default(false),
-                        Forms\Components\CheckboxList::make('correctiveAction')
-                        ->columnSpanFull()
-                        ->validationAttribute('corrective action')
-                        ->label('Recommended Corrective Action')
-                        ->options([
-                            'action1' => 'Attempt Realignment',
-                            'action2' => 'Attempt Troubleshooting',
-                            'action3' => 'Limit Instrument',
-                            'action4' => 'Reject Instrument',
-                            'action5' => 'Provide "as found-as left" data - do not limit',
-                            'action6' => 'Beyond Economical Repair (BER) - replace unit',
-                        ])->columns(2)
-                        ->required(),
+                        Forms\Components\Fieldset::make('Recommended Corrective Action')
+                        ->schema([
+                            Forms\Components\CheckboxList::make('correctiveAction')
+                            ->columnSpanFull()
+                            ->validationAttribute('corrective action')
+                            ->label('')
+                            ->options([
+                                'action1' => 'Attempt Realignment',
+                                'action2' => 'Attempt Troubleshooting',
+                                'action3' => 'Limit Instrument',
+                                'action4' => 'Reject Instrument',
+                                'action5' => 'Provide "as found-as left" data - do not limit',
+                                'action6' => 'Beyond Economical Repair (BER) - replace unit',
+                            ])->columns(2)
+                            ->required(),
+                        ]),
+                        Forms\Components\Fieldset::make('Client Decision Recommendation')
+                        ->schema([
+                            Forms\Components\CheckboxList::make('clientDecisionRecommendation')
+                            ->columnSpanFull()
+                            ->validationAttribute('client decision recommendationn')
+                            ->label('')
+                            ->options([
+                                'action1' => 'Attempt Realignment',
+                                'action2' => 'Attempt Repair',
+                                'action3' => 'Limit Instrument',
+                                'action4' => 'Reject Instrument',
+                                'action5' => 'Provide "As found-As left" Data',
+                                'action6' => 'Beyond Economical Repair (BER)',
+                            ])->columns(2)
+                            ->required(),
+                        ]),
                         Forms\Components\Section::make('')
                         ->columns(2)
                         ->schema([
@@ -250,9 +270,9 @@ class NonConformityReportResource extends Resource
                         ->dehydrated(),
                         // Forms\Components\DatePicker::make('repliedDate')
                         // ->label('Date Replied'),
-                        Forms\Components\CheckboxList::make('correctiveAction')
+                        Forms\Components\CheckboxList::make('clientDecision')
                         ->columnSpanFull()
-                        ->validationAttribute('corrective action')
+                        ->validationAttribute('client decision')
                         ->label('Customer Directions')
                         ->options([
                             'action1' => 'Attempt Realignment',

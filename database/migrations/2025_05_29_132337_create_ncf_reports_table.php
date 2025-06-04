@@ -31,6 +31,8 @@ return new class extends Migration
             $table->string('isCurrentChargeableItem')->nullable();
             $table->boolean('troubleshootingStatus')->default(false);
             $table->json('correctiveAction')->nullable();
+            $table->json('clientDecisionRecommendation')->nullable();
+            $table->json('clientDecision')->nullable();
             $table->string('diagnosticFee')->nullable();
             $table->string('conditionalFee')->nullable();
             $table->string('conditionalFeeAmount')->nullable();
