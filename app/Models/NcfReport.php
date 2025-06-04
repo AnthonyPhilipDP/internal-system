@@ -16,6 +16,7 @@ class NcfReport extends Model
     ];
 
     protected $casts = [
+        'specificFailure' => 'array',
         'correctiveAction' => 'array',
     ];
 

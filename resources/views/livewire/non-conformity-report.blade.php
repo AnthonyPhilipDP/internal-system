@@ -1,5 +1,5 @@
 <div>
-  <a class="absolute top-4 left-4 bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 print:hidden"
+  <a class="sticky top-4 left-4 bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 print:hidden"
     href="{{ url('admin/non-conformity-reports') }}">
     <button>
       Go back
@@ -150,32 +150,31 @@
           </div>
         </div>
       </section>
-      <section class="mx-12 px-12 py-1 flex flex-row justify-between text-[11px]">
+      <section class="mx-12 px-12 py-1 flex flex-row gap-8 justify-between text-[11px]">
         <div>
           <div class="flex flex-col">
             <span class="font-semibold text-gray-900 -mx-10 text-[12px] italic">Equipment Status</span>
             <span class="font-semibold text-gray-900 italic font-arial">Calibration Status:</span>
             <span class="font-medium text-gray-900 pl-6 font-arial">Calibration completed?</span>
             <span class="font-semibold text-gray-900 mt-2 italic font-arial">Specific Failure:</span>
-            <span class="font-medium text-gray-900 pl-6 font-arial">{{ $selectedReport->specificFailure }}</span>
-            <span class="font-semibold text-gray-900 mt-2 italic font-arial">Troubleshooting Status:</span>
-            <span class="font-medium text-gray-900 pl-6 font-arial">Troubleshooting completed?</span>
+            @foreach ($selectedReport->specificFailure as $item)
+              <span class="font-medium text-gray-900 pl-6 font-arial">{{ $item['specificFailure'] }}asdasdasdasdasdas
+                asdasdasd asdasdasdasdas asdasdasdasd</span>
+            @endforeach
           </div>
         </div>
-        <div class="flex-1 ml-8">
-          <div class="flex flex-col">
-            <span class="font-semibold text-gray-900">&emsp;</span>
-            <span class="font-semibold text-gray-900">&emsp;</span>
-            <span
-              class="font-medium text-gray-900 font-arial">{{ $selections[$selectedReport->isCalibrationCompleted] }}</span>
-            <span class="font-semibold text-gray-900 mt-2 font-arial">(UUT = Unit Under Test)</span>
-            <span class="font-medium text-gray-900">&emsp;</span>
-            <span class="font-semibold text-gray-900 mt-2">&emsp;</span>
-            <span
-              class="font-medium text-gray-900 font-arial">{{ $selections[$selectedReport->troubleshootingStatus] }}.</span>
-          </div>
-        </div>
-        <div class="flex flex-row font-arial pt-24">
+        <span
+          class="font-semibold text-gray-900 font-arial absolute top-[357px] left-[270px]">{{ $selections[$selectedReport->isCalibrationCompleted] }}</span>
+        <span class="font-semibold text-gray-900 font-arial absolute top-[380px] left-[270px]">(UUT = Unit Under
+          Test)</span>
+        @if ($selectedReport->troubleshootingStatus)
+          <span class="font-semibold text-gray-900 italic font-arial absolute top-[340px] right-[170px]">Troubleshooting
+            Status:</span>
+          <span class="font-medium text-gray-900 pl-6 font-arial absolute top-[357px] right-[85px]">Troubleshooting
+            completed? &emsp;&emsp;
+            {{ $selections[$selectedReport->troubleshootingStatus] }}.</span>
+        @endif
+        {{-- <div class="flex flex-row font-arial">
           <div class="text-end gap-1 max-w-sm pr-2">
             <p class="font-medium text-gray-900">
               Reported by:
@@ -192,19 +191,27 @@
               {{ $selectedReport->ncfReviewedBy }}
             </p>
           </div>
-        </div>
+        </div> --}}
       </section>
-      <section class="mx-12 px-12 py-1">
+      <section class="mx-12 px-12 pb-1">
         <div class="flex flex-col">
           <span class="font-semibold text-gray-900 -mx-10 text-[12px] italic">Recommended Corrective Action:</span>
-          <div class="grid grid-cols-3">
+          <div class="grid grid-cols-4">
             @foreach ($selectedReport->correctiveAction as $item)
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-2">
                 <x-bi-asterisk class="w-1 h-1 text-gray-900 items-center justify-center" />
-                <span class="text-[10px] font-medium text-gray-900 font-arial">{{ $selections[$item] }}</span>
+                <span class="flex-1 text-[10px] font-medium text-gray-900 font-arial">{{ $selections[$item] }}</span>
               </div>
             @endforeach
           </div>
+        </div>
+      </section>
+      <section class="mx-12 px-12 pb-1 font-arial">
+        <div class="flex gap-8">
+          <span class="font-normal text-gray-900 text-[11px]">Reported By: <span
+              class="font-semibold">{{ $selectedReport->ncfReportedBy }}</span></span>
+          <span class="font-normal text-gray-900 text-[11px]">Reviewed By: <span
+              class="font-semibold">{{ $selectedReport->ncfReviewedBy }}</span></span>
         </div>
       </section>
       <section
@@ -225,7 +232,8 @@
             <div class="flex flex-col">
               <p class="font-semibold text-gray-900 -mx-6">&emsp;</p>
               <span class="pl-14 text-gray-900">Yes</span>
-              <span class="pl-14 text-gray-900">{{ $selectedReport->diagnosticFee }}</span>
+              <span
+                class="pl-14 text-gray-900">{{ is_numeric($selectedReport->diagnosticFee) ? 'PHP ' . $selectedReport->diagnosticFee : $selectedReport->diagnosticFee }}</span>
               <span
                 class="pl-14 text-gray-900">{{ is_numeric($selectedReport->conditionalFeeAmount) ? 'PHP ' . $selectedReport->conditionalFeeAmount : $selectedReport->conditionalFeeAmount }}
               </span>
@@ -240,16 +248,14 @@
           <div class="flex flex-col text-[8px]">
             <p><span class="font-semibold">Please Note:</span> Repair price quote will be emailed upon completion of
               the troubleshooting. Diagnostic fee is WAIVED upon approval of repair.
-              Diagnostic fee will also be WAIVED if no replacement parts are available or if we determine unit is beyond
-              economical repair.
             </p>
           </div>
         </div>
       </section>
-      <section class="mx-12 px-8 py-2 text-[11px]">
+      <section class="mx-12 px-8 py-1 text-[11px]">
         <div class="flex flex-row">
           <span class="flex-1 font-bold italic -mx-6 text-[12px]">Client Decision / Approval:</span>
-          <span class="flex-1 font-bold italic -mx-6 text-[12px] ml-36">Client's Instruction / Comment:</span>
+          <span class="flex-1 font-bold italic text-[12px] ml-36">Client's Instruction / Comment:</span>
         </div>
         <div class="flex flex-row">
           <div class="flex">
@@ -279,17 +285,17 @@
                 </div>
                 <div class="flex items-center gap-2">
                   <span class=" w-3 h-3 text-black border-[.100rem] border-gray-900"></span>
-                  <span>Beyond Economical Repair (BET) - replace unit</span>
+                  <span>Beyond Economical Repair (BER)</span>
                 </div>
               </div>
             </div>
           </div>
-          <div class="flex flex-col font-arial italic ml-8">
+          <div class="flex flex-col font-arial italic ml-20">
             {{-- <div class="font-bold">Client Instruction / Comment:</div> --}}
-            <div class="underline">________________________________________</div>
-            <div class="underline">________________________________________</div>
-            <div class="underline">________________________________________</div>
-            <div class="underline">________________________________________</div>
+            <div>___________________________________________</div>
+            <div>___________________________________________</div>
+            <div>___________________________________________</div>
+            <div>___________________________________________</div>
           </div>
         </div>
         <div class="text-[9px] flex flex-row -mx-4 font-arial">
@@ -303,7 +309,7 @@
           </div>
         </div>
         <div class="text-[11px] font-arial">
-          <h1 class="font-bold mt-2 -mx-4">Instructions for Nonconforming parameter/test point(s):</h1>
+          <h1 class="font-bold mt-1 -mx-4">Instructions for Nonconforming parameter/test point(s):</h1>
           <div class="flex items-center gap-2">
             <span class=" w-3 h-3 text-black border-[.100rem] border-gray-900"></span>
             <span>Highlight test points or parameters in Measurement Report. Describe nonconformity in the Remarks
@@ -325,13 +331,13 @@
               Remarks Section.</span>
           </div>
         </div>
-        <div class="mt-2 -mx-4 text-[12px]">
+        <div class="mt-1 -mx-4 text-[12px]">
           <h1><span class="font-bold">Note:</span> Revision of Printed Measurement Report will incur
             revision/reprinting fee</h1>
         </div>
       </section>
       <div class="absolute bottom-12">
-        <section class="mx-12 px-8 py-2 text-[11px]">
+        <section class="mx-12 px-8 py-1 text-[11px]">
           <div class="flex w-full justify-around">
             <div class="flex flex-col items-center">
               <p class="text-xs font-medium text-black">&emsp;</p>
@@ -344,7 +350,7 @@
                 &emsp;&emsp;&emsp;&emsp;&emsp;Date&emsp;&emsp;&emsp;&emsp;&emsp;</p>
             </div>
           </div>
-          <div class="font-bold text-center mt-2">
+          <div class="font-bold text-center mt-1">
             <div>
               *** Please complete "Client Decision/Approval" section and email back to PMSi ***
             </div>
@@ -395,9 +401,9 @@
     </style>
   </div>
 
-  {{-- <script>
-        window.onload = function() {
-            window.print();
-        };
-    </script> --}}
+  <script>
+    window.onload = function() {
+      window.print();
+    };
+  </script>
 </div>

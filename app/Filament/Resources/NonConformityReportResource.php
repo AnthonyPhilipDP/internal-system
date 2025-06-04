@@ -51,12 +51,17 @@ class NonConformityReportResource extends Resource
                         
                                     $contactPerson = $equipment->customer->contactPerson->first();
                                     $identity = $contactPerson ? $contactPerson->identity : null;
-                                    $prefix = ($identity === 'male') ? 'Mr.' : 'Ms.';
+                                    $contactPersonName;
+                                    
+                                    if($identity){
+                                        $prefix = ($identity === 'male') ? 'Mr.' : 'Ms.';
+                                        $contactPersonName = $prefix . ' ' . $contactPerson->name;
+                                    }
 
                                     if ($equipment) {
                                         $set('transaction_id', $equipment->transaction_id);
                                         $set('customerName', $equipment->customer->name);
-                                        $set('contactPersonName', $prefix . ' ' . $contactPerson->name ?? null);
+                                        $set('contactPersonName', $contactPersonName ?? null);
                                         $set('contactPersonEmail', $equipment->customer->contactPerson->first()->email ?? null);
                                         $set('ncfNumber', $equipment->transaction_id);
                                         $set('equipment_id', $equipment->equipment_id);
@@ -89,7 +94,9 @@ class NonConformityReportResource extends Resource
                         Forms\Components\Fieldset::make('Client & Equipment Details')
                         ->schema([
                             Forms\Components\TextInput::make('customerName')
-                                ->label('Client Name'),
+                                ->label('Client Name')
+                                ->disabled()
+                                ->dehydrated(),
                             Forms\Components\TextInput::make('contactPersonName')
                                 ->label('Attention to')
                                 ->disabled()
@@ -132,13 +139,18 @@ class NonConformityReportResource extends Resource
                     ->columns(2)
                     ->description('Details of the non-conformity')
                     ->schema([
-                        Forms\Components\Textarea::make('specificFailure')
-                        ->validationAttribute('specific failure')
-                        ->label('Specific Failure')
-                        ->maxLength(255)
-                        ->rows(2)
-                        ->autosize()
-                        ->required()
+                        Forms\Components\Repeater::make('specificFailure')
+                        ->label('')
+                        ->addActionLabel('Add specific failure')
+                        ->schema([
+                            Forms\Components\Textarea::make('specificFailure')
+                            ->validationAttribute('specific failure')
+                            ->label('Specific Failure')
+                            ->maxLength(255)
+                            ->rows(1)
+                            ->autosize()
+                            ->required(),
+                        ])
                         ->columnSpanFull(),
                         Forms\Components\Select::make('isCalibrationCompleted')
                         ->validationAttribute('calibration completion status')
@@ -236,6 +248,8 @@ class NonConformityReportResource extends Resource
                         ->prefix('40-')
                         ->disabled()
                         ->dehydrated(),
+                        // Forms\Components\DatePicker::make('repliedDate')
+                        // ->label('Date Replied'),
                         Forms\Components\CheckboxList::make('correctiveAction')
                         ->columnSpanFull()
                         ->validationAttribute('corrective action')
@@ -255,8 +269,7 @@ class NonConformityReportResource extends Resource
                         ->autosize()
                         ->columnSpan(2),
                         Forms\Components\TextInput::make('approvedBy')
-                        ->label('Approved By')
-                        ->required(),
+                        ->label('Approved By'),
                         Forms\Components\Select::make('status')
                         ->label('Equipment Status')
                         ->native(false)
@@ -451,7 +464,7 @@ class NonConformityReportResource extends Resource
                     ->color('warning'),
                     Tables\Actions\Action::make('viewReport')
                     ->label('View Report')
-                    ->url(fn ($record) => route('ncfReport', ['reportId' => $record->id]))
+                    ->url(fn ($record) => route('ncfReport', ['reportId' => $record->id]), shouldOpenInNewTab: true)
                     ->icon('heroicon-m-document-check')
                     ->color('info'),
                 ])

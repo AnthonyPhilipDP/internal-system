@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('serial')->nullable();
             $table->string('description')->nullable();
             // Step 2
-            $table->string('specificFailure')->nullable();
+            $table->json('specificFailure')->nullable();
             $table->string('isCalibrationCompleted')->nullable();
             $table->string('isCurrentChargeableItem')->nullable();
             $table->boolean('troubleshootingStatus')->default(false);
