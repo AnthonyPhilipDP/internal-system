@@ -16,3 +16,4 @@ Route::get('/acknowledgment-receipt', AcknowledgmentReceipt::class);
 Route::get('/equipment/certificate', Certificate::class);
 Route::get('/calibration-recall', CalibrationRecall::class)->name('recallCalibration');
 Route::get('/equipment/ncf-report/{reportId}', NonConformityReport::class)->name('ncfReport');
+Route::get('/equipment/download-pdf/{reportId}', [NonConformityReport::class, 'downloadPdf'])->name('downloadPdf');

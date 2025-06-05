@@ -268,8 +268,8 @@ class NonConformityReportResource extends Resource
                         ->prefix('40-')
                         ->disabled()
                         ->dehydrated(),
-                        // Forms\Components\DatePicker::make('repliedDate')
-                        // ->label('Date Replied'),
+                        Forms\Components\DatePicker::make('repliedDate')
+                        ->label('Date Replied'),
                         Forms\Components\CheckboxList::make('clientDecision')
                         ->columnSpanFull()
                         ->validationAttribute('client decision')
@@ -486,6 +486,11 @@ class NonConformityReportResource extends Resource
                     ->label('View Report')
                     ->url(fn ($record) => route('ncfReport', ['reportId' => $record->id]), shouldOpenInNewTab: true)
                     ->icon('heroicon-m-document-check')
+                    ->color('info'),
+                    Tables\Actions\Action::make('downloadPdf')
+                    ->label('Download PDF')
+                    ->url(fn ($record) => route('downloadPdf', ['reportId' => $record->id]), shouldOpenInNewTab: true)
+                    ->icon('heroicon-m-arrow-down-tray')
                     ->color('info'),
                 ])
                 ->icon('heroicon-o-ellipsis-horizontal-circle')

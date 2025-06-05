@@ -5,7 +5,7 @@ namespace App\Filament\Resources\NonConformityReportResource\Pages;
 use data;
 use Filament\Actions;
 use App\Models\NcfReport;
-use Filament\Actions\Action;
+use Filament\Notifications\Actions\Action;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -44,7 +44,14 @@ class CreateNonConformityReport extends CreateRecord
             ->success()
             ->icon('heroicon-o-document-check')
             ->title('NCF Report Successfully Added')
-            ->body('NCF report of the equipment has been saved to the system.');
+            ->body('NCF report of the equipment has been saved to the system.')
+            ->actions([
+                Action::make('downloadPdf')
+                    ->button()
+                    ->url(fn () => route('downloadPdf', ['reportId' => $this->record->id]), shouldOpenInNewTab: true)
+                    ->label('Download PDF')
+            ])
+            ->send();
     }
 
     protected function getRedirectUrl(): string
