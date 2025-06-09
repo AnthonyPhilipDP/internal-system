@@ -118,7 +118,7 @@
           </p>
         @endif
         <div class="border-b border-white rounded-lg overflow-x-auto">
-          <table class="min-w-full divide-y divide-white table-fixed">
+          <table class="min-w-full divide-y divide-white table-fixed w-full">
             @if ($equipmentChunks->count() > 1)
               <caption class="caption-bottom text-xs text-gray-500 font-mono mt-2">
                 Number of equipment in this page: {{ $equipmentChunk->count() }}
@@ -179,8 +179,13 @@
                   <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
                     {{ $equipment['serial'] }}
                   </td>
-                  <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 pl-2 pr-4">
-                    Not Applicable
+                  <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 pl-2 pr-4"
+                    style="display: inline-block; max-width: 15ch; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                    @if ($equipment['isClientExclusive'])
+                      <span class="">{{ $equipment['exclusive_name'] }}</span>
+                    @else
+                      Not Applicable
+                    @endif
                   </td>
                 </tr>
               @endforeach

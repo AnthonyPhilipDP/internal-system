@@ -704,6 +704,10 @@ class CustomerResource extends Resource
                                         'serial' => $equipment->serial,
                                         'description' => $equipment->description,
                                         'calibrationDue' => $equipment->calibrationDue,
+                                        'isClientExclusive' => $equipment->isClientExclusive,
+                                        'exclusive_id' => $equipment->exclusive_id,
+                                        'exclusive_name' => $equipment->exclusive_name,
+                                        'exclusive_address' => $equipment->exclusive_address,
                                     ];
                                 })->toArray(),
                             ];
