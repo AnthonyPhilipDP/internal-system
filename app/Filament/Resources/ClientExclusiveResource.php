@@ -29,7 +29,7 @@ class ClientExclusiveResource extends Resource
                 Forms\Components\Section::make('')
                 ->schema([
                     Forms\Components\Select::make('customer_id')
-                    ->label('Customer')
+                    ->label('Client Exclusive of')
                     ->columnSpan(4)
                     ->searchable()
                     ->required()
@@ -88,7 +88,7 @@ class ClientExclusiveResource extends Resource
                         }
                     }),
                 Forms\Components\TextInput::make('exclusive_id')
-                    ->label('Exclusive ID')  
+                    ->label('Client Exclusive ID')  
                     ->readonly()
                     ->maxLength(255)
                     ->columnSpan(2),
@@ -107,12 +107,12 @@ class ClientExclusiveResource extends Resource
                     ->columnSpanFull(),
                 
                 Forms\Components\TextInput::make('name')
-                    ->label('Name')  
+                    ->label('Client Name')  
                     ->maxLength(255)
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('address')
-                    ->label('Address')  
+                    ->label('Client Address')  
                     ->maxLength(255)
                     ->autosize()
                     ->required()
@@ -127,7 +127,7 @@ class ClientExclusiveResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Customer ID')
+                    ->label('Client Exclusive of')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('exclusive_id')
