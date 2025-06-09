@@ -19,8 +19,6 @@ class Certificate extends Component
         // Fetch customer names and transaction IDs for each equipment
         $this->equipmentData = array_map(function ($equipment) {
             $customer = Customer::find($equipment['customer_id']);
-            $equipment['customer_name'] = $customer->name;
-            $equipment['customer_address'] = $customer->address;
 
             return $equipment;
         }, $this->equipmentData);

@@ -1038,6 +1038,9 @@ class EquipmentResource extends Resource
                                 'outCondition' => $record->outCondition,
                                 'withPabLogo' => $data['withPabLogo'],
                                 'withCalibrationDue' => $data['withCalibrationDue'],
+                                'exclusive_id' => $record->exclusive_id,
+                                'exclusive_name' => $record->exclusive_name,
+                                'exclusive_address' => $record->exclusive_address,
                             ];
                         })->toArray();
                 

@@ -47,11 +47,19 @@
           </div>
           <div class="flex">
             <p class="w-[25%] font-semibold text-sm text-right mr-[20px]">Client Name: </p>
-            <p class="w-[75%] text-sm">{{ $equipment['customer_name'] }}</p>
+            @if ($equipment['exclusive_id'])
+              <p class="w-[75%] text-sm">{{ $equipment['exclusive_name'] }}</p>
+            @else
+              <p class="w-[75%] text-sm">{{ $equipment['customer_name'] }}</p>
+            @endif
           </div>
           <div class="flex">
             <p class="w-[25%] text-sm text-right mr-[20px]">Address: </p>
-            <p class="w-[75%] text-sm">{{ $equipment['customer_address'] }}</p>
+            @if ($equipment['exclusive_id'])
+              <p class="w-[75%] text-sm">{{ $equipment['exclusive_address'] }}</p>
+            @else
+              <p class="w-[75%] text-sm">{{ $equipment['customer_address'] }}</p>
+            @endif
           </div>
         </div>
         <h1
