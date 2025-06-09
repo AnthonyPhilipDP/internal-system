@@ -83,7 +83,12 @@ return new class extends Migration
             $table->boolean('certify')->default(false);                                                    
             $table->boolean('DAILY_rep')->default(false);      
             //Identifier if the equipment is imported
-            $table->boolean('isEquipmentImported')->default(false);                                              
+            $table->boolean('isEquipmentImported')->default(false);  
+            //Client Exclusive
+            $table->boolean('isClientExclusive')->default(false);  
+            $table->string('exclusive_id')->nullable();
+            $table->string('exclusive_name')->nullable();
+            $table->string('exclusive_address')->nullable();                                          
             //Timestamps
             $table->timestamps();
             $table->softDeletes();

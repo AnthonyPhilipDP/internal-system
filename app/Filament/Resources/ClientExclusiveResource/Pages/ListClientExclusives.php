@@ -13,7 +13,9 @@ class ListClientExclusives extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Add New Client Exclusive')
+                ->icon('heroicon-o-user-plus'),
         ];
     }
 }

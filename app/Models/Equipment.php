@@ -18,6 +18,7 @@ class Equipment extends Model
 
     protected $casts = [
         'inspection' => 'array',
+        'isClientExclusive' => 'boolean',
     ];
     
     protected $guarded = [

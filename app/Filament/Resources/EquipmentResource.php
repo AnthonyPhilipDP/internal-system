@@ -13,6 +13,7 @@ use App\Models\Equipment;
 use Endroid\QrCode\QrCode;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use App\Models\ClientExclusive;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Grid;
@@ -124,8 +125,12 @@ class EquipmentResource extends Resource
                                             if ($customer) {
                                                 $set('customerAddress', $customer->address);
                                             }
+                                            // Update ClientExclusive options based on selected customer_id
+                                            $clientExclusives = ClientExclusive::where('customer_id', $state)->pluck('name', 'id')->toArray();
+                                            $set('client_exclusive_options', $clientExclusives);
                                         } else {
                                             $set('customerAddress', '');
+                                            $set('client_exclusive_options', []);
                                         }
                                     }),
 
@@ -141,7 +146,81 @@ class EquipmentResource extends Resource
                                         return ''; // Default to empty if no customer_id
                                     })
                                     ->autosize(),
-                                    Forms\Components\TextInput::make('equipment_id')
+                                Forms\Components\Section::make('')
+                                ->description('It is recommended to replicate your equipment if it has the same receipt')
+                                ->schema([
+                                    Forms\Components\Toggle::make('isClientExclusive')
+                                        ->onColor('success')
+                                        ->offColor('danger')
+                                        ->label('Client Exclusive')
+                                        ->onIcon('heroicon-m-bolt')
+                                        ->offIcon('heroicon-m-bolt-slash')
+                                        ->default(false)
+                                        ->reactive()
+                                        ->columnSpan(4),
+
+                                    Forms\Components\TextInput::make('exclusive_name')
+                                        ->label('')
+                                        ->disabled()
+                                        ->dehydrated()
+                                        ->default('')
+                                        ->extraAttributes(['class' => 'hidden'])
+                                        ->columnSpan(2),
+
+                                    Forms\Components\TextInput::make('exclusive_address')
+                                        ->label('')
+                                        ->disabled()
+                                        ->dehydrated()
+                                        ->default('')
+                                        ->extraAttributes(['class' => 'hidden'])
+                                        ->columnSpan(2),
+
+                                    Forms\Components\TextInput::make('exclusive_name')
+                                        ->label('Selected Client Exclusive Name')
+                                        ->disabled()
+                                        ->dehydrated()
+                                        ->default('')
+                                        ->columnSpan(4)
+                                        ->hiddenOn('create'),
+
+                                    Forms\Components\Select::make('client_exclusive_id')
+                                        ->label('Client Exclusive')
+                                        ->native(false)
+                                        ->searchable()
+                                        ->options(function (callable $get) {
+                                            return $get('client_exclusive_options') ?? [];
+                                        })
+                                        ->reactive()
+                                        ->afterStateUpdated(function (?string $state, callable $get, callable $set): void {
+                                            if ($state) {
+                                                $clientExclusive = ClientExclusive::find($state);
+                                                if ($clientExclusive) {
+                                                    $set('exclusive_id', $clientExclusive->exclusive_id);
+                                                    $set('exclusive_name', $clientExclusive->name);
+                                                    $set('exclusive_address', $clientExclusive->address);
+                                                }
+                                            } else {
+                                                $set('exclusive_id', '');
+                                                $set('exclusive_name', '');
+                                                $set('exclusive_address', '');
+                                            }
+                                        })
+                                        ->hiddenOn('edit')
+                                        ->visible(fn (callable $get) => $get('isClientExclusive'))
+                                        ->columnSpan(4),
+
+                                    Forms\Components\TextInput::make('exclusive_id')
+                                        ->label('Selected Client Exclusive ID')
+                                        ->disabled()
+                                        ->dehydrated()
+                                        ->default('')
+                                        ->hidden(fn (callable $get) => !$get('isClientExclusive'))
+                                        ->columnSpan(4),
+                                    
+                                ])
+                                ->columns(8),
+                                
+                                Forms\Components\TextInput::make('equipment_id')
                                     ->label('Equipment ID')  
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('make')
@@ -261,22 +340,29 @@ class EquipmentResource extends Resource
                                         $set('ar_id', (string)$newValue);
 
                                         if (!$state) {
-                                            $customerId = Equipment::query()
+                                            $equipment = Equipment::query()
                                                 ->where('ar_id', $maxAr)
-                                                ->value('customer_id');
-                                            $set('customer_id', $customerId);
-                                        
-                                            // Fetch and set the customer's address based on the customer_id
-                                            if ($customerId) {
-                                                $customer = Customer::find($customerId);
+                                                ->first();
+
+                                            if ($equipment) {
+                                                $set('customer_id', $equipment->customer_id);
+                                                $set('isClientExclusive', $equipment->isClientExclusive);
+                                                $set('exclusive_name', $equipment->exclusive_name);
+                                                $set('exclusive_address', $equipment->exclusive_address);
+
+                                                // Fetch and set the customer's address based on the customer_id
+                                                $customer = Customer::find($equipment->customer_id);
                                                 if ($customer) {
                                                     $set('customerAddress', $customer->address);
                                                 }
                                             }
                                         } else {
-                                            // Set customer_id to null and clear address when toggle is on
+                                            // Set customer_id and related fields to null and clear address when toggle is on
                                             $set('customer_id', null);
                                             $set('customerAddress', '');
+                                            $set('isClientExclusive', false);
+                                            $set('exclusive_name', '');
+                                            $set('exclusive_address', '');
                                         }
                                     }),
                                 // TextInput for ar_id: shows computed value and updates on hydration.

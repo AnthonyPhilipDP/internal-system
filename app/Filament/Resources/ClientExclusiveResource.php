@@ -18,15 +18,21 @@ class ClientExclusiveResource extends Resource
 {
     protected static ?string $model = ClientExclusive::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'bi-people';
+
+    protected static ?string $navigationGroup = 'PMSi';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('customer_id')
+                Forms\Components\Section::make('')
+                ->schema([
+                    Forms\Components\Select::make('customer_id')
                     ->label('Customer')
+                    ->columnSpan(4)
                     ->searchable()
+                    ->required()
                     ->preload()
                     ->prefixIcon('heroicon-o-user')
                     ->prefixIconColor('primary')
@@ -70,7 +76,10 @@ class ClientExclusiveResource extends Resource
                                 $count = ClientExclusive::where('customer_id', $state)->count() + 1;
 
                                 // Construct the exclusive_id
-                                $exclusiveId = $state . '-' . $count;
+                                $customerId = $state;
+                                $prefix = substr($customerId, 0, 3); // Extract the first 3 digits
+                                $suffix = substr($customerId, 3); // Extract the remaining digits
+                                $exclusiveId = $prefix . '-' . $suffix . '-' . $count;
                                 $set('exclusive_id', $exclusiveId);
                             }
                         } else {
@@ -78,7 +87,11 @@ class ClientExclusiveResource extends Resource
                             $set('exclusive_id', '');
                         }
                     }),
-
+                Forms\Components\TextInput::make('exclusive_id')
+                    ->label('Exclusive ID')  
+                    ->readonly()
+                    ->maxLength(255)
+                    ->columnSpan(2),
                 Forms\Components\TextArea::make('customerAddress')
                     ->label('Selected Customer Address')
                     ->disabled()
@@ -90,16 +103,22 @@ class ClientExclusiveResource extends Resource
                         }
                         return ''; // Default to empty if no customer_id
                     })
-                    ->autosize(),
-                Forms\Components\TextInput::make('exclusive_id')
-                    ->label('Exclusive ID')  
-                    ->maxLength(255),
+                    ->autosize()
+                    ->columnSpanFull(),
+                
                 Forms\Components\TextInput::make('name')
                     ->label('Name')  
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('address')
+                    ->maxLength(255)
+                    ->required()
+                    ->columnSpanFull(),
+                Forms\Components\Textarea::make('address')
                     ->label('Address')  
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->autosize()
+                    ->required()
+                    ->columnSpanFull(),
+                ])
+                ->columns(6)
             ]);
     }
 
@@ -123,7 +142,7 @@ class ClientExclusiveResource extends Resource
                     ->label('Address')
                     ->searchable()
                     ->sortable(),
-            ])
+            ])->defaultSort('id', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
