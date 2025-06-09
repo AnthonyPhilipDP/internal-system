@@ -7,6 +7,7 @@ use App\Models\Equipment;
 use Illuminate\Support\Str;
 use App\Models\ContactPerson;
 use App\Models\DeliveryPerson;
+use App\Models\ClientExclusive;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -156,6 +157,10 @@ class Customer extends Model
     // equipment.customer_id matches customers.customer_id (not id)
     public function equipment(){
         return $this->hasMany(Equipment::class, 'customer_id', 'customer_id');
+    }
+
+    public function exclusive(){
+        return $this->hasMany(ClientExclusive::class, 'customer_id', 'customer_id');
     }
 
     public function contactPerson() {
