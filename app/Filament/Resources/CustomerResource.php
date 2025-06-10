@@ -696,7 +696,9 @@ class CustomerResource extends Resource
                                         'email' => $contactPerson->email,
                                     ];
                                 })->toArray(),
-                                'equipment' => $customer->equipment->map(function ($equipment) {
+                                'equipment' => $customer->equipment->filter(function ($equipment) {
+                                    return $equipment->calibrationDue !== null; // Ensure calibrationDue is not null
+                                })->map(function ($equipment) {
                                     $exclusiveRecord = null;
                                     if ($equipment->exclusive_id) {
                                         $exclusiveRecord = ClientExclusive::where('exclusive_id', $equipment->exclusive_id)->first();
