@@ -32,5 +32,6 @@ SET foreign_key_checks = 1;
 	
 #Others
 	-- Remove the parenthesis of the telephone numbers.	
+	
 	-- Change " to nothing
 	-- Remove new line in row 8 and 15
