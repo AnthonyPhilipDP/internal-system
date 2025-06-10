@@ -86,9 +86,7 @@ return new class extends Migration
             $table->boolean('isEquipmentImported')->default(false);  
             //Client Exclusive
             $table->boolean('isClientExclusive')->default(false);  
-            $table->string('exclusive_id')->nullable();
-            $table->string('exclusive_name')->nullable();
-            $table->string('exclusive_address')->nullable();                                          
+            $table->string('exclusive_id')->nullable();                                        
             //Timestamps
             $table->timestamps();
             $table->softDeletes();

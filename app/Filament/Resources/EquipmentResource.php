@@ -1016,6 +1016,8 @@ class EquipmentResource extends Resource
                     ])
                     ->action(function ($records, $data) {
                         $equipmentData = $records->map(function ($record) use ($data) {
+                            $exclusive_id = $record->exclusive_id;
+                            $exclusiveRecord = ClientExclusive::where('exclusive_id', $exclusive_id)->first();
                             return [
                                 'id' => $record->id,
                                 'transaction_id' => $record->transaction_id,
@@ -1038,10 +1040,10 @@ class EquipmentResource extends Resource
                                 'outCondition' => $record->outCondition,
                                 'withPabLogo' => $data['withPabLogo'],
                                 'withCalibrationDue' => $data['withCalibrationDue'],
-                                'isClientExclusive' => $equipment->isClientExclusive,
+                                'isClientExclusive' => $record->isClientExclusive,
                                 'exclusive_id' => $record->exclusive_id,
-                                'exclusive_name' => $record->exclusive_name,
-                                'exclusive_address' => $record->exclusive_address,
+                                'exclusive_name' => $exclusiveRecord->name,
+                                'exclusive_address' => $exclusiveRecord->address,
                             ];
                         })->toArray();
                 

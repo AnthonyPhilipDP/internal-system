@@ -2,18 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Tables\Actions\Action;
 use Filament\Forms;
 use Filament\Tables;
-use Filament\Infolists;
 use Filament\Forms\Get;
+use Filament\Infolists;
 use App\Models\Customer;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ClientExclusive;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Wizard;
@@ -696,6 +697,10 @@ class CustomerResource extends Resource
                                     ];
                                 })->toArray(),
                                 'equipment' => $customer->equipment->map(function ($equipment) {
+                                    $exclusiveRecord = null;
+                                    if ($equipment->exclusive_id) {
+                                        $exclusiveRecord = ClientExclusive::where('exclusive_id', $equipment->exclusive_id)->first();
+                                    }
                                     return [
                                         'equipment_id' => $equipment->equipment_id,
                                         'transaction_id' => $equipment->transaction_id,
@@ -706,8 +711,7 @@ class CustomerResource extends Resource
                                         'calibrationDue' => $equipment->calibrationDue,
                                         'isClientExclusive' => $equipment->isClientExclusive,
                                         'exclusive_id' => $equipment->exclusive_id,
-                                        'exclusive_name' => $equipment->exclusive_name,
-                                        'exclusive_address' => $equipment->exclusive_address,
+                                        'exclusive_name' => $exclusiveRecord ? $exclusiveRecord->name : null,
                                     ];
                                 })->toArray(),
                             ];

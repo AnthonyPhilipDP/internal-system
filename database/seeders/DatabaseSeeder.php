@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('client_exclusives')->insert([
             'customer_id' => '1',
+            'exclusive_id' => '1-1',
             'name' => 'Smasnug',
             'address' => "South Korea",
             'created_at' => now(),
