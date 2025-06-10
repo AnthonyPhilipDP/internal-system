@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->string('exclusive_id')->nullable();
             $table->string('name')->nullable();
-            $table->string('address')->nullable();
+            $table->string('address', 1000)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

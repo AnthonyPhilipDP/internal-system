@@ -1,4 +1,6 @@
 SET foreign_key_checks = 0;
+
+#Customer Import Query
 LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/customers.csv'
 INTO TABLE customers
 CHARACTER SET 'latin1'
@@ -28,7 +30,9 @@ SET
 	businessStyle = @businessStyle,
 	tin = @tin,
 	createdDate = @createdDate,
+	isCustomerImported = TRUE,
 	created_at = NOW();
+
 SET foreign_key_checks = 1;
 
 #CSV Formatting Instructions

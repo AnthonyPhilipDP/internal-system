@@ -121,15 +121,9 @@ SET
 	DrNoDocReleased = @DrNoDocReleased,
 	assignedTo = @assignedTo,
 	documentReceivedBy = @documentReceivedBy,
+	isEquipmentImported = TRUE,
 	created_at = NOW();
 SET foreign_key_checks = 1;
-
-UPDATE equipment
-SET calibrationDue = 
-    CASE 
-        WHEN calibrationDue = '' THEN NULL
-        ELSE DATE_FORMAT(STR_TO_DATE(calibrationDue, '%d/%m/%Y'), '%Y-%m-%d')
-    END;
 
 #CSV Formatting Instructions
 
@@ -145,3 +139,11 @@ SET calibrationDue =
 	-- Keep dates unchanged.
 	-- Ensure IDs are numeric only, remove any special characters if present.
 	-- In boolean types of data, change false to 0 and true to 1.
+
+#Format the calibrationDue
+UPDATE equipment
+SET calibrationDue = 
+    CASE 
+        WHEN calibrationDue = '' THEN NULL
+        ELSE DATE_FORMAT(STR_TO_DATE(calibrationDue, '%d/%m/%Y'), '%Y-%m-%d')
+    END;

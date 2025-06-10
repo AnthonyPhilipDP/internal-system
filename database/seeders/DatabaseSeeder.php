@@ -41,6 +41,13 @@ class DatabaseSeeder extends Seeder
             'tin' => '1234567890',
             'created_at' => now(),
         ]);
+
+        DB::table('client_exclusives')->insert([
+            'customer_id' => '1',
+            'name' => 'Smasnug',
+            'address' => "South Korea",
+            'created_at' => now(),
+        ]);
         
         /*
         DB::table('equipment')->insert([
