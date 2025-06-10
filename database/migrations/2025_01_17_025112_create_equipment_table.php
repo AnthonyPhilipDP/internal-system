@@ -45,7 +45,7 @@ return new class extends Migration
             $table->string('humidity')->nullable(); //imported
             $table->string('validation')->nullable(); //imported
             $table->string('validatedBy')->nullable();
-            $table->string('ncfReport')->nullable();
+            $table->boolean('ncfReport')->default(false);
             //Timeline
             $table->string('calibrationDate')->nullable(); //imported
             $table->string('calibrationInterval')->nullable(); //imported

@@ -580,8 +580,12 @@ class EquipmentResource extends Resource
                                 ]),
                                 Forms\Components\TextInput::make('ncfReport')
                                     ->label('Non-conformity Report')
-                                    ->nullable()
-                                    ->maxLength(255),
+                                    ->disabled()
+                                    ->formatStateUsing(fn(?Equipment $record) => $record ?->ncfReport ? 'Issued Non-Conformity Report' : 'No Report Issued')
+                                    ->extraInputAttributes([
+                                        'class' => 'text-center bg-red-50',
+                                    ])
+                                    ,
                             ]),
                         ])->columnSpan(2), 
                     ])->columns(3),

@@ -4,10 +4,11 @@ namespace App\Filament\Resources\NonConformityReportResource\Pages;
 
 use data;
 use Filament\Actions;
+use App\Models\Equipment;
 use App\Models\NcfReport;
-use Filament\Notifications\Actions\Action;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Notifications\Notification;
+use Filament\Notifications\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Validation\ValidationException;
 use App\Filament\Resources\NonConformityReportResource;
@@ -35,6 +36,8 @@ class CreateNonConformityReport extends CreateRecord
             $this->halt();
         }
 
+        // Set the NCF Status to Issued
+        Equipment::where('transaction_id', $data['transaction_id'])->update(['ncfReport' => true]);
         return $data;
     }
 
