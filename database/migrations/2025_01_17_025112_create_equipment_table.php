@@ -62,6 +62,13 @@ return new class extends Migration
             $table->string('comments', 1500)->nullable(); //imported
             //Other Columns that needs to be imported
             //but still UNUSED in the system (for future use)
+            /*
+             * The column names are INTENTIONALLY left as they are
+             * to maintain compatibility with old data and references.
+             * I have to follow the naming convention of the old database.
+             * because this is preferred by the company.
+             * The data is intended for viewing only anyways.
+             */
             $table->string('worksheet')->nullable();
             $table->string('oldInspection')->nullable();
             $table->string('oldAccessories', 1000)->nullable();
