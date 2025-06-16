@@ -28,28 +28,28 @@ return new class extends Migration
             $table->string('service')->nullable();
             $table->string('payment')->nullable();
             // Middle
-            $table->string('item_number')->nullable();
-            $table->string('transaction_id')->nullable();
-            $table->integer('quantity')->nullable();
-            $table->string('currency')->nullable();
-            $table->decimal('unitPrice', 10, 2)->nullable();
-            $table->decimal('equipmentTotal', 10, 2)->nullable();
-            $table->string('amountInWords')->nullable();
+            // $table->string('item_number')->nullable();
+            // $table->string('transaction_id')->nullable();
+            // $table->integer('quantity')->nullable();
+            // $table->decimal('unitPrice', 10, 2)->nullable();
+            // $table->decimal('equipmentTotal', 10, 2)->nullable();
             // Bottom
             $table->string('comments')->nullable();
             $table->string('subTotal')->nullable();
-
-            $table->string('lessType')->nullable();
-            $table->string('lessPercentage')->nullable();
-            $table->string('lessAmount')->nullable();
-
-            $table->string('chargeType')->nullable();
-            $table->string('chargePercentage')->nullable();
-            $table->string('chargeAmount')->nullable();
-
+            
+            // $table->string('lessType')->nullable();
+            // $table->string('lessPercentage')->nullable();
+            // $table->string('lessAmount')->nullable();
+            
+            // $table->string('chargeType')->nullable();
+            // $table->string('chargePercentage')->nullable();
+            // $table->string('chargeAmount')->nullable();
+            
             $table->boolean('vatToggle')->default(false);
-
+            
+            $table->string('currency')->nullable();
             $table->string('total')->nullable();
+            $table->string('amountInWords')->nullable();
             
             $table->timestamps();
             // vat inclusive

@@ -13,6 +13,7 @@ use Filament\Forms\Form;
 use App\Models\Equipment;
 use App\Models\Worksheet;
 use Filament\Tables\Table;
+use App\Models\InvoiceItem;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\ContactPerson;
@@ -726,7 +727,7 @@ class EquipmentRelationManager extends RelationManager
                             ->success()
                             ->send();
                     }),
-                    Tables\Actions\BulkAction::make('generateInvoice')
+                Tables\Actions\BulkAction::make('generateInvoice')
                     ->label('Generate Invoice')
                     ->color('info')
                     ->requiresConfirmation()
@@ -741,7 +742,7 @@ class EquipmentRelationManager extends RelationManager
                         $formSchema = [
                             Forms\Components\Fieldset::make('Customer Information')
                             ->extraAttributes([
-                                'class' => 'bg-blue-50'
+                                'class' => 'bg-red-50'
                             ])
                             ->schema([
                                 Forms\Components\Select::make('contactPerson')
@@ -908,89 +909,311 @@ class EquipmentRelationManager extends RelationManager
                         $itemNumber = 1;
                         $equipmentIds = collect($records)->pluck('id')->all();
                         foreach ($records as $record) {
-                            Forms\Components\Fieldset::make('List of Equipment')
+                            $formSchema[] = 
+                            Forms\Components\Fieldset::make(fn () => "ITEM # {$itemNumber}")
+                            ->extraAttributes([
+                                'class' => 'bg-blue-50'
+                            ])
                             ->schema([
-                            $formSchema[] = Forms\Components\Grid::make(9)
+                                Forms\Components\Grid::make(5)
                                 ->schema([
-                                    Forms\Components\TextInput::make("item_number_{$record->id}")
-                                    ->label('Item Number')
-                                    ->default($itemNumber)
-                                    ->disabled()
-                                    ->dehydrated(),
-                                Forms\Components\TextInput::make("transaction_id_{$record->id}")
-                                    ->label('Transaction ID')
-                                    ->default($record->transaction_id)
-                                    ->disabled(),
-                                Forms\Components\TextInput::make("make_{$record->id}")
-                                    ->label('Make')
-                                    ->default($record->make)
-                                    ->disabled(),
-                                Forms\Components\TextInput::make("model_{$record->id}")
-                                    ->label('Model')
-                                    ->default($record->model)
-                                    ->disabled(),
-                                Forms\Components\TextInput::make("description_{$record->id}")
-                                    ->label('Description')
-                                    ->default($record->description)
-                                    ->disabled(),
-                                Forms\Components\TextInput::make("serial_{$record->id}")
-                                    ->label('Serial')
-                                    ->default($record->serial)
-                                    ->disabled(),
-                                Forms\Components\TextInput::make("quantity_{$record->id}")
-                                    ->label('Quantity')
-                                    ->numeric()
-                                    ->default(1)
-                                    ->live(debounce: 500)
-                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
-                                        // Calculate total for this equipment
-                                        $quantity = $get("quantity_{$record->id}");
-                                        $unitPrice = $get("unit_price_{$record->id}");
-                                        $total = (float) ($quantity ?? 0) * (float) ($unitPrice ?? 0);
-                                        $set("total_{$record->id}", $total);
+                                    // First Grid
+                                    Forms\Components\Group::make([
+                                        Forms\Components\Fieldset::make('')
+                                            ->extraAttributes([
+                                                'class' => 'bg-orange-50'
+                                            ])
+                                            
+                                            ->schema([
+                                                Forms\Components\Grid::make(2)
+                                                ->schema([
+                                                Forms\Components\TextInput::make("item_number_{$record->id}")
+                                                    ->label('Item Number')
+                                                    ->default($itemNumber)
+                                                    ->disabled()
+                                                    ->dehydrated(),
+                                                Forms\Components\TextInput::make("transaction_id_{$record->id}")
+                                                    ->label('Transaction ID')
+                                                    ->default($record->transaction_id)
+                                                    ->disabled(),
+                                                Forms\Components\TextInput::make("make_{$record->id}")
+                                                    ->label('Make')
+                                                    ->default($record->make)
+                                                    ->disabled(),
+                                                Forms\Components\TextInput::make("model_{$record->id}")
+                                                    ->label('Model')
+                                                    ->default($record->model)
+                                                    ->disabled(),
+                                                Forms\Components\TextInput::make("description_{$record->id}")
+                                                    ->label('Description')
+                                                    ->default($record->description)
+                                                    ->disabled(),
+                                                Forms\Components\TextInput::make("serial_{$record->id}")
+                                                    ->label('Serial')
+                                                    ->default($record->serial)
+                                                    ->disabled(),
+                                                ])
+                                            ])
+                                    ])->columnSpan('2'),
+
+                                    // Middle Grid
+                                    Forms\Components\Group::make([
+                                        Forms\Components\Fieldset::make('')
+                                            ->extraAttributes([
+                                                'class' => 'bg-orange-50'
+                                            ])
+                                            ->schema([
+                                                Forms\Components\Grid::make(1)
+                                                ->schema([
+                                                    Forms\Components\TextInput::make("quantity_{$record->id}")
+                                                    ->label('Quantity')
+                                                    ->numeric()
+                                                    ->default(1)
+                                                    ->live(debounce: 500)
+                                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
+                                                        $quantity = (float) $state;
+                                                        $unitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
+                                                        $subTotal = $quantity * $unitPrice;
+                                                        $set("equipment_subtotal_{$record->id}", $subTotal);
                                     
-                                        // Recalculate subtotal
-                                        $subTotal = 0;
-                                        foreach ($equipmentIds as $id) {
-                                            $subTotal += (float) ($get("total_{$id}") ?? 0);
-                                        }
-                                        $set('subTotal', $subTotal);
+                                                        // Recalculate less and charge
+                                                        $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
+                                                        $lessAmount = $subTotal * ($lessPercentage / 100);
+                                                        $set("less_amount_{$record->id}", $lessAmount);
                                     
-                                        // Recalculate total (final invoice total)
-                                        $less = (float) ($get('lessAmount') ?? 0);
-                                        $charge = (float) ($get('chargeAmount') ?? 0);
-                                        $set('total', $subTotal - $less + $charge);
-                                    }),
-                                Forms\Components\TextInput::make("unit_price_{$record->id}")
-                                    ->label('Unit Price')
-                                    ->numeric()
-                                    ->default(0)
-                                    ->live(debounce: 500)
-                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
-                                        // Calculate total for this equipment
-                                        $quantity = $get("quantity_{$record->id}");
-                                        $unitPrice = $get("unit_price_{$record->id}");
-                                        $total = (float) ($quantity ?? 0) * (float) ($unitPrice ?? 0);
-                                        $set("total_{$record->id}", $total);
+                                                        $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
+                                                        $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                        $set("charge_amount_{$record->id}", $chargeAmount);
                                     
-                                        // Recalculate subtotal
-                                        $subTotal = 0;
-                                        foreach ($equipmentIds as $id) {
-                                            $subTotal += (float) ($get("total_{$id}") ?? 0);
-                                        }
-                                        $set('subTotal', $subTotal);
+                                                        // Calculate line total
+                                                        $lineTotal = $subTotal - $lessAmount + $chargeAmount;
+                                                        $set("line_total_{$record->id}", $lineTotal);
                                     
-                                        // Recalculate total (final invoice total)
-                                        $less = (float) ($get('lessAmount') ?? 0);
-                                        $charge = (float) ($get('chargeAmount') ?? 0);
-                                        $set('total', $subTotal - $less + $charge);
-                                    }),
-                                Forms\Components\TextInput::make("total_{$record->id}")
-                                    ->label('Total')
-                                    ->numeric()
-                                    ->default(0)
-                                    ->disabled()
-                                    ->dehydrated(),
+                                                        // Update overall subtotal and total
+                                                        $overallSub = 0;
+                                                        $overallTotal = 0;
+                                                        foreach ($equipmentIds as $id) {
+                                                            $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
+                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                        }
+                                                        $set('subTotal', $overallSub);
+                                                        $set('total', $overallTotal);
+                                                    }),
+                                                Forms\Components\TextInput::make("unit_price_{$record->id}")
+                                                    ->label('Unit Price')
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->live(debounce: 500)
+                                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
+                                                        $quantity = (float) ($get("quantity_{$record->id}") ?? 0);
+                                                        $unitPrice = (float) $state;
+                                                        $subTotal = $quantity * $unitPrice;
+                                                        $set("equipment_subtotal_{$record->id}", $subTotal);
+                                    
+                                                        // Recalculate less and charge
+                                                        $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
+                                                        $lessAmount = $subTotal * ($lessPercentage / 100);
+                                                        $set("less_amount_{$record->id}", $lessAmount);
+                                    
+                                                        $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
+                                                        $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                        $set("charge_amount_{$record->id}", $chargeAmount);
+                                    
+                                                        // Calculate line total
+                                                        $lineTotal = $subTotal - $lessAmount + $chargeAmount;
+                                                        $set("line_total_{$record->id}", $lineTotal);
+                                    
+                                                        // Update overall subtotal and total
+                                                        $overallSub = 0;
+                                                        $overallTotal = 0;
+                                                        foreach ($equipmentIds as $id) {
+                                                            $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
+                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                        }
+                                                        $set('subTotal', $overallSub);
+                                                        $set('total', $overallTotal);
+                                                    }),
+                                                Forms\Components\TextInput::make("equipment_subtotal_{$record->id}")
+                                                    ->label('Subtotal')
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->readOnly(),
+                                                ])
+                                            ])
+                                    ])->columnSpan('1'),
+
+                                    // Last Grid
+                                    Forms\Components\Group::make([
+                                        Forms\Components\Fieldset::make('')
+                                            ->extraAttributes([
+                                                'class' => 'bg-orange-50'
+                                            ])
+                                            ->schema([
+                                                Forms\Components\Grid::make(4)
+                                                ->schema([
+                                                Forms\Components\Select::make('less_type')
+                                                    ->label('Less Type')
+                                                    ->columnSpan(2)
+                                                    ->native(false)
+                                                    ->options([
+                                                        'discount' => 'Discount'
+                                                    ])
+                                                    ->createOptionForm([
+                                                        Forms\Components\TextInput::make('new_less_type')
+                                                            ->label('Add Another Payment Method')
+                                                            ->required(),
+                                                    ])
+                                                    ->createOptionUsing(function (array $data, callable $set, callable $get): string {
+                                                        $newLessType = $data['new_less_type'];
+                                                
+                                                        $currentOptions = $get('less_type_options') ?? [];
+                                                
+                                                        $currentOptions[$newLessType] = $newLessType;
+                                                
+                                                        $set('less_type_options', $currentOptions);
+                                                
+                                                        return $newLessType;
+                                                    })
+                                                    ->reactive()
+                                                    ->afterStateHydrated(function (callable $set, callable $get) {
+                                                        if (!$get('less_type_options')) {
+                                                            $set('less_type_options', [
+                                                                'discount' => 'Discount'
+                                                            ]);
+                                                        }
+                                                    })
+                                                    ->options(function (callable $get) {
+                                                        return $get('less_type_options');
+                                                    }),
+                                                Forms\Components\TextInput::make("less_percentage_{$record->id}")
+                                                    ->label('Less (%)')
+                                                    ->columnSpan(1)
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->live(debounce: 500)
+                                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
+                                                        $quantity = (float) ($get("quantity_{$record->id}") ?? 0);
+                                                        $unitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
+                                                        $subTotal = $quantity * $unitPrice;
+                                                        $set("equipment_subtotal_{$record->id}", $subTotal);
+                                    
+                                                        $lessPercentage = (float) $state;
+                                                        $lessAmount = $subTotal * ($lessPercentage / 100);
+                                                        $set("less_amount_{$record->id}", $lessAmount);
+                                    
+                                                        $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
+                                                        $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                        $set("charge_amount_{$record->id}", $chargeAmount);
+                                    
+                                                        $lineTotal = $subTotal - $lessAmount + $chargeAmount;
+                                                        $set("line_total_{$record->id}", $lineTotal);
+                                    
+                                                        // Update overall subtotal and total
+                                                        $overallSub = 0;
+                                                        $overallTotal = 0;
+                                                        foreach ($equipmentIds as $id) {
+                                                            $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
+                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                        }
+                                                        $set('subTotal', $overallSub);
+                                                        $set('total', $overallTotal);
+                                                    }),
+                                                Forms\Components\TextInput::make("less_amount_{$record->id}")
+                                                    ->label('Less Amount')
+                                                    ->columnSpan(1)
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->disabled()
+                                                    ->dehydrated(),
+                                                Forms\Components\Select::make('charge_type')
+                                                    ->label('Charge Type')
+                                                    ->columnSpan(2)
+                                                    ->native(false)
+                                                    ->options([
+                                                        'On-site fee' => 'On-site fee',
+                                                        'Delivery Charge' => 'Delivery Charge'
+                                                    ])
+                                                    ->createOptionForm([
+                                                        Forms\Components\TextInput::make('new_charge_type')
+                                                            ->label('Add Another Payment Method')
+                                                            ->required(),
+                                                    ])
+                                                    ->createOptionUsing(function (array $data, callable $set, callable $get): string {
+                                                        $newChargeType = $data['new_charge_type'];
+                                                
+                                                        $currentOptions = $get('charge_type_options') ?? [];
+                                                
+                                                        $currentOptions[$newChargeType] = $newChargeType;
+                                                
+                                                        $set('charge_type_options', $currentOptions);
+                                                
+                                                        return $newChargeType;
+                                                    })
+                                                    ->reactive()
+                                                    ->afterStateHydrated(function (callable $set, callable $get) {
+                                                        if (!$get('charge_type_options')) {
+                                                            $set('charge_type_options', [
+                                                                'On-site fee' => 'On-site fee',
+                                                                'Delivery Charge' => 'Delivery Charge'
+                                                            ]);
+                                                        }
+                                                    })
+                                                    ->options(function (callable $get) {
+                                                        return $get('charge_type_options');
+                                                    }),
+                                                Forms\Components\TextInput::make("charge_percentage_{$record->id}")
+                                                    ->label('Charge (%)')
+                                                    ->columnSpan(1)
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->live(debounce: 500)
+                                                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
+                                                        $quantity = (float) ($get("quantity_{$record->id}") ?? 0);
+                                                        $unitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
+                                                        $subTotal = $quantity * $unitPrice;
+                                                        $set("equipment_subtotal_{$record->id}", $subTotal);
+                                    
+                                                        $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
+                                                        $lessAmount = $subTotal * ($lessPercentage / 100);
+                                                        $set("less_amount_{$record->id}", $lessAmount);
+                                    
+                                                        $chargePercentage = (float) $state;
+                                                        $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                        $set("charge_amount_{$record->id}", $chargeAmount);
+                                    
+                                                        $lineTotal = $subTotal - $lessAmount + $chargeAmount;
+                                                        $set("line_total_{$record->id}", $lineTotal);
+                                    
+                                                        // Update overall subtotal and total
+                                                        $overallSub = 0;
+                                                        $overallTotal = 0;
+                                                        foreach ($equipmentIds as $id) {
+                                                            $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
+                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                        }
+                                                        $set('subTotal', $overallSub);
+                                                        $set('total', $overallTotal);
+                                                    }),
+                                                Forms\Components\TextInput::make("charge_amount_{$record->id}")
+                                                    ->label('Charge Amount')
+                                                    ->columnSpan(1)
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->disabled()
+                                                    ->dehydrated(),
+                                                Forms\Components\TextInput::make("line_total_{$record->id}")
+                                                    ->label('Total')
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->readOnly()
+                                                    ->columnSpan(4)
+                                                    ->extraInputAttributes([
+                                                        'class' => 'text-center'
+                                                    ]),
+                                                ])
+                                        ])
+                                    ])->columnSpan('2'),
+                                    
                                 ])
                             ]);
                             $itemNumber++;
@@ -1004,122 +1227,122 @@ class EquipmentRelationManager extends RelationManager
                             ->schema([
                                 Forms\Components\Grid::make(2)
                                 ->schema([
-                                    Forms\Components\Group::make([
-                                        Forms\Components\Fieldset::make('Less')
-                                        ->schema([
-                                            Forms\Components\Select::make('lessType')
-                                                ->label('Type')
-                                                ->native(false)
-                                                ->options([
-                                                    'discount' => 'Discount'
-                                                ])
-                                                ->createOptionForm([
-                                                    Forms\Components\TextInput::make('new_less_type')
-                                                        ->label('Add Another Payment Method')
-                                                        ->required(),
-                                                ])
-                                                ->createOptionUsing(function (array $data, callable $set, callable $get): string {
-                                                    $newLessType = $data['new_less_type'];
+                                    // Forms\Components\Group::make([
+                                    //     Forms\Components\Fieldset::make('Less')
+                                    //     ->schema([
+                                    //         Forms\Components\Select::make('lessType')
+                                    //             ->label('Type')
+                                    //             ->native(false)
+                                    //             ->options([
+                                    //                 'discount' => 'Discount'
+                                    //             ])
+                                    //             ->createOptionForm([
+                                    //                 Forms\Components\TextInput::make('new_less_type')
+                                    //                     ->label('Add Another Payment Method')
+                                    //                     ->required(),
+                                    //             ])
+                                    //             ->createOptionUsing(function (array $data, callable $set, callable $get): string {
+                                    //                 $newLessType = $data['new_less_type'];
                                             
-                                                    $currentOptions = $get('less_type_options') ?? [];
+                                    //                 $currentOptions = $get('less_type_options') ?? [];
                                             
-                                                    $currentOptions[$newLessType] = $newLessType;
+                                    //                 $currentOptions[$newLessType] = $newLessType;
                                             
-                                                    $set('less_type_options', $currentOptions);
+                                    //                 $set('less_type_options', $currentOptions);
                                             
-                                                    return $newLessType;
-                                                })
-                                                ->reactive()
-                                                ->afterStateHydrated(function (callable $set, callable $get) {
-                                                    if (!$get('less_type_options')) {
-                                                        $set('less_type_options', [
-                                                            'discount' => 'Discount'
-                                                        ]);
-                                                    }
-                                                })
-                                                ->options(function (callable $get) {
-                                                    return $get('less_type_options');
-                                                }),
-                                            Forms\Components\TextInput::make('lessPercentage')
-                                                ->label('Less (%)')
-                                                ->numeric()
-                                                ->default(0)
-                                                ->live(debounce: 500)
-                                                ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                                    $subTotal = (float) ($get('subTotal') ?? 0);
-                                                    $chargeAmount = (float) ($get('chargeAmount') ?? 0);
-                                                    $lessAmount = $subTotal * ((float) ($state ?? 0) / 100);
-                                                    $set('lessAmount', $lessAmount);
+                                    //                 return $newLessType;
+                                    //             })
+                                    //             ->reactive()
+                                    //             ->afterStateHydrated(function (callable $set, callable $get) {
+                                    //                 if (!$get('less_type_options')) {
+                                    //                     $set('less_type_options', [
+                                    //                         'discount' => 'Discount'
+                                    //                     ]);
+                                    //                 }
+                                    //             })
+                                    //             ->options(function (callable $get) {
+                                    //                 return $get('less_type_options');
+                                    //             }),
+                                    //         Forms\Components\TextInput::make('lessPercentage')
+                                    //             ->label('Less (%)')
+                                    //             ->numeric()
+                                    //             ->default(0)
+                                    //             ->live(debounce: 500)
+                                    //             ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                    //                 $subTotal = (float) ($get('subTotal') ?? 0);
+                                    //                 $chargeAmount = (float) ($get('chargeAmount') ?? 0);
+                                    //                 $lessAmount = $subTotal * ((float) ($state ?? 0) / 100);
+                                    //                 $set('lessAmount', $lessAmount);
 
-                                                    // Always use latest less and charge
-                                                    $set('total', $subTotal - $lessAmount + $chargeAmount);
-                                                }),
-                                            Forms\Components\TextInput::make('lessAmount')
-                                                ->label('Amount')
-                                                ->readOnly()
-                                                ->numeric()
-                                                ->default(0),
-                                            ])->columns(3)
-                                        ]),
-                                    Forms\Components\Group::make([
-                                        Forms\Components\Fieldset::make('Charges')
-                                        ->schema([
-                                            Forms\Components\Select::make('chargeType')
-                                                ->label('Type')
-                                                ->native(false)
-                                                ->options([
-                                                    'On-site fee' => 'On-site fee',
-                                                    'Delivery Charge' => 'Delivery Charge'
-                                                ])
-                                                ->createOptionForm([
-                                                    Forms\Components\TextInput::make('new_charge_type')
-                                                        ->label('Add Another Payment Method')
-                                                        ->required(),
-                                                ])
-                                                ->createOptionUsing(function (array $data, callable $set, callable $get): string {
-                                                    $newChargeType = $data['new_charge_type'];
+                                    //                 // Always use latest less and charge
+                                    //                 $set('total', $subTotal - $lessAmount + $chargeAmount);
+                                    //             }),
+                                    //         Forms\Components\TextInput::make('lessAmount')
+                                    //             ->label('Amount')
+                                    //             ->readOnly()
+                                    //             ->numeric()
+                                    //             ->default(0),
+                                    //         ])->columns(3)
+                                    //     ]),
+                                    // Forms\Components\Group::make([
+                                    //     Forms\Components\Fieldset::make('Charges')
+                                    //     ->schema([
+                                    //         Forms\Components\Select::make('charge_type')
+                                    //             ->label('Type')
+                                    //             ->native(false)
+                                    //             ->options([
+                                    //                 'On-site fee' => 'On-site fee',
+                                    //                 'Delivery Charge' => 'Delivery Charge'
+                                    //             ])
+                                    //             ->createOptionForm([
+                                    //                 Forms\Components\TextInput::make('new_charge_type')
+                                    //                     ->label('Add Another Payment Method')
+                                    //                     ->required(),
+                                    //             ])
+                                    //             ->createOptionUsing(function (array $data, callable $set, callable $get): string {
+                                    //                 $newChargeType = $data['new_charge_type'];
                                             
-                                                    $currentOptions = $get('charge_type_options') ?? [];
+                                    //                 $currentOptions = $get('charge_type_options') ?? [];
                                             
-                                                    $currentOptions[$newChargeType] = $newChargeType;
+                                    //                 $currentOptions[$newChargeType] = $newChargeType;
                                             
-                                                    $set('charge_type_options', $currentOptions);
+                                    //                 $set('charge_type_options', $currentOptions);
                                             
-                                                    return $newChargeType;
-                                                })
-                                                ->reactive()
-                                                ->afterStateHydrated(function (callable $set, callable $get) {
-                                                    if (!$get('charge_type_options')) {
-                                                        $set('charge_type_options', [
-                                                            'On-site fee' => 'On-site fee',
-                                                            'Delivery Charge' => 'Delivery Charge'
-                                                        ]);
-                                                    }
-                                                })
-                                                ->options(function (callable $get) {
-                                                    return $get('charge_type_options');
-                                                }),
-                                            Forms\Components\TextInput::make('chargePercentage')
-                                                ->label('Charge (%)')
-                                                ->numeric()
-                                                ->default(0)
-                                                ->live(debounce: 500)
-                                                ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                                    $subTotal = (float) ($get('subTotal') ?? 0);
-                                                    $lessAmount = (float) ($get('lessAmount') ?? 0);
-                                                    $chargeAmount = $subTotal * ((float) ($state ?? 0) / 100);
-                                                    $set('chargeAmount', $chargeAmount);
+                                    //                 return $newChargeType;
+                                    //             })
+                                    //             ->reactive()
+                                    //             ->afterStateHydrated(function (callable $set, callable $get) {
+                                    //                 if (!$get('charge_type_options')) {
+                                    //                     $set('charge_type_options', [
+                                    //                         'On-site fee' => 'On-site fee',
+                                    //                         'Delivery Charge' => 'Delivery Charge'
+                                    //                     ]);
+                                    //                 }
+                                    //             })
+                                    //             ->options(function (callable $get) {
+                                    //                 return $get('charge_type_options');
+                                    //             }),
+                                    //         Forms\Components\TextInput::make('chargePercentage')
+                                    //             ->label('Charge (%)')
+                                    //             ->numeric()
+                                    //             ->default(0)
+                                    //             ->live(debounce: 500)
+                                    //             ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                    //                 $subTotal = (float) ($get('subTotal') ?? 0);
+                                    //                 $lessAmount = (float) ($get('lessAmount') ?? 0);
+                                    //                 $chargeAmount = $subTotal * ((float) ($state ?? 0) / 100);
+                                    //                 $set('chargeAmount', $chargeAmount);
 
-                                                    // Always use latest less and charge
-                                                    $set('total', $subTotal - $lessAmount + $chargeAmount);
-                                                }),
-                                            Forms\Components\TextInput::make('chargeAmount')
-                                                ->label('Amount')
-                                                ->readOnly()
-                                                ->numeric()
-                                                ->default(0),
-                                            ])->columns(3)
-                                        ]),
+                                    //                 // Always use latest less and charge
+                                    //                 $set('total', $subTotal - $lessAmount + $chargeAmount);
+                                    //             }),
+                                    //         Forms\Components\TextInput::make('chargeAmount')
+                                    //             ->label('Amount')
+                                    //             ->readOnly()
+                                    //             ->numeric()
+                                    //             ->default(0),
+                                    //         ])->columns(3)
+                                    //     ]),
                                 ]),
                                 Forms\Components\Textarea::make('comments')
                                 ->label('Comments')
@@ -1147,88 +1370,60 @@ class EquipmentRelationManager extends RelationManager
                                 ])
                                 ->readOnly()
                                 ->dehydrated()
-                                ->columnSpan(3)
-                                ->afterStateHydrated(function (callable $set, callable $get) use ($equipmentIds) {
-                                    // Initialize subtotal when modal opens
-                                    $subTotal = 0;
-                                    foreach ($equipmentIds as $id) {
-                                        $subTotal += (float) ($get("total_{$id}") ?? 0);
-                                    }
-                                    $set('subTotal', $subTotal);
-                                }),
+                                ->columnSpan(3),
                                 Forms\Components\TextInput::make('total')
                                 ->label('Total')
                                 ->extraInputAttributes([
                                     'class' => 'text-center'
                                 ])
                                 ->readOnly()
-                                ->columnSpan(4)
-                                ->afterStateHydrated(function (callable $set, callable $get) {
-                                    $subTotal = (float) ($get('subTotal') ?? 0);
-                                    $less = (float) ($get('lessAmount') ?? 0);
-                                    $charge = (float) ($get('chargeAmount') ?? 0);
-                                    $set('total', $subTotal - $less + $charge);
-                                }),
+                                ->columnSpan(4),
                             ])->columns(12);
                 
                         return $formSchema;
                     })
                     ->action(function ($records, array $data) {
-                        // Process the form data to generate the invoice
-                        foreach ($records as $record) {
-                            // For item_number
-                            $itemNumberField = "item_number_{$record->id}";
-                            $itemNumber = $data[$itemNumberField] ?? null;
-
-                            $quantity = $data["quantity_{$record->id}"];
-                            $unitPrice = $data["unit_price_{$record->id}"];
-                            $total = $quantity * $unitPrice;
+                        // 1. Create the invoice
+                        $invoice = Invoice::create([
+                            'customer_id'    => $record->customer_id,
+                            'contactPerson'  => $data['contactPerson'] ?? null,
+                            'carbonCopy'     => $data['carbonCopy'] ?? null,
+                            'invoice_number' => $data['invoice_number'] ?? null,
+                            'invoice_date'   => $data['invoice_date'] ?? null,
+                            'poNoCalibration'   => $data['poNoCalibration'] ?? null,
+                            'yourRef'   => $data['yourRef'] ?? null,
+                            'pmsiRefNo'   => $data['pmsiRefNo'] ?? null,
+                            'freeOnBoard'   => $data['freeOnBoard'] ?? null,
+                            'businessSystem'   => $data['businessSystem'] ?? null,
+                            'tin'   => $data['tin'] ?? null,
+                            'service'   => $data['service'] ?? null,
+                            'payment'   => $data['payment'] ?? null,
+                            'comments'       => $data['comments'] ?? null,
+                            'subTotal'       => $data['subTotal'] ?? null,
+                            'vatToggle'      => $data['vatToggle'] ?? false,
+                            'currency'       => $data['currency'] ?? null,
+                            'total'          => $data['total'] ?? null,
+                            'amountInWords'  => $data['amountInWords'] ?? null,
+                        ]);
                 
-                            // Update the total field in the form data
-                            $data["total_{$record->id}"] = $total;
-                            // Save the invoice details to the database
-                            Invoice::create([
-                                // Top
-                                'customer_id' => $record->customer_id,
-                                'contactPerson' => $data['contactPerson'],
-                                'carbonCopy' => $data['carbonCopy'],
-                                'invoice_number' => $data['invoice_number'],
-                                'invoice_date' => $data['invoice_date'],
-                                'poNoCalibration' => $data['poNoCalibration'],
-                                'yourRef' => $data['yourRef'],
-                                'pmsiRefNo' => $data['pmsiRefNo'],
-                                'freeOnBoard' => $data['freeOnBoard'],
-                                'businessSystem' => $data['businessSystem'],
-                                'tin' => $data['tin'],
-                                'service' => $data['service'],//
-                                'payment' => $data['payment'],
-                                // Middle
-                                'item_number' => $itemNumber,
-                                'transaction_id' => $record->transaction_id,
-                                'quantity' => $quantity,
-                                'currency' => $data['currency'],
-                                'unitPrice' => $unitPrice,
-                                'equipmentTotal' => $total,
-                                // 'amountInWords' => $amountInWords,//
-                                // Bottom
-                                'comments' => $data['comments'],
-                                'subTotal' => $data['subTotal'],
-                                'lessType' => $data['lessType'],
-                                'lessPercentage' => $data['lessPercentage'],
-                                'lessAmount' => $data['lessAmount'],
-                                'chargeType' => $data['chargeType'],
-                                'chargePercentage' => $data['chargePercentage'],
-                                'chargeAmount' => $data['chargeAmount'],
-                                'vatToggle' => $data['vatToggle'],
-                                'total' => $data['total'],
+                        // 2. Loop through each equipment and create invoice items
+                        foreach ($records as $record) {
+                            $id = $record->id;
+                            InvoiceItem::create([
+                                'invoice_id'        => $invoice->id,
+                                'transaction_id'       => $data["transaction_id_{$id}"] ?? null,
+                                'item_number'       => $data["item_number_{$id}"] ?? null,
+                                'quantity'          => $data["quantity_{$id}"] ?? 1,
+                                'unit_price'        => $data["unit_price_{$id}"] ?? 0,
+                                'less_type'         => $data["less_type_{$id}"] ?? null,
+                                'less_percentage'   => $data["less_percentage_{$id}"] ?? 0,
+                                'less_amount'       => $data["less_amount_{$id}"] ?? null,
+                                'charge_type'       => $data["charge_type_{$id}"] ?? null,
+                                'charge_percentage' => $data["charge_percentage_{$id}"] ?? 0,
+                                'charge_amount'     => $data["charge_amount_{$id}"] ?? null,
+                                'line_total'        => $data["line_total_{$id}"] ?? 0,
                             ]);
                         }
-                
-                        Notification::make()
-                            ->title('Invoice Generated')
-                            ->body('The invoice has been successfully generated.')
-                            ->success()
-                            ->send();
                     }),
             ])
             ->defaultPaginationPageOption(5)

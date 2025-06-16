@@ -14,4 +14,8 @@ class Invoice extends Model
         'total' => 'decimal:2',
     ];
     
+    public function items()
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
 }
