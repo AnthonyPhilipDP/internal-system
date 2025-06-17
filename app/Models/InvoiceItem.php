@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Invoice;
+use App\Models\Equipment;
 use Illuminate\Database\Eloquent\Model;
 
 class InvoiceItem extends Model

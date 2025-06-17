@@ -141,7 +141,14 @@ class InvoiceResource extends Resource
                 Tables\Actions\Action::make('printInvoice')
                     ->tooltip('Print Invoice')
                     ->icon('bi-printer-fill')
-                    ->label('Print Invoice'),
+                    ->label('Print Invoice')
+                    ->requiresConfirmation()
+                    ->modalIcon('bi-printer')
+                    ->modalHeading('Ready to Print Invoice')
+                    ->modalDescription('Make sure all invoice details are accurate. When you\'re ready, click “Print” to generate a printable copy.')
+                    ->modalSubmitActionLabel('Print')
+                    ->url(fn ($record) => route('invoice-manager', ['invoice_id' => $record->id]))
+                    ->openUrlInNewTab(),
             ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
