@@ -52,6 +52,7 @@ return new class extends Migration
             $table->string('amountInWords')->nullable();
             
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
