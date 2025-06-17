@@ -750,6 +750,7 @@ class EquipmentRelationManager extends RelationManager
                                 Forms\Components\Select::make('contactPerson')
                                 ->label('Attention To')
                                 ->native(false)
+                                ->required()
                                 ->options(function () use ($records) {
                                     // All selected equipment belong to the same customer
                                     $customerId = $records->first()->customer->id;
@@ -877,6 +878,7 @@ class EquipmentRelationManager extends RelationManager
                                 Forms\Components\Select::make('payment')
                                 ->label('Payment')
                                 ->native(false)
+                                ->required()
                                 ->options([
                                     'cod' => 'Cash On Delivery'
                                 ])
@@ -1603,6 +1605,13 @@ class EquipmentRelationManager extends RelationManager
                                 'line_total'        => $data["line_total_{$id}"] ?? 0,
                             ]);
                         }
+
+                        Notification::make()
+                            ->title('Invoice Has Been Succesfully Generated')
+                            ->body('New Invoice has been added to the system.')
+                            ->success()
+                            ->icon('bi-envelope-paper')
+                            ->send();
                     }),
             ])
             ->defaultPaginationPageOption(5)
