@@ -48,6 +48,7 @@ class EquipmentRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
+        dd($record);
         return $form
             ->schema([
                 Tabs::make('Tabs')
@@ -729,6 +730,7 @@ class EquipmentRelationManager extends RelationManager
                     }),
                 Tables\Actions\BulkAction::make('generateInvoice')
                     ->label('Generate Invoice')
+                    ->closeModalByClickingAway(false)
                     ->color('info')
                     ->requiresConfirmation()
                     ->modalHeading(fn ($records) => ('Generate Invoice for ' . $records->first()->customer->name))
@@ -736,7 +738,7 @@ class EquipmentRelationManager extends RelationManager
                     ->modalButton('Generate')
                     ->modalIcon('bi-envelope-paper')
                     ->icon('bi-envelope-paper')
-                    ->modalWidth(MaxWidth::FitContent)
+                    ->modalWidth(MaxWidth::ScreenTwoExtraLarge )
                     ->form(function ($records) {
                         // Top
                         $formSchema = [
@@ -835,7 +837,12 @@ class EquipmentRelationManager extends RelationManager
                                 ->label('CC'),
                                 Forms\Components\TextInput::make('invoice_number')
                                 ->label('Sales Invoice')
-                                ->required(),
+                                ->prefix('83-00-')
+                                ->default(function () {
+                                    $max = Invoice::max('invoice_number');
+                                    return $max ? $max + 1 : 4338; // Change the 1 value in else as the start number
+                                })
+                                ->disabled(),
                                 Forms\Components\DatePicker::make('invoice_date')
                                 ->label('Invoice Date')
                                 ->required()
@@ -857,9 +864,15 @@ class EquipmentRelationManager extends RelationManager
                                 Forms\Components\Select::make('service')
                                 ->label('Service')
                                 ->required()
+                                ->native(false)
                                 ->options([
-                                    '1' => '1',
-                                    '2' => '2',
+                                    'calibration' => 'Calibration',
+                                    'repair' => 'Repair',
+                                    'realignment' => 'Re-alignment',
+                                    'cal_repair' => 'Cal / Repair',
+                                    'cal_realign' => 'Cal / Re-align',
+                                    'repair_realign' => 'Repair / Realign',
+                                    'cal_repair_realign' => 'Cal / Repair / Realign',
                                 ]),
                                 Forms\Components\Select::make('payment')
                                 ->label('Payment')
@@ -935,7 +948,8 @@ class EquipmentRelationManager extends RelationManager
                                                 Forms\Components\TextInput::make("transaction_id_{$record->id}")
                                                     ->label('Transaction ID')
                                                     ->default($record->transaction_id)
-                                                    ->disabled(),
+                                                    ->disabled()
+                                                    ->dehydrated(),
                                                 Forms\Components\TextInput::make("make_{$record->id}")
                                                     ->label('Make')
                                                     ->default($record->make)
@@ -972,32 +986,36 @@ class EquipmentRelationManager extends RelationManager
                                                     ->live(debounce: 500)
                                                     ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
                                                         $quantity = (float) $state;
-                                                        $unitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
+                                                        $baseUnitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
+                                                        $vatOnEquipment = $get('vatToggle');
+                                                        $unitPrice = $vatOnEquipment ? $baseUnitPrice * 1.12 : $baseUnitPrice;
                                                         $subTotal = $quantity * $unitPrice;
                                                         $set("equipment_subtotal_{$record->id}", $subTotal);
-                                    
-                                                        // Recalculate less and charge
+                                                    
                                                         $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
                                                         $lessAmount = $subTotal * ($lessPercentage / 100);
                                                         $set("less_amount_{$record->id}", $lessAmount);
-                                    
+                                                    
                                                         $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
                                                         $chargeAmount = $subTotal * ($chargePercentage / 100);
                                                         $set("charge_amount_{$record->id}", $chargeAmount);
-                                    
-                                                        // Calculate line total
+                                                    
                                                         $lineTotal = $subTotal - $lessAmount + $chargeAmount;
                                                         $set("line_total_{$record->id}", $lineTotal);
-                                    
-                                                        // Update overall subtotal and total
+                                                    
                                                         $overallSub = 0;
                                                         $overallTotal = 0;
                                                         foreach ($equipmentIds as $id) {
                                                             $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
                                                             $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
                                                         }
-                                                        $set('subTotal', $overallSub);
-                                                        $set('total', $overallTotal);
+                                                        $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                    
+                                                        $total = $overallTotal;
+                                                        if (!$get('vatToggle')) {
+                                                            $total = $total * 1.12;
+                                                        }
+                                                        $set('total', number_format($total, 2, '.', ''));
                                                     }),
                                                 Forms\Components\TextInput::make("unit_price_{$record->id}")
                                                     ->label('Unit Price')
@@ -1005,33 +1023,37 @@ class EquipmentRelationManager extends RelationManager
                                                     ->default(0)
                                                     ->live(debounce: 500)
                                                     ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
+                                                        $baseUnitPrice = (float) $state;
+                                                        $vatOnEquipment = $get('vatToggle');
+                                                        $unitPrice = $vatOnEquipment ? $baseUnitPrice * 1.12 : $baseUnitPrice;
                                                         $quantity = (float) ($get("quantity_{$record->id}") ?? 0);
-                                                        $unitPrice = (float) $state;
                                                         $subTotal = $quantity * $unitPrice;
-                                                        $set("equipment_subtotal_{$record->id}", $subTotal);
-                                    
-                                                        // Recalculate less and charge
+                                                        $set("equipment_subtotal_{$record->id}", number_format($subTotal, 2, '.', ''));
+                                                    
                                                         $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
                                                         $lessAmount = $subTotal * ($lessPercentage / 100);
-                                                        $set("less_amount_{$record->id}", $lessAmount);
-                                    
+                                                        $set("less_amount_{$record->id}", number_format($lessAmount, 2, '.', ''));
+                                                    
                                                         $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
                                                         $chargeAmount = $subTotal * ($chargePercentage / 100);
-                                                        $set("charge_amount_{$record->id}", $chargeAmount);
-                                    
-                                                        // Calculate line total
+                                                        $set("charge_amount_{$record->id}", number_format($chargeAmount, 2, '.', ''));
+                                                    
                                                         $lineTotal = $subTotal - $lessAmount + $chargeAmount;
-                                                        $set("line_total_{$record->id}", $lineTotal);
-                                    
-                                                        // Update overall subtotal and total
+                                                        $set("line_total_{$record->id}", number_format($lineTotal, 2, '.', ''));
+                                                    
                                                         $overallSub = 0;
                                                         $overallTotal = 0;
                                                         foreach ($equipmentIds as $id) {
                                                             $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
                                                             $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
                                                         }
-                                                        $set('subTotal', $overallSub);
-                                                        $set('total', $overallTotal);
+                                                        $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                    
+                                                        $total = $overallTotal;
+                                                        if (!$get('vatToggle')) {
+                                                            $total = $total * 1.12;
+                                                        }
+                                                        $set('total', number_format($total, 2, '.', ''));
                                                     }),
                                                 Forms\Components\TextInput::make("equipment_subtotal_{$record->id}")
                                                     ->label('Subtotal')
@@ -1051,12 +1073,13 @@ class EquipmentRelationManager extends RelationManager
                                             ->schema([
                                                 Forms\Components\Grid::make(4)
                                                 ->schema([
-                                                Forms\Components\Select::make('less_type')
+                                                Forms\Components\Select::make("less_type_{$record->id}")
                                                     ->label('Less Type')
                                                     ->columnSpan(2)
                                                     ->native(false)
                                                     ->options([
-                                                        'discount' => 'Discount'
+                                                        'discount' => 'Discount',
+                                                        'other' => 'Other'
                                                     ])
                                                     ->createOptionForm([
                                                         Forms\Components\TextInput::make('new_less_type')
@@ -1078,7 +1101,8 @@ class EquipmentRelationManager extends RelationManager
                                                     ->afterStateHydrated(function (callable $set, callable $get) {
                                                         if (!$get('less_type_options')) {
                                                             $set('less_type_options', [
-                                                                'discount' => 'Discount'
+                                                                'discount' => 'Discount',
+                                                                'other' => 'Other'
                                                             ]);
                                                         }
                                                     })
@@ -1092,31 +1116,37 @@ class EquipmentRelationManager extends RelationManager
                                                     ->default(0)
                                                     ->live(debounce: 500)
                                                     ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
-                                                        $quantity = (float) ($get("quantity_{$record->id}") ?? 0);
-                                                        $unitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
-                                                        $subTotal = $quantity * $unitPrice;
-                                                        $set("equipment_subtotal_{$record->id}", $subTotal);
-                                    
                                                         $lessPercentage = (float) $state;
+                                                        $baseUnitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
+                                                        $vatOnEquipment = $get('vatToggle');
+                                                        $unitPrice = $vatOnEquipment ? $baseUnitPrice * 1.12 : $baseUnitPrice;
+                                                        $quantity = (float) ($get("quantity_{$record->id}") ?? 0);
+                                                        $subTotal = $quantity * $unitPrice;
+                                                        $set("equipment_subtotal_{$record->id}",number_format($subTotal, 2, '.', ''));
+                                                    
                                                         $lessAmount = $subTotal * ($lessPercentage / 100);
-                                                        $set("less_amount_{$record->id}", $lessAmount);
-                                    
+                                                        $set("less_amount_{$record->id}", number_format($lessAmount, 2, '.', ''));
+                                                    
                                                         $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
                                                         $chargeAmount = $subTotal * ($chargePercentage / 100);
-                                                        $set("charge_amount_{$record->id}", $chargeAmount);
-                                    
+                                                        $set("charge_amount_{$record->id}", number_format($chargeAmount, 2, '.', ''));
+                                                    
                                                         $lineTotal = $subTotal - $lessAmount + $chargeAmount;
-                                                        $set("line_total_{$record->id}", $lineTotal);
-                                    
-                                                        // Update overall subtotal and total
+                                                        $set("line_total_{$record->id}", number_format($lineTotal, 2, '.', ''));
+                                                    
                                                         $overallSub = 0;
                                                         $overallTotal = 0;
                                                         foreach ($equipmentIds as $id) {
                                                             $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
                                                             $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
                                                         }
-                                                        $set('subTotal', $overallSub);
-                                                        $set('total', $overallTotal);
+                                                        $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                    
+                                                        $total = $overallTotal;
+                                                        if (!$get('vatToggle')) {
+                                                            $total = $total * 1.12;
+                                                        }
+                                                        $set('total', number_format($total, 2, '.', ''));
                                                     }),
                                                 Forms\Components\TextInput::make("less_amount_{$record->id}")
                                                     ->label('Less Amount')
@@ -1125,13 +1155,14 @@ class EquipmentRelationManager extends RelationManager
                                                     ->default(0)
                                                     ->disabled()
                                                     ->dehydrated(),
-                                                Forms\Components\Select::make('charge_type')
+                                                Forms\Components\Select::make("charge_type_{$record->id}")
                                                     ->label('Charge Type')
                                                     ->columnSpan(2)
                                                     ->native(false)
                                                     ->options([
                                                         'On-site fee' => 'On-site fee',
-                                                        'Delivery Charge' => 'Delivery Charge'
+                                                        'Delivery Charge' => 'Delivery Charge',
+                                                        'other' => 'Other'
                                                     ])
                                                     ->createOptionForm([
                                                         Forms\Components\TextInput::make('new_charge_type')
@@ -1154,7 +1185,8 @@ class EquipmentRelationManager extends RelationManager
                                                         if (!$get('charge_type_options')) {
                                                             $set('charge_type_options', [
                                                                 'On-site fee' => 'On-site fee',
-                                                                'Delivery Charge' => 'Delivery Charge'
+                                                                'Delivery Charge' => 'Delivery Charge',
+                                                                'other' => 'Other'
                                                             ]);
                                                         }
                                                     })
@@ -1168,31 +1200,37 @@ class EquipmentRelationManager extends RelationManager
                                                     ->default(0)
                                                     ->live(debounce: 500)
                                                     ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
+                                                        $chargePercentage = (float) $state;
+                                                        $baseUnitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
+                                                        $vatOnEquipment = $get('vatToggle');
+                                                        $unitPrice = $vatOnEquipment ? $baseUnitPrice * 1.12 : $baseUnitPrice;
                                                         $quantity = (float) ($get("quantity_{$record->id}") ?? 0);
-                                                        $unitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
                                                         $subTotal = $quantity * $unitPrice;
-                                                        $set("equipment_subtotal_{$record->id}", $subTotal);
-                                    
+                                                        $set("equipment_subtotal_{$record->id}", number_format($subTotal, 2, '.', ''));
+                                                    
                                                         $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
                                                         $lessAmount = $subTotal * ($lessPercentage / 100);
-                                                        $set("less_amount_{$record->id}", $lessAmount);
-                                    
-                                                        $chargePercentage = (float) $state;
+                                                        $set("less_amount_{$record->id}", number_format($lessAmount, 2, '.', ''));
+                                                    
                                                         $chargeAmount = $subTotal * ($chargePercentage / 100);
-                                                        $set("charge_amount_{$record->id}", $chargeAmount);
-                                    
+                                                        $set("charge_amount_{$record->id}", number_format($chargeAmount, 2, '.', ''));
+                                                    
                                                         $lineTotal = $subTotal - $lessAmount + $chargeAmount;
-                                                        $set("line_total_{$record->id}", $lineTotal);
-                                    
-                                                        // Update overall subtotal and total
+                                                        $set("line_total_{$record->id}", number_format($lineTotal, 2, '.', ''));
+                                                    
                                                         $overallSub = 0;
                                                         $overallTotal = 0;
                                                         foreach ($equipmentIds as $id) {
                                                             $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
                                                             $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
                                                         }
-                                                        $set('subTotal', $overallSub);
-                                                        $set('total', $overallTotal);
+                                                        $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                    
+                                                        $total = $overallTotal;
+                                                        if (!$get('vatToggle')) {
+                                                            $total = $total * 1.12;
+                                                        }
+                                                        $set('total', number_format($total, 2, '.', ''));
                                                     }),
                                                 Forms\Components\TextInput::make("charge_amount_{$record->id}")
                                                     ->label('Charge Amount')
@@ -1227,122 +1265,224 @@ class EquipmentRelationManager extends RelationManager
                             ->schema([
                                 Forms\Components\Grid::make(2)
                                 ->schema([
-                                    // Forms\Components\Group::make([
-                                    //     Forms\Components\Fieldset::make('Less')
-                                    //     ->schema([
-                                    //         Forms\Components\Select::make('lessType')
-                                    //             ->label('Type')
-                                    //             ->native(false)
-                                    //             ->options([
-                                    //                 'discount' => 'Discount'
-                                    //             ])
-                                    //             ->createOptionForm([
-                                    //                 Forms\Components\TextInput::make('new_less_type')
-                                    //                     ->label('Add Another Payment Method')
-                                    //                     ->required(),
-                                    //             ])
-                                    //             ->createOptionUsing(function (array $data, callable $set, callable $get): string {
-                                    //                 $newLessType = $data['new_less_type'];
-                                            
-                                    //                 $currentOptions = $get('less_type_options') ?? [];
-                                            
-                                    //                 $currentOptions[$newLessType] = $newLessType;
-                                            
-                                    //                 $set('less_type_options', $currentOptions);
-                                            
-                                    //                 return $newLessType;
-                                    //             })
-                                    //             ->reactive()
-                                    //             ->afterStateHydrated(function (callable $set, callable $get) {
-                                    //                 if (!$get('less_type_options')) {
-                                    //                     $set('less_type_options', [
-                                    //                         'discount' => 'Discount'
-                                    //                     ]);
-                                    //                 }
-                                    //             })
-                                    //             ->options(function (callable $get) {
-                                    //                 return $get('less_type_options');
-                                    //             }),
-                                    //         Forms\Components\TextInput::make('lessPercentage')
-                                    //             ->label('Less (%)')
-                                    //             ->numeric()
-                                    //             ->default(0)
-                                    //             ->live(debounce: 500)
-                                    //             ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                    //                 $subTotal = (float) ($get('subTotal') ?? 0);
-                                    //                 $chargeAmount = (float) ($get('chargeAmount') ?? 0);
-                                    //                 $lessAmount = $subTotal * ((float) ($state ?? 0) / 100);
-                                    //                 $set('lessAmount', $lessAmount);
+                                    Forms\Components\Toggle::make('applyToAll')
+                                        ->label('Apply less/charges to all equipment')
+                                        ->columnSpan(2)
+                                        ->reactive(),
+                                    Forms\Components\Group::make([
+                                        Forms\Components\Fieldset::make('Less')
+                                        ->schema([
+                                            Forms\Components\Select::make('global_less_type')
+                                                ->columnSpan(2)
+                                                ->native(false)
+                                                ->label('Less Type')
+                                                ->options([
+                                                    'discount' => 'Discount',
+                                                    'other' => 'Other'
+                                                ])
+                                                ->createOptionForm([
+                                                    Forms\Components\TextInput::make('new_less_type')
+                                                        ->label('Add Another Less Type')
+                                                        ->required(),
+                                                ])
+                                                ->createOptionUsing(function (array $data, callable $set, callable $get): string {
+                                                    $newLessType = $data['new_less_type'];
+                                                    $currentOptions = $get('global_less_type_options') ?? [];
+                                                    $currentOptions[$newLessType] = $newLessType;
+                                                    $set('global_less_type_options', $currentOptions);
+                                                    return $newLessType;
+                                                })
+                                                ->reactive()
+                                                ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
+                                                    if ($get('applyToAll')) {
+                                                        foreach ($equipmentIds as $id) {
+                                                            $set("less_type_{$id}", $state);
+                                                        }
+                                                    }
+                                                })
+                                                ->options(function (callable $get) {
+                                                    return $get('global_less_type_options') ?? [
+                                                        'discount' => 'Discount',
+                                                        'other' => 'Other'
+                                                    ];
+                                                }),
 
-                                    //                 // Always use latest less and charge
-                                    //                 $set('total', $subTotal - $lessAmount + $chargeAmount);
-                                    //             }),
-                                    //         Forms\Components\TextInput::make('lessAmount')
-                                    //             ->label('Amount')
-                                    //             ->readOnly()
-                                    //             ->numeric()
-                                    //             ->default(0),
-                                    //         ])->columns(3)
-                                    //     ]),
-                                    // Forms\Components\Group::make([
-                                    //     Forms\Components\Fieldset::make('Charges')
-                                    //     ->schema([
-                                    //         Forms\Components\Select::make('charge_type')
-                                    //             ->label('Type')
-                                    //             ->native(false)
-                                    //             ->options([
-                                    //                 'On-site fee' => 'On-site fee',
-                                    //                 'Delivery Charge' => 'Delivery Charge'
-                                    //             ])
-                                    //             ->createOptionForm([
-                                    //                 Forms\Components\TextInput::make('new_charge_type')
-                                    //                     ->label('Add Another Payment Method')
-                                    //                     ->required(),
-                                    //             ])
-                                    //             ->createOptionUsing(function (array $data, callable $set, callable $get): string {
-                                    //                 $newChargeType = $data['new_charge_type'];
+                                            Forms\Components\TextInput::make('global_less_percentage')
+                                                ->columnSpan(1)
+                                                ->label('Less (%)')
+                                                ->numeric()
+                                                ->default(0)
+                                                ->reactive()
+                                                ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
+                                                    if ($get('applyToAll')) {
+                                                        foreach ($equipmentIds as $id) {
+                                                            $set("less_percentage_{$id}", $state);
                                             
-                                    //                 $currentOptions = $get('charge_type_options') ?? [];
+                                                            // Recalculate for each equipment
+                                                            $quantity = (float) ($get("quantity_{$id}") ?? 0);
+                                                            $unitPrice = (float) ($get("unit_price_{$id}") ?? 0);
+                                                            $subTotal = $quantity * $unitPrice;
+                                                            $lessAmount = $subTotal * ((float) $state / 100);
+                                                            $set("less_amount_{$id}", $lessAmount);
                                             
-                                    //                 $currentOptions[$newChargeType] = $newChargeType;
+                                                            $chargePercentage = (float) ($get("charge_percentage_{$id}") ?? 0);
+                                                            $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                            $set("charge_amount_{$id}", $chargeAmount);
                                             
-                                    //                 $set('charge_type_options', $currentOptions);
+                                                            $lineTotal = $subTotal - $lessAmount + $chargeAmount;
+                                                            $set("line_total_{$id}", number_format($lineTotal, 2, '.', ''));
+                                                        }
                                             
-                                    //                 return $newChargeType;
-                                    //             })
-                                    //             ->reactive()
-                                    //             ->afterStateHydrated(function (callable $set, callable $get) {
-                                    //                 if (!$get('charge_type_options')) {
-                                    //                     $set('charge_type_options', [
-                                    //                         'On-site fee' => 'On-site fee',
-                                    //                         'Delivery Charge' => 'Delivery Charge'
-                                    //                     ]);
-                                    //                 }
-                                    //             })
-                                    //             ->options(function (callable $get) {
-                                    //                 return $get('charge_type_options');
-                                    //             }),
-                                    //         Forms\Components\TextInput::make('chargePercentage')
-                                    //             ->label('Charge (%)')
-                                    //             ->numeric()
-                                    //             ->default(0)
-                                    //             ->live(debounce: 500)
-                                    //             ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                    //                 $subTotal = (float) ($get('subTotal') ?? 0);
-                                    //                 $lessAmount = (float) ($get('lessAmount') ?? 0);
-                                    //                 $chargeAmount = $subTotal * ((float) ($state ?? 0) / 100);
-                                    //                 $set('chargeAmount', $chargeAmount);
+                                                        // Update overall subtotal and total
+                                                        $overallSub = 0;
+                                                        $overallTotal = 0;
+                                                        $globalLessAmount = 0;
+                                                        foreach ($equipmentIds as $id) {
+                                                            $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
+                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                            $globalLessAmount += (float) ($get("less_amount_{$id}") ?? 0);
+                                                        }
+                                                        $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                        $set('total', number_format($overallTotal, 2, '.', ''));
+                                                        $set('global_less_amount' ,number_format($globalLessAmount, 2, '.', ''));
+                                                    }
+                                                }),
 
-                                    //                 // Always use latest less and charge
-                                    //                 $set('total', $subTotal - $lessAmount + $chargeAmount);
-                                    //             }),
-                                    //         Forms\Components\TextInput::make('chargeAmount')
-                                    //             ->label('Amount')
-                                    //             ->readOnly()
-                                    //             ->numeric()
-                                    //             ->default(0),
-                                    //         ])->columns(3)
-                                    //     ]),
+                                            Forms\Components\TextInput::make('global_less_amount')
+                                                ->columnSpan(1)
+                                                ->label('Less Amount')
+                                                ->numeric()
+                                                ->default(0)
+                                                ->reactive()
+                                                ->readOnly()
+                                                ->afterStateHydrated(function (callable $set, callable $get) use ($equipmentIds) {
+                                                    // On form load, sum all less_amounts
+                                                    $sum = 0;
+                                                    foreach ($equipmentIds as $id) {
+                                                        $sum += (float) ($get("less_amount_{$id}") ?? 0);
+                                                    }
+                                                    $set('global_less_amount', number_format($sum, 2, '.', ''));
+                                                })
+                                                ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
+                                                    // When user types, do nothing (or optionally sync to all, but you want sum)
+                                                    if ($get('applyToAll')) {
+                                                        $sum = 0;
+                                                        foreach ($equipmentIds as $id) {
+                                                            $sum += (float) ($get("less_amount_{$id}") ?? 0);
+                                                        }
+                                                        $set('global_less_amount', number_format($sum, 2, '.', ''));
+                                                    }
+                                                }),
+                                            ])->columns(4)
+                                        ])->visible(fn (callable $get) => $get('applyToAll')),
+                                    Forms\Components\Group::make([
+                                        Forms\Components\Fieldset::make('Charges')
+                                        ->schema([
+                                            Forms\Components\Select::make('global_charge_type')
+                                                ->columnSpan(2)
+                                                ->native(false)
+                                                ->label('Charge Type')
+                                                ->options([
+                                                    'On-site fee' => 'On-site fee',
+                                                    'Delivery Charge' => 'Delivery Charge',
+                                                    'other' => 'Other'
+                                                ])
+                                                ->createOptionForm([
+                                                    Forms\Components\TextInput::make('new_charge_type')
+                                                        ->label('Add Another Charge Type')
+                                                        ->required(),
+                                                ])
+                                                ->createOptionUsing(function (array $data, callable $set, callable $get): string {
+                                                    $newChargeType = $data['new_charge_type'];
+                                                    $currentOptions = $get('global_charge_type_options') ?? [];
+                                                    $currentOptions[$newChargeType] = $newChargeType;
+                                                    $set('global_charge_type_options', $currentOptions);
+                                                    return $newChargeType;
+                                                })
+                                                ->reactive()
+                                                ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
+                                                    if ($get('applyToAll')) {
+                                                        foreach ($equipmentIds as $id) {
+                                                            $set("charge_type_{$id}", $state);
+                                                        }
+                                                    }
+                                                })
+                                                ->options(function (callable $get) {
+                                                    return $get('global_charge_type_options') ?? [
+                                                        'On-site fee' => 'On-site fee',
+                                                        'Delivery Charge' => 'Delivery Charge',
+                                                        'other' => 'Other'
+                                                    ];
+                                                }),
+
+                                            Forms\Components\TextInput::make('global_charge_percentage')
+                                                ->columnSpan(1)
+                                                ->label('Charge (%)')
+                                                ->numeric()
+                                                ->default(0)
+                                                ->reactive()
+                                                ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
+                                                    if ($get('applyToAll')) {
+                                                        foreach ($equipmentIds as $id) {
+                                                            $set("charge_percentage_{$id}", $state);
+                                            
+                                                            // Recalculate for each equipment
+                                                            $quantity = (float) ($get("quantity_{$id}") ?? 0);
+                                                            $unitPrice = (float) ($get("unit_price_{$id}") ?? 0);
+                                                            $subTotal = $quantity * $unitPrice;
+                                            
+                                                            $lessPercentage = (float) ($get("less_percentage_{$id}") ?? 0);
+                                                            $lessAmount = $subTotal * ($lessPercentage / 100);
+                                                            $set("less_amount_{$id}", $lessAmount);
+                                            
+                                                            $chargePercentage = (float) $state;
+                                                            $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                            $set("charge_amount_{$id}", $chargeAmount);
+                                            
+                                                            $lineTotal = $subTotal - $lessAmount + $chargeAmount;
+                                                            $set("line_total_{$id}", number_format($lineTotal, 2, '.', ''));
+                                                        }
+                                            
+                                                        // Update overall subtotal and total
+                                                        $overallSub = 0;
+                                                        $overallTotal = 0;
+                                                        $globalChargeAmount = 0;
+                                                        foreach ($equipmentIds as $id) {
+                                                            $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
+                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                            $globalChargeAmount += (float) ($get("charge_amount_{$id}") ?? 0);
+                                                        }
+                                                        $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                        $set('total', number_format($overallTotal, 2, '.', ''));
+                                                        $set('global_charge_amount', number_format($globalChargeAmount, 2, '.', ''));
+                                                    }
+                                                }),
+
+                                            Forms\Components\TextInput::make('global_charge_amount')
+                                                ->columnSpan(1)
+                                                ->label('Charge Amount')
+                                                ->numeric()
+                                                ->default(0)
+                                                ->reactive()
+                                                ->readOnly()
+                                                ->afterStateHydrated(function (callable $set, callable $get) use ($equipmentIds) {
+                                                    $sum = 0;
+                                                    foreach ($equipmentIds as $id) {
+                                                        $sum += (float) ($get("charge_amount_{$id}") ?? 0);
+                                                    }
+                                                    $set('global_charge_amount', number_format($sum, 2, '.', ''));
+                                                })
+                                                ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
+                                                    if ($get('applyToAll')) {
+                                                        $sum = 0;
+                                                        foreach ($equipmentIds as $id) {
+                                                            $sum += (float) ($get("charge_amount_{$id}") ?? 0);
+                                                        }
+                                                        $set('global_charge_amount', number_format($sum, 2, '.', ''));
+                                                    }
+                                                }),
+                                            ])->columns(4)
+                                        ])->visible(fn (callable $get) => $get('applyToAll')),
                                 ]),
                                 Forms\Components\Textarea::make('comments')
                                 ->label('Comments')
@@ -1350,10 +1490,6 @@ class EquipmentRelationManager extends RelationManager
                                 ->autosize()
                                 ->columnSpan(3)
                                 ->placeholder('Enter any additional notes for the invoice'),
-                                Forms\Components\Toggle::make('vatToggle')
-                                ->label('VAT')
-                                ->columnSpan(1)
-                                ->inline(false),
                                 Forms\Components\Select::make('currency')
                                 ->label('Currency')
                                 ->native(false)
@@ -1365,6 +1501,7 @@ class EquipmentRelationManager extends RelationManager
                                 ->columnSpan(1),
                                 Forms\Components\TextInput::make('subTotal')
                                 ->label('SubTotal')
+                                ->default(0)
                                 ->extraInputAttributes([
                                     'class' => 'text-center'
                                 ])
@@ -1373,11 +1510,53 @@ class EquipmentRelationManager extends RelationManager
                                 ->columnSpan(3),
                                 Forms\Components\TextInput::make('total')
                                 ->label('Total')
+                                ->numeric()
+                                ->default(0)
                                 ->extraInputAttributes([
                                     'class' => 'text-center'
                                 ])
                                 ->readOnly()
                                 ->columnSpan(4),
+                                Forms\Components\Toggle::make('vatToggle')
+                                ->label('VAT')
+                                ->reactive()
+                                ->columnSpan(1)
+                                ->inline(false)
+                                ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
+                                    foreach ($equipmentIds as $id) {
+                                        $baseUnitPrice = (float) ($get("unit_price_{$id}") ?? 0);
+                                        $quantity = (float) ($get("quantity_{$id}") ?? 0);
+                                        $unitPrice = $state ? $baseUnitPrice * 1.12 : $baseUnitPrice;
+                                        $subTotal = $quantity * $unitPrice;
+                                        $set("equipment_subtotal_{$id}", number_format($subTotal, 2, '.', ''));
+                            
+                                        $lessPercentage = (float) ($get("less_percentage_{$id}") ?? 0);
+                                        $lessAmount = $subTotal * ($lessPercentage / 100);
+                                        $set("less_amount_{$id}", number_format($lessAmount, 2, '.', ''));
+                            
+                                        $chargePercentage = (float) ($get("charge_percentage_{$id}") ?? 0);
+                                        $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                        $set("charge_amount_{$id}", number_format($chargeAmount, 2, '.', ''));
+                            
+                                        $lineTotal = $subTotal - $lessAmount + $chargeAmount;
+                                        $set("line_total_{$id}", number_format($lineTotal, 2, '.', ''));
+                                    }
+                            
+                                    // Update overall subtotal and total
+                                    $overallSub = 0;
+                                    $overallTotal = 0;
+                                    foreach ($equipmentIds as $id) {
+                                        $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
+                                        $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                    }
+                                    $set('subTotal', number_format($overallSub, 2, '.', ''));
+                            
+                                    $total = $overallTotal;
+                                    if (!$state) {
+                                        $total = $total * 1.12;
+                                    }
+                                    $set('total', number_format($total, 2, '.', ''));
+                                }),
                             ])->columns(12);
                 
                         return $formSchema;
@@ -1385,7 +1564,7 @@ class EquipmentRelationManager extends RelationManager
                     ->action(function ($records, array $data) {
                         // 1. Create the invoice
                         $invoice = Invoice::create([
-                            'customer_id'    => $record->customer_id,
+                            'customer_id'    => $this->getOwnerRecord()->customer_id,
                             'contactPerson'  => $data['contactPerson'] ?? null,
                             'carbonCopy'     => $data['carbonCopy'] ?? null,
                             'invoice_number' => $data['invoice_number'] ?? null,
@@ -1414,7 +1593,7 @@ class EquipmentRelationManager extends RelationManager
                                 'transaction_id'       => $data["transaction_id_{$id}"] ?? null,
                                 'item_number'       => $data["item_number_{$id}"] ?? null,
                                 'quantity'          => $data["quantity_{$id}"] ?? 1,
-                                'unit_price'        => $data["unit_price_{$id}"] ?? 0,
+                                'unit_price'        => $data["equipment_subtotal_{$id}"] ?? 0,
                                 'less_type'         => $data["less_type_{$id}"] ?? null,
                                 'less_percentage'   => $data["less_percentage_{$id}"] ?? 0,
                                 'less_amount'       => $data["less_amount_{$id}"] ?? null,

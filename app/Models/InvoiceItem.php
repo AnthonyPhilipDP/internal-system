@@ -10,15 +10,6 @@ class InvoiceItem extends Model
         'id'
     ];
 
-    protected $casts = [
-        'unit_price' => 'decimal:2',
-        'less_percentage' => 'decimal:2',
-        'less_amount' => 'decimal:2',
-        'charge_percentage' => 'decimal:2',
-        'charge_amount' => 'decimal:2',
-        'line_total' => 'decimal:2',
-    ];
-
     public function invoice()
     {
         return $this->belongsTo(Invoice::class);

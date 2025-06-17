@@ -17,14 +17,14 @@ return new class extends Migration
             $table->string('transaction_id')->nullable();
             $table->integer('item_number')->nullable();
             $table->integer('quantity')->default(1);
-            $table->decimal('unit_price', 12, 2)->default(0);
-            $table->decimal('less_type', 5, 2)->nullable();
-            $table->decimal('less_percentage', 5, 2)->nullable();
-            $table->decimal('less_amount', 12, 2)->nullable();
-            $table->decimal('charge_type', 5, 2)->nullable();
-            $table->decimal('charge_percentage', 5, 2)->nullable();
-            $table->decimal('charge_amount', 12, 2)->nullable();
-            $table->decimal('line_total', 12, 2)->default(0);
+            $table->string('unit_price')->nullable();
+            $table->string('less_type')->nullable();
+            $table->string('less_percentage')->nullable();
+            $table->string('less_amount')->nullable();
+            $table->string('charge_type')->nullable();
+            $table->string('charge_percentage')->nullable();
+            $table->string('charge_amount')->nullable();
+            $table->string('line_total')->nullable();
             $table->timestamps();
         });
     }

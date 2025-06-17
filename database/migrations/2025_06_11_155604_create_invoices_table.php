@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->string('contactPerson')->nullable();
             $table->string('carbonCopy')->nullable();
-            $table->string('invoice_number')->nullable();
+            $table->unsignedBigInteger('invoice_number')->unique();
             $table->date('invoice_date')->nullable();
             $table->string('poNoCalibration')->nullable();
             $table->string('yourRef')->nullable();
@@ -45,14 +45,13 @@ return new class extends Migration
             // $table->string('chargePercentage')->nullable();
             // $table->string('chargeAmount')->nullable();
             
-            $table->boolean('vatToggle')->default(false);
+            $table->boolean('vatToggle')->default(false); // Vat Inclusive
             
             $table->string('currency')->nullable();
             $table->string('total')->nullable();
             $table->string('amountInWords')->nullable();
             
             $table->timestamps();
-            // vat inclusive
         });
     }
 
