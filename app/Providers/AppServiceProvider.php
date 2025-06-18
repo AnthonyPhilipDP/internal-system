@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Contracts\Http\Kernel;
 use App\Http\Middleware\AppServiceBoot;
 use Illuminate\Support\ServiceProvider;
@@ -23,5 +24,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $kernel->pushMiddleware(AppServiceBoot::class);
         ini_set('memory_limit', '256M');
+
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }

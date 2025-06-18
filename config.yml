@@ -1,0 +1,7 @@
+{}
+
+# Run this command to deploy locally
+## ./cloudflared tunnel --url http://localhost:8000
+## Change the APP_URL in ENV File the temporary host
+## npm run build
+## php artisan serve

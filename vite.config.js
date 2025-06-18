@@ -17,8 +17,9 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: '192.168.1.200',
+        host: '192.168.1.200', // Change to '0.0.0.0' when using Tunnel
         port: 5173,
-        cors: true
+        cors: true,
+        https: false,
     },
 });
