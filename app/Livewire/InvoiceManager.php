@@ -27,17 +27,23 @@ class InvoiceManager extends Component
             $equipment = Equipment::where('transaction_id', $item->transaction_id)->first();
         
             return [
-                'item_number'   => $item->item_number,
-                'make'          => $equipment->make ?? '',
-                'model'         => $equipment->model ?? '',
-                'description'   => $equipment->description ?? '',
-                'serial'        => $equipment->serial ?? '',
-                'qty'           => $item->quantity,
-                'unit_price'    => $item->unit_price,
-                'total'         => $item->line_total,
-                'less'          => $item->less_amount,
-                'charges'       => $item->charge_amount,
-                'comment'       => $item->comment ?? '',
+                'invoice_id'        => $item->invoice_id,
+                'item_number'       => $item->item_number,
+                'quantity'          => $item->quantity,
+                'unit_price'        => $item->unit_price,
+                'less_type'         => $item->less_type,
+                'less_percentage'   => $item->less_percentage,
+                'less_amount'       => $item->less_amount,
+                'charge_type'       => $item->charge_type,
+                'charge_percentage' => $item->charge_percentage,
+                'charge_amount'     => $item->charge_amount,
+                'line_total'        => $item->line_total,
+                
+                'transaction_id'    => $item->transaction_id,
+                'make'              => $equipment->make ?? '',
+                'model'             => $equipment->model ?? '',
+                'description'       => $equipment->description ?? '',
+                'serial'            => $equipment->serial ?? '',
             ];
         })->toArray();
     }
