@@ -1012,6 +1012,7 @@ class EquipmentRelationManager extends RelationManager
                                                             $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
                                                         }
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
                                                     
                                                         $total = $overallTotal;
                                                         if (!$get('vatToggle')) {
@@ -1022,7 +1023,7 @@ class EquipmentRelationManager extends RelationManager
                                                 Forms\Components\TextInput::make("unit_price_{$record->id}")
                                                     ->label('Unit Price')
                                                     ->numeric()
-                                                    ->default(0)
+                                                    ->default('0')
                                                     ->live(debounce: 500)
                                                     ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
                                                         $baseUnitPrice = (float) $state;
@@ -1050,6 +1051,7 @@ class EquipmentRelationManager extends RelationManager
                                                             $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
                                                         }
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
                                                     
                                                         $total = $overallTotal;
                                                         if (!$get('vatToggle')) {
@@ -1060,7 +1062,7 @@ class EquipmentRelationManager extends RelationManager
                                                 Forms\Components\TextInput::make("equipment_subtotal_{$record->id}")
                                                     ->label('Subtotal')
                                                     ->numeric()
-                                                    ->default(0)
+                                                    ->default('0.00')
                                                     ->readOnly(),
                                                 ])
                                             ])
@@ -1115,7 +1117,7 @@ class EquipmentRelationManager extends RelationManager
                                                     ->label('Less (%)')
                                                     ->columnSpan(1)
                                                     ->numeric()
-                                                    ->default(0)
+                                                    ->default('0.00')
                                                     ->live(debounce: 500)
                                                     ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
                                                         $lessPercentage = (float) $state;
@@ -1143,6 +1145,7 @@ class EquipmentRelationManager extends RelationManager
                                                             $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
                                                         }
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
                                                     
                                                         $total = $overallTotal;
                                                         if (!$get('vatToggle')) {
@@ -1154,7 +1157,7 @@ class EquipmentRelationManager extends RelationManager
                                                     ->label('Less Amount')
                                                     ->columnSpan(1)
                                                     ->numeric()
-                                                    ->default(0)
+                                                    ->default('0.00')
                                                     ->disabled()
                                                     ->dehydrated(),
                                                 Forms\Components\Select::make("charge_type_{$record->id}")
@@ -1199,7 +1202,7 @@ class EquipmentRelationManager extends RelationManager
                                                     ->label('Charge (%)')
                                                     ->columnSpan(1)
                                                     ->numeric()
-                                                    ->default(0)
+                                                    ->default('0.00')
                                                     ->live(debounce: 500)
                                                     ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
                                                         $chargePercentage = (float) $state;
@@ -1227,6 +1230,7 @@ class EquipmentRelationManager extends RelationManager
                                                             $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
                                                         }
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
                                                     
                                                         $total = $overallTotal;
                                                         if (!$get('vatToggle')) {
@@ -1238,13 +1242,13 @@ class EquipmentRelationManager extends RelationManager
                                                     ->label('Charge Amount')
                                                     ->columnSpan(1)
                                                     ->numeric()
-                                                    ->default(0)
+                                                    ->default('0.00')
                                                     ->disabled()
                                                     ->dehydrated(),
                                                 Forms\Components\TextInput::make("line_total_{$record->id}")
                                                     ->label('Total')
                                                     ->numeric()
-                                                    ->default(0)
+                                                    ->default('0.00')
                                                     ->readOnly()
                                                     ->columnSpan(4)
                                                     ->extraInputAttributes([
@@ -1313,7 +1317,7 @@ class EquipmentRelationManager extends RelationManager
                                                 ->columnSpan(1)
                                                 ->label('Less (%)')
                                                 ->numeric()
-                                                ->default(0)
+                                                ->default('0.00')
                                                 ->reactive()
                                                 ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
                                                     if ($get('applyToAll')) {
@@ -1345,6 +1349,7 @@ class EquipmentRelationManager extends RelationManager
                                                             $globalLessAmount += (float) ($get("less_amount_{$id}") ?? 0);
                                                         }
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
                                                         $set('total', number_format($overallTotal, 2, '.', ''));
                                                         $set('global_less_amount' ,number_format($globalLessAmount, 2, '.', ''));
                                                     }
@@ -1354,7 +1359,7 @@ class EquipmentRelationManager extends RelationManager
                                                 ->columnSpan(1)
                                                 ->label('Less Amount')
                                                 ->numeric()
-                                                ->default(0)
+                                                ->default('0.00')
                                                 ->reactive()
                                                 ->readOnly()
                                                 ->afterStateHydrated(function (callable $set, callable $get) use ($equipmentIds) {
@@ -1421,7 +1426,7 @@ class EquipmentRelationManager extends RelationManager
                                                 ->columnSpan(1)
                                                 ->label('Charge (%)')
                                                 ->numeric()
-                                                ->default(0)
+                                                ->default('0.00')
                                                 ->reactive()
                                                 ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
                                                     if ($get('applyToAll')) {
@@ -1455,6 +1460,7 @@ class EquipmentRelationManager extends RelationManager
                                                             $globalChargeAmount += (float) ($get("charge_amount_{$id}") ?? 0);
                                                         }
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
                                                         $set('total', number_format($overallTotal, 2, '.', ''));
                                                         $set('global_charge_amount', number_format($globalChargeAmount, 2, '.', ''));
                                                     }
@@ -1464,7 +1470,7 @@ class EquipmentRelationManager extends RelationManager
                                                 ->columnSpan(1)
                                                 ->label('Charge Amount')
                                                 ->numeric()
-                                                ->default(0)
+                                                ->default('0.00')
                                                 ->reactive()
                                                 ->readOnly()
                                                 ->afterStateHydrated(function (callable $set, callable $get) use ($equipmentIds) {
@@ -1503,17 +1509,17 @@ class EquipmentRelationManager extends RelationManager
                                 ->columnSpan(1),
                                 Forms\Components\TextInput::make('subTotal')
                                 ->label('SubTotal')
-                                ->default(0)
+                                ->default('0.00')
                                 ->extraInputAttributes([
                                     'class' => 'text-center'
                                 ])
                                 ->readOnly()
                                 ->dehydrated()
-                                ->columnSpan(3),
+                                ->columnSpan(2),
                                 Forms\Components\TextInput::make('total')
                                 ->label('Total')
                                 ->numeric()
-                                ->default(0)
+                                ->default('0.00')
                                 ->extraInputAttributes([
                                     'class' => 'text-center'
                                 ])
@@ -1552,6 +1558,7 @@ class EquipmentRelationManager extends RelationManager
                                         $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
                                     }
                                     $set('subTotal', number_format($overallSub, 2, '.', ''));
+                                    $set('vatAmount', $get('vatToggle') ? number_format(0, 2, '.', '') : number_format($overallSub * 0.12, 2, '.', ''));
                             
                                     $total = $overallTotal;
                                     if (!$state) {
@@ -1559,6 +1566,12 @@ class EquipmentRelationManager extends RelationManager
                                     }
                                     $set('total', number_format($total, 2, '.', ''));
                                 }),
+                                Forms\Components\TextInput::make('vatAmount')
+                                ->label('VAT Amount')
+                                ->columnSpan(1)
+                                ->default('0.00')
+                                ->disabled()
+                                ->dehydrated()
                             ])->columns(12);
                 
                         return $formSchema;
@@ -1584,7 +1597,14 @@ class EquipmentRelationManager extends RelationManager
                             'vatToggle'      => $data['vatToggle'] ?? false,
                             'currency'       => $data['currency'] ?? null,
                             'total'          => $data['total'] ?? null,
-                            'amountInWords'  => $data['amountInWords'] ?? null,
+                            'vatAmount'          => $data['vatAmount'] ?? null,
+                            'applyToAll'  => $data['applyToAll'] ?? null,
+                            'global_less_type'  => $data['global_less_type'] ?? null,
+                            'global_less_percentage'  => $data['global_less_percentage'] ?? null,
+                            'global_less_amount'  => $data['global_less_amount'] ?? null,
+                            'global_charge_type'  => $data['global_charge_type'] ?? null,
+                            'global_charge_percentage'  => $data['global_charge_percentage'] ?? null,
+                            'global_charge_amount'  => $data['global_charge_amount'] ?? null,
                         ]);
                 
                         // 2. Loop through each equipment and create invoice items

@@ -27,25 +27,21 @@ return new class extends Migration
             $table->string('tin')->nullable();
             $table->string('service')->nullable();
             $table->string('payment')->nullable();
-            // Middle
-            // $table->string('item_number')->nullable();
-            // $table->string('transaction_id')->nullable();
-            // $table->integer('quantity')->nullable();
-            // $table->decimal('unitPrice', 10, 2)->nullable();
-            // $table->decimal('equipmentTotal', 10, 2)->nullable();
+
             // Bottom
             $table->string('comments')->nullable();
             $table->string('subTotal')->nullable();
             
-            // $table->string('lessType')->nullable();
-            // $table->string('lessPercentage')->nullable();
-            // $table->string('lessAmount')->nullable();
-            
-            // $table->string('chargeType')->nullable();
-            // $table->string('chargePercentage')->nullable();
-            // $table->string('chargeAmount')->nullable();
+            $table->boolean('applyToAll')->default(false);
+            $table->string('global_less_type')->nullable();
+            $table->string('global_less_percentage')->nullable();
+            $table->string('global_less_amount')->nullable();
+            $table->string('global_charge_type')->nullable();
+            $table->string('global_charge_percentage')->nullable();
+            $table->string('global_charge_amount')->nullable();
             
             $table->boolean('vatToggle')->default(false); // Vat Inclusive
+            $table->string('vatAmount')->nullable();
             
             $table->string('currency')->nullable();
             $table->string('total')->nullable();

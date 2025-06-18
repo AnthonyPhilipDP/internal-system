@@ -107,10 +107,7 @@ class InvoiceResource extends Resource
                     ->label('Vat Inclusive')
                     ->formatStateUsing(fn ($record) => ($record->vatToggle ? 'True' : 'False'))
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        '0' => 'gray',
-                        '1' => 'primary',
-                    }),
+                    ->color(fn ($state) => ($state ? 'primary' : 'gray')),
 
                 Tables\Columns\TextColumn::make('currency'),
 

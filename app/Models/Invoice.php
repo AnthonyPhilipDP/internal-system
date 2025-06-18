@@ -14,6 +14,11 @@ class Invoice extends Model
     protected $guarded = [
         'id'
     ];
+
+    protected $casts = [
+        'applyToAll' => 'boolean',
+        'vatToggle' => 'boolean',
+    ];
     
     public function items()
     {
