@@ -66,52 +66,56 @@
           </div>
         </div>
       @else
-        {{-- <div class="flex flex-col">
-          <div class="grid grid-cols-3 gap-x-6">
-            <div class="flex flex-col col-span-1 text-end">
-              @foreach ($items as $item)
-                @if ($loop->first)
-                  @if (!empty($item['less_type']) && ($item['less_percentage'] ?? 0) > 0)
-                    <span>Less Breakdown:</span>
-                  @endif
-                @endif
-                @if ($loop->first)
-                  @if (!empty($item['charge_type']) && ($item['charge_percentage'] ?? 0) > 0)
-                    <span>Charges Breakdown:</span>
-                  @endif
-                @endif
-              @endforeach
-              <span>Remarks Breakdown:</span>
-            </div>
-            <div class="flex flex-col col-span-1">
-              @foreach ($items as $item)
-                <!-- Less -->
-                @if (!empty($item['less_type']) && ($item['less_percentage'] ?? 0) > 0)
-                  <span>{{ $item['less_percentage'] }}% {{ $item['less_type'] }} for item
-                    {{ $item['item_number'] }}</span>
-                @endif
+        @php
+          $lessItems = [];
+          $chargeItems = [];
+        @endphp
 
-                <!-- Charges -->
-                @if (!empty($item['charge_type']) && ($item['charge_percentage'] ?? 0) > 0)
-                  <span>{{ $item['charge_percentage'] }}% {{ $item['charge_type'] }} for item
-                    {{ $item['item_number'] }}</span>
-                @endif
-              @endforeach
-              <span>{{ $invoice->comments }}</span>
-            </div>
-            <div class="flex flex-col col-span-1 text-end">
-              @foreach ($items as $item)
-                @if (!empty($item['less_type']) && ($item['less_percentage'] ?? 0) > 0)
-                  <span>{{ $item['less_amount'] }}</span>
-                @endif
-                @if (!empty($item['charge_type']) && ($item['charge_percentage'] ?? 0) > 0)
-                  <span>{{ $item['charge_amount'] }}</span>
-                @endif
-                <span></span>
-              @endforeach
-            </div>
+        @foreach ($items as $item)
+          @if ($item['less_percentage'] > 0)
+            @php
+              $lessItems[] = $item['item_number'];
+            @endphp
+          @endif
+          @if ($item['charge_percentage'] > 0)
+            @php
+              $chargeItems[] = $item['item_number'];
+            @endphp
+          @endif
+        @endforeach
+
+        <div class="flex flex-row gap-x-8">
+          <div class="flex flex-col text-end w-[20%]">
+            @if (!empty($lessItems))
+              <span>Less Breakdown:</span>
+            @endif
+            @if (!empty($chargeItems))
+              <span>Charges Breakdown:</span>
+            @endif
+            @if (!empty($invoice->comments))
+              <span>Remarks Breakdown:</span>
+            @endif
           </div>
-        </div> --}}
+          <div class="flex flex-col w-[60%]">
+            @if (!empty($lessItems))
+              <span>Discount on items {{ implode(', ', $lessItems) }}</span>
+            @endif
+            @if (!empty($chargeItems))
+              <span>Charges on items {{ implode(', ', $chargeItems) }}</span>
+            @endif
+            @if (!empty($invoice->comments))
+              <span>{{ $invoice->comments }}</span>
+            @endif
+          </div>
+          <div class="flex flex-col text-end w-[20%]">
+            @if (!empty($lessItems))
+              <span>{{ $totalLessAmount }}</span>
+            @endif
+            @if (!empty($chargeItems))
+              <span>{{ $totalChargeAmount }}</span>
+            @endif
+          </div>
+        </div>
       @endif
     </div>
 

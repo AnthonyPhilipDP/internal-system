@@ -15,6 +15,8 @@ class InvoiceManager extends Component
     public $invoice;
     public $customer;
     public $items = [];
+    public $totalLessAmount;
+    public $totalChargeAmount;
 
     public function mount($invoice_id)
     {
@@ -44,17 +46,17 @@ class InvoiceManager extends Component
                 'model'             => $equipment->model ?? '',
                 'description'       => $equipment->description ?? '',
                 'serial'            => $equipment->serial ?? '',
-                'equipment_id'            => $equipment->equipment_id ?? '',
+                'equipment_id'      => $equipment->equipment_id ?? '',
             ];
         })->toArray();
+
+        $this->totalLessAmount = number_format($this->invoice->items->sum('less_amount'), 2);
+        $this->totalChargeAmount = number_format($this->invoice->items->sum('charge_amount'), 2);
+
     }
 
     public function render()
     {
-        return view('livewire.invoice-manager', [
-            'invoice' => $this->invoice,
-            'customer' => $this->customer,
-            'items' => $this->items,
-        ]);
+        return view('livewire.invoice-manager');
     }
 }
