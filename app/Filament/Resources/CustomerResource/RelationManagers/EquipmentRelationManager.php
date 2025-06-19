@@ -940,33 +940,90 @@ class EquipmentRelationManager extends RelationManager
                                             ])
                                             
                                             ->schema([
-                                                Forms\Components\Grid::make(2)
+                                                Forms\Components\Grid::make(8)
                                                 ->schema([
                                                 Forms\Components\TextInput::make("item_number_{$record->id}")
-                                                    ->label('Item Number')
+                                                    ->label('Item #')
+                                                    ->extraInputAttributes([
+                                                        'class' => 'text-center'
+                                                    ])
+                                                    ->columnSpan(1)
                                                     ->default($itemNumber)
                                                     ->disabled()
                                                     ->dehydrated(),
-                                                Forms\Components\TextInput::make("transaction_id_{$record->id}")
-                                                    ->label('Transaction ID')
-                                                    ->default($record->transaction_id)
-                                                    ->disabled()
-                                                    ->dehydrated(),
+                                                Forms\Components\TextInput::make("equipment_id_{$record->id}")
+                                                    ->label('Equipment ID')
+                                                    ->columnSpan(2)
+                                                    ->default($record->equipment_id)
+                                                    ->disabled(),
+                                                Forms\Components\TextInput::make("service_{$record->id}")
+                                                    ->label('Service')
+                                                    ->columnSpan(3)
+                                                    ->default($record->service)
+                                                    ->formatStateUsing(function ($state) {
+                                                        $services = [
+                                                            'calibration' => 'Calibration',
+                                                            'cal and realign' => 'Calibration and Realign',
+                                                            'cal and repair' => 'Calibration and Repair',
+                                                            'repair' => 'Repair',
+                                                            'diagnostic' => 'Diagnostic',
+                                                            'N/A' => 'Not Available',
+                                                        ];
+                                                
+                                                        return $services[$state] ?? 'N/A';
+                                                    })
+                                                    ->disabled(),
+                                                Forms\Components\TextInput::make("status_{$record->id}")
+                                                    ->label('Status')
+                                                    ->columnSpan(2)
+                                                    ->default($record->status)
+                                                    ->formatStateUsing(function ($state) {
+                                                        $statuses = [
+                                                            'completed' => 'Completed',
+                                                            'delivered' => 'Delivered',
+                                                            'picked-up' => 'Picked-up',
+                                                            'repair' => 'Repair',
+                                                            'pending' => 'Pending',
+                                                            'on-hold' => 'On-hold',
+                                                            'incoming' => 'Incoming',
+                                                            'returned' => 'Returned',
+                                                            'on-site' => 'On-site',
+                                                            'for sale' => 'For sale',
+                                                        ];
+                                                
+                                                        return $statuses[$state] ?? 'N/A';
+                                                    })
+                                                    ->disabled(),
                                                 Forms\Components\TextInput::make("make_{$record->id}")
                                                     ->label('Make')
+                                                    ->columnSpan(2)
                                                     ->default($record->make)
                                                     ->disabled(),
                                                 Forms\Components\TextInput::make("model_{$record->id}")
                                                     ->label('Model')
+                                                    ->columnSpan(2)
                                                     ->default($record->model)
                                                     ->disabled(),
                                                 Forms\Components\TextInput::make("description_{$record->id}")
                                                     ->label('Description')
+                                                    ->columnSpan(2)
                                                     ->default($record->description)
                                                     ->disabled(),
                                                 Forms\Components\TextInput::make("serial_{$record->id}")
                                                     ->label('Serial')
+                                                    ->columnSpan(2)
                                                     ->default($record->serial)
+                                                    ->disabled(),
+                                                Forms\Components\TextInput::make("transaction_id_{$record->id}")
+                                                    ->label('Transaction ID')
+                                                    ->columnSpan(2)
+                                                    ->default($record->transaction_id)
+                                                    ->disabled()
+                                                    ->dehydrated(),
+                                                Forms\Components\TextInput::make("code_range_{$record->id}")
+                                                    ->label('Code | Range')
+                                                    ->columnSpan(6)
+                                                    ->default($record->code_range)
                                                     ->disabled(),
                                                 ])
                                             ])
@@ -1166,7 +1223,8 @@ class EquipmentRelationManager extends RelationManager
                                                     ->native(false)
                                                     ->options([
                                                         'On-site fee' => 'On-site fee',
-                                                        'Delivery Charge' => 'Delivery Charge',
+                                                        'Delivery Fee' => 'Delivery Fee',
+                                                        'Expedite Fee' => 'Expedite Fee',
                                                         'other' => 'Other'
                                                     ])
                                                     ->createOptionForm([
@@ -1190,7 +1248,8 @@ class EquipmentRelationManager extends RelationManager
                                                         if (!$get('charge_type_options')) {
                                                             $set('charge_type_options', [
                                                                 'On-site fee' => 'On-site fee',
-                                                                'Delivery Charge' => 'Delivery Charge',
+                                                                'Delivery Fee' => 'Delivery Fee',
+                                                                'Expedite Fee' => 'Expedite Fee',
                                                                 'other' => 'Other'
                                                             ]);
                                                         }
@@ -1391,7 +1450,8 @@ class EquipmentRelationManager extends RelationManager
                                                 ->label('Charge Type')
                                                 ->options([
                                                     'On-site fee' => 'On-site fee',
-                                                    'Delivery Charge' => 'Delivery Charge',
+                                                    'Delivery Fee' => 'Delivery Fee',
+                                                    'Expedite Fee' => 'Expedite Fee',
                                                     'other' => 'Other'
                                                 ])
                                                 ->createOptionForm([
@@ -1417,7 +1477,8 @@ class EquipmentRelationManager extends RelationManager
                                                 ->options(function (callable $get) {
                                                     return $get('global_charge_type_options') ?? [
                                                         'On-site fee' => 'On-site fee',
-                                                        'Delivery Charge' => 'Delivery Charge',
+                                                        'Delivery Fee' => 'Delivery Fee',
+                                                        'Expedite Fee' => 'Expedite Fee',
                                                         'other' => 'Other'
                                                     ];
                                                 }),
