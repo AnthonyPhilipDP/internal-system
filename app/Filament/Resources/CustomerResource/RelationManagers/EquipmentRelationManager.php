@@ -1051,12 +1051,13 @@ class EquipmentRelationManager extends RelationManager
                                                         $subTotal = $quantity * $unitPrice;
                                                         $set("equipment_subtotal_{$record->id}", $subTotal);
                                                     
+                                                        $baseSubTotal = $baseUnitPrice * $quantity;
                                                         $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
-                                                        $lessAmount = $subTotal * ($lessPercentage / 100);
+                                                        $lessAmount = $baseSubTotal * ($lessPercentage / 100);
                                                         $set("less_amount_{$record->id}", $lessAmount);
                                                     
                                                         $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
-                                                        $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                        $chargeAmount = $baseSubTotal * ($chargePercentage / 100);
                                                         $set("charge_amount_{$record->id}", $chargeAmount);
                                                     
                                                         $lineTotal = $subTotal - $lessAmount + $chargeAmount;
@@ -1099,12 +1100,13 @@ class EquipmentRelationManager extends RelationManager
                                                         $subTotal = $quantity * $unitPrice;
                                                         $set("equipment_subtotal_{$record->id}", number_format($subTotal, 2, '.', ''));
                                                     
+                                                        $baseSubTotal = $baseUnitPrice * $quantity;
                                                         $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
-                                                        $lessAmount = $subTotal * ($lessPercentage / 100);
+                                                        $lessAmount = $baseSubTotal * ($lessPercentage / 100);
                                                         $set("less_amount_{$record->id}", number_format($lessAmount, 2, '.', ''));
                                                     
                                                         $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
-                                                        $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                        $chargeAmount = $baseSubTotal * ($chargePercentage / 100);
                                                         $set("charge_amount_{$record->id}", number_format($chargeAmount, 2, '.', ''));
                                                     
                                                         $lineTotal = $subTotal - $lessAmount + $chargeAmount;
@@ -1203,11 +1205,12 @@ class EquipmentRelationManager extends RelationManager
                                                         $subTotal = $quantity * $unitPrice;
                                                         $set("equipment_subtotal_{$record->id}",number_format($subTotal, 2, '.', ''));
                                                     
-                                                        $lessAmount = $subTotal * ($lessPercentage / 100);
+                                                        $baseSubTotal = $baseUnitPrice * $quantity;
+                                                        $lessAmount = $baseSubTotal * ($lessPercentage / 100);
                                                         $set("less_amount_{$record->id}", number_format($lessAmount, 2, '.', ''));
                                                     
                                                         $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
-                                                        $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                        $chargeAmount = $baseSubTotal * ($chargePercentage / 100);
                                                         $set("charge_amount_{$record->id}", number_format($chargeAmount, 2, '.', ''));
                                                     
                                                         $lineTotal = $subTotal - $lessAmount + $chargeAmount;
@@ -1299,11 +1302,12 @@ class EquipmentRelationManager extends RelationManager
                                                         $subTotal = $quantity * $unitPrice;
                                                         $set("equipment_subtotal_{$record->id}", number_format($subTotal, 2, '.', ''));
                                                     
+                                                        $baseSubTotal = $baseUnitPrice * $quantity;
                                                         $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
-                                                        $lessAmount = $subTotal * ($lessPercentage / 100);
+                                                        $lessAmount = $baseSubTotal * ($lessPercentage / 100);
                                                         $set("less_amount_{$record->id}", number_format($lessAmount, 2, '.', ''));
                                                     
-                                                        $chargeAmount = $subTotal * ($chargePercentage / 100);
+                                                        $chargeAmount = $baseSubTotal * ($chargePercentage / 100);
                                                         $set("charge_amount_{$record->id}", number_format($chargeAmount, 2, '.', ''));
                                                     
                                                         $lineTotal = $subTotal - $lessAmount + $chargeAmount;
@@ -1627,32 +1631,33 @@ class EquipmentRelationManager extends RelationManager
                                 ->reactive()
                                 ->columnSpan(1)
                                 ->inline(false)
-                                ->afterStateUpdated(function ($state, callable $set, callable $get) use ($record, $equipmentIds) {
-                                    $vatOnEquipment = $get('vatToggle');
-                                    $baseUnitPrice = (float) ($get("unit_price_{$record->id}") ?? 0);
-                                    $quantity = (float) ($get("quantity_{$record->id}") ?? 0);
-                                
-                                    // Always use base subtotal for less/charge
-                                    $baseSubTotal = $quantity * $baseUnitPrice;
-                                
-                                    // For display, apply VAT if toggle is on
-                                    $displayUnitPrice = $vatOnEquipment ? $baseUnitPrice * 1.12 : $baseUnitPrice;
-                                    $displaySubTotal = $quantity * $displayUnitPrice;
-                                    $set("equipment_subtotal_{$record->id}", number_format($displaySubTotal, 2, '.', ''));
-                                
-                                    // Less and charge always based on baseSubTotal
-                                    $lessPercentage = (float) ($get("less_percentage_{$record->id}") ?? 0);
-                                    $lessAmount = $baseSubTotal * ($lessPercentage / 100);
-                                    $set("less_amount_{$record->id}", number_format($lessAmount, 2, '.', ''));
-                                
-                                    $chargePercentage = (float) ($get("charge_percentage_{$record->id}") ?? 0);
-                                    $chargeAmount = $baseSubTotal * ($chargePercentage / 100);
-                                    $set("charge_amount_{$record->id}", number_format($chargeAmount, 2, '.', ''));
-                                
-                                    $lineTotal = $displaySubTotal + $chargeAmount - $lessAmount;
-                                    $set("line_total_{$record->id}", number_format($lineTotal, 2, '.', ''));
-                                
-                                    // --- Overall summary calculation (as before, using your business rule) ---
+                                ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
+                                    foreach ($equipmentIds as $id) {
+                                        $baseUnitPrice = (float) ($get("unit_price_{$id}") ?? 0);
+                                        $quantity = (float) ($get("quantity_{$id}") ?? 0);
+                            
+                                        // Always use base subtotal for less/charge
+                                        $baseSubTotal = $quantity * $baseUnitPrice;
+                            
+                                        // For display, apply VAT if toggle is on
+                                        $displayUnitPrice = $state ? $baseUnitPrice * 1.12 : $baseUnitPrice;
+                                        $displaySubTotal = $quantity * $displayUnitPrice;
+                                        $set("equipment_subtotal_{$id}", number_format($displaySubTotal, 2, '.', ''));
+                            
+                                        // Less and charge always based on baseSubTotal
+                                        $lessPercentage = (float) ($get("less_percentage_{$id}") ?? 0);
+                                        $lessAmount = $baseSubTotal * ($lessPercentage / 100);
+                                        $set("less_amount_{$id}", number_format($lessAmount, 2, '.', ''));
+                            
+                                        $chargePercentage = (float) ($get("charge_percentage_{$id}") ?? 0);
+                                        $chargeAmount = $baseSubTotal * ($chargePercentage / 100);
+                                        $set("charge_amount_{$id}", number_format($chargeAmount, 2, '.', ''));
+                            
+                                        $lineTotal = $displaySubTotal + $chargeAmount - $lessAmount;
+                                        $set("line_total_{$id}", number_format($lineTotal, 2, '.', ''));
+                                    }
+                            
+                                    // --- Overall summary calculation ---
                                     $overallSub = 0;
                                     $totalChargeAmount = 0;
                                     $totalLessAmount = 0;
@@ -1662,12 +1667,12 @@ class EquipmentRelationManager extends RelationManager
                                         $totalLessAmount += (float) ($get("less_amount_{$id}") ?? 0);
                                     }
                                     $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                    $set('vatAmount', $get('vatToggle') ? number_format(0, 2, '.', '') : number_format($overallSub * 0.12, 2, '.', ''));
+                                    $set('vatAmount', $state ? number_format(0, 2, '.', '') : number_format($overallSub * 0.12, 2, '.', ''));
                                     $set('global_charge_amount', number_format($totalChargeAmount, 2, '.', ''));
                                     $set('global_less_amount', number_format($totalLessAmount, 2, '.', ''));
-                                
+                            
                                     $total = $overallSub
-                                        + ($get('vatToggle') ? 0 : ($overallSub * 0.12))
+                                        + ($state ? 0 : ($overallSub * 0.12))
                                         + $totalChargeAmount
                                         - $totalLessAmount;
                                     $set('total', number_format($total, 2, '.', ''));
