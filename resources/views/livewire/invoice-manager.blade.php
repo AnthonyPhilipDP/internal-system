@@ -72,12 +72,12 @@
         @endphp
 
         @foreach ($items as $item)
-          @if ($item['less_percentage'] > 0)
+          @if ($item['less_amount'] > 0)
             @php
               $lessItems[] = $item['item_number'];
             @endphp
           @endif
-          @if ($item['charge_percentage'] > 0)
+          @if ($item['charge_amount'] > 0)
             @php
               $chargeItems[] = $item['item_number'];
             @endphp
