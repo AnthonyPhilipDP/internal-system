@@ -44,6 +44,7 @@ class InvoiceManager extends Component
                 'model'             => $equipment->model ?? '',
                 'description'       => $equipment->description ?? '',
                 'serial'            => $equipment->serial ?? '',
+                'equipment_id'            => $equipment->equipment_id ?? '',
             ];
         })->toArray();
     }

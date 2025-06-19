@@ -32,7 +32,13 @@
             <span class="px-[2px] text-start w-[20%] h-4 truncate">{{ $item['make'] }}</span>
             <span class="px-[2px] text-start w-[12.5%] h-4 truncate">{{ $item['model'] }}</span>
             <span class="px-[2px] text-start w-[28%] h-4 truncate">{{ $item['description'] }}</span>
-            <span class="px-[2px] text-start w-[16.5%] h-4 truncate">{{ $item['serial'] }}</span>
+            <span class="px-[2px] text-start w-[16.5%] h-4 truncate">
+              @if ($item['serial'] === 'N/A' || $item['serial'] === 'n/a' || $item['serial'] === '' || $item['serial'] === null)
+                {{ $item['equipment_id'] }}
+              @else
+                {{ $item['serial'] }}
+              @endif
+            </span>
             <span class="px-[2px] text-start w-[2%] h-4 truncate">{{ $item['quantity'] }}</span>
             <span class="px-[2px] text-end w-[8%] h-4 truncate">{{ $item['unit_price'] }}</span>
             <span class="px-[2px] text-end w-[8%] h-4 truncate">{{ $item['line_total'] }}</span>
