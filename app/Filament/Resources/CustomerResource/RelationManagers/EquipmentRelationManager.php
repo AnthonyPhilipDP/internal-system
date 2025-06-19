@@ -1063,18 +1063,27 @@ class EquipmentRelationManager extends RelationManager
                                                         $set("line_total_{$record->id}", $lineTotal);
                                                     
                                                         $overallSub = 0;
-                                                        $overallTotal = 0;
+                                                        $totalChargeAmount = 0;
+                                                        $totalLessAmount = 0;
                                                         foreach ($equipmentIds as $id) {
                                                             $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
-                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                            $totalChargeAmount += (float) ($get("charge_amount_{$id}") ?? 0);
+                                                            $totalLessAmount += (float) ($get("less_amount_{$id}") ?? 0);
                                                         }
+
+                                                        // Set subtotal and VAT
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
-                                                    
-                                                        $total = $overallTotal;
-                                                        if (!$get('vatToggle')) {
-                                                            $total = $total * 1.12;
-                                                        }
+                                                        $set('vatAmount', $get('vatToggle') ? number_format(0, 2, '.', '') : number_format($overallSub * 0.12, 2, '.', ''));
+
+                                                        // Set global less/charge amounts
+                                                        $set('global_charge_amount', number_format($totalChargeAmount, 2, '.', ''));
+                                                        $set('global_less_amount', number_format($totalLessAmount, 2, '.', ''));
+
+                                                        // Calculate and set total
+                                                        $total = $overallSub
+                                                            + ($get('vatToggle') ? 0 : ($overallSub * 0.12))
+                                                            + $totalChargeAmount
+                                                            - $totalLessAmount;
                                                         $set('total', number_format($total, 2, '.', ''));
                                                     }),
                                                 Forms\Components\TextInput::make("unit_price_{$record->id}")
@@ -1102,18 +1111,27 @@ class EquipmentRelationManager extends RelationManager
                                                         $set("line_total_{$record->id}", number_format($lineTotal, 2, '.', ''));
                                                     
                                                         $overallSub = 0;
-                                                        $overallTotal = 0;
+                                                        $totalChargeAmount = 0;
+                                                        $totalLessAmount = 0;
                                                         foreach ($equipmentIds as $id) {
                                                             $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
-                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                            $totalChargeAmount += (float) ($get("charge_amount_{$id}") ?? 0);
+                                                            $totalLessAmount += (float) ($get("less_amount_{$id}") ?? 0);
                                                         }
+
+                                                        // Set subtotal and VAT
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
-                                                    
-                                                        $total = $overallTotal;
-                                                        if (!$get('vatToggle')) {
-                                                            $total = $total * 1.12;
-                                                        }
+                                                        $set('vatAmount', $get('vatToggle') ? number_format(0, 2, '.', '') : number_format($overallSub * 0.12, 2, '.', ''));
+
+                                                        // Set global less/charge amounts
+                                                        $set('global_charge_amount', number_format($totalChargeAmount, 2, '.', ''));
+                                                        $set('global_less_amount', number_format($totalLessAmount, 2, '.', ''));
+
+                                                        // Calculate and set total
+                                                        $total = $overallSub
+                                                            + ($get('vatToggle') ? 0 : ($overallSub * 0.12))
+                                                            + $totalChargeAmount
+                                                            - $totalLessAmount;
                                                         $set('total', number_format($total, 2, '.', ''));
                                                     }),
                                                 Forms\Components\TextInput::make("equipment_subtotal_{$record->id}")
@@ -1196,18 +1214,27 @@ class EquipmentRelationManager extends RelationManager
                                                         $set("line_total_{$record->id}", number_format($lineTotal, 2, '.', ''));
                                                     
                                                         $overallSub = 0;
-                                                        $overallTotal = 0;
+                                                        $totalChargeAmount = 0;
+                                                        $totalLessAmount = 0;
                                                         foreach ($equipmentIds as $id) {
                                                             $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
-                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                            $totalChargeAmount += (float) ($get("charge_amount_{$id}") ?? 0);
+                                                            $totalLessAmount += (float) ($get("less_amount_{$id}") ?? 0);
                                                         }
+
+                                                        // Set subtotal and VAT
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
-                                                    
-                                                        $total = $overallTotal;
-                                                        if (!$get('vatToggle')) {
-                                                            $total = $total * 1.12;
-                                                        }
+                                                        $set('vatAmount', $get('vatToggle') ? number_format(0, 2, '.', '') : number_format($overallSub * 0.12, 2, '.', ''));
+
+                                                        // Set global less/charge amounts
+                                                        $set('global_charge_amount', number_format($totalChargeAmount, 2, '.', ''));
+                                                        $set('global_less_amount', number_format($totalLessAmount, 2, '.', ''));
+
+                                                        // Calculate and set total
+                                                        $total = $overallSub
+                                                            + ($get('vatToggle') ? 0 : ($overallSub * 0.12))
+                                                            + $totalChargeAmount
+                                                            - $totalLessAmount;
                                                         $set('total', number_format($total, 2, '.', ''));
                                                     }),
                                                 Forms\Components\TextInput::make("less_amount_{$record->id}")
@@ -1283,18 +1310,27 @@ class EquipmentRelationManager extends RelationManager
                                                         $set("line_total_{$record->id}", number_format($lineTotal, 2, '.', ''));
                                                     
                                                         $overallSub = 0;
-                                                        $overallTotal = 0;
+                                                        $totalChargeAmount = 0;
+                                                        $totalLessAmount = 0;
                                                         foreach ($equipmentIds as $id) {
                                                             $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
-                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
+                                                            $totalChargeAmount += (float) ($get("charge_amount_{$id}") ?? 0);
+                                                            $totalLessAmount += (float) ($get("less_amount_{$id}") ?? 0);
                                                         }
+
+                                                        // Set subtotal and VAT
                                                         $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
-                                                    
-                                                        $total = $overallTotal;
-                                                        if (!$get('vatToggle')) {
-                                                            $total = $total * 1.12;
-                                                        }
+                                                        $set('vatAmount', $get('vatToggle') ? number_format(0, 2, '.', '') : number_format($overallSub * 0.12, 2, '.', ''));
+
+                                                        // Set global less/charge amounts
+                                                        $set('global_charge_amount', number_format($totalChargeAmount, 2, '.', ''));
+                                                        $set('global_less_amount', number_format($totalLessAmount, 2, '.', ''));
+
+                                                        // Calculate and set total
+                                                        $total = $overallSub
+                                                            + ($get('vatToggle') ? 0 : ($overallSub * 0.12))
+                                                            + $totalChargeAmount
+                                                            - $totalLessAmount;
                                                         $set('total', number_format($total, 2, '.', ''));
                                                     }),
                                                 Forms\Components\TextInput::make("charge_amount_{$record->id}")
@@ -1613,19 +1649,28 @@ class EquipmentRelationManager extends RelationManager
                             
                                     // Update overall subtotal and total
                                     $overallSub = 0;
-                                    $overallTotal = 0;
-                                    foreach ($equipmentIds as $id) {
-                                        $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
-                                        $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
-                                    }
-                                    $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                    $set('vatAmount', $get('vatToggle') ? number_format(0, 2, '.', '') : number_format($overallSub * 0.12, 2, '.', ''));
-                            
-                                    $total = $overallTotal;
-                                    if (!$state) {
-                                        $total = $total * 1.12;
-                                    }
-                                    $set('total', number_format($total, 2, '.', ''));
+$totalChargeAmount = 0;
+$totalLessAmount = 0;
+foreach ($equipmentIds as $id) {
+    $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
+    $totalChargeAmount += (float) ($get("charge_amount_{$id}") ?? 0);
+    $totalLessAmount += (float) ($get("less_amount_{$id}") ?? 0);
+}
+
+// Set subtotal and VAT
+$set('subTotal', number_format($overallSub, 2, '.', ''));
+$set('vatAmount', $state ? number_format(0, 2, '.', '') : number_format($overallSub * 0.12, 2, '.', ''));
+
+// Set global less/charge amounts
+$set('global_charge_amount', number_format($totalChargeAmount, 2, '.', ''));
+$set('global_less_amount', number_format($totalLessAmount, 2, '.', ''));
+
+// Calculate and set total
+$total = $overallSub
+    + ($state ? 0 : ($overallSub * 0.12))
+    + $totalChargeAmount
+    - $totalLessAmount;
+$set('total', number_format($total, 2, '.', ''));
                                 }),
                                 Forms\Components\TextInput::make('vatAmount')
                                 ->label('VAT Amount')
