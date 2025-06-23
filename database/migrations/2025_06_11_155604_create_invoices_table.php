@@ -39,6 +39,10 @@ return new class extends Migration
             $table->string('global_charge_type')->nullable();
             $table->string('global_charge_percentage')->nullable();
             $table->string('global_charge_amount')->nullable();
+
+            $table->boolean('applyEwt')->default(false);
+            $table->string('ewt_percentage')->nullable();
+            $table->string('ewt_amount')->nullable();
             
             $table->boolean('vatToggle')->default(false); // Vat Inclusive
             $table->string('vatAmount')->nullable();

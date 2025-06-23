@@ -17,6 +17,7 @@ class Invoice extends Model
 
     protected $casts = [
         'applyToAll' => 'boolean',
+        'applyEwt' => 'boolean',
         'vatToggle' => 'boolean',
     ];
     

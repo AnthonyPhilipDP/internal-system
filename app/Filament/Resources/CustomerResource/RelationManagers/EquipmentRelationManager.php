@@ -1420,6 +1420,7 @@ class EquipmentRelationManager extends RelationManager
                                 'class' => 'bg-yellow-50'
                             ])
                             ->schema([
+                                // Apply to all
                                 Forms\Components\Grid::make(2)
                                 ->schema([
                                     Forms\Components\Toggle::make('applyToAll')
@@ -1471,39 +1472,38 @@ class EquipmentRelationManager extends RelationManager
                                                 ->default('0.00')
                                                 ->reactive()
                                                 ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
-                                                    if ($get('applyToAll')) {
-                                                        foreach ($equipmentIds as $id) {
-                                                            $set("less_percentage_{$id}", $state);
+                                                    $subTotal = (float) ($get('subTotal') ?? 0);
+                                                    $lessAmount = $subTotal * ((float) $state / 100);
+                                                    $set('global_less_amount', number_format($lessAmount, 2, '.', ''));
                                             
-                                                            // Recalculate for each equipment
-                                                            $quantity = (float) ($get("quantity_{$id}") ?? 0);
-                                                            $unitPrice = (float) ($get("unit_price_{$id}") ?? 0);
-                                                            $subTotal = $quantity * $unitPrice;
-                                                            $lessAmount = $subTotal * ((float) $state / 100);
-                                                            $set("less_amount_{$id}", $lessAmount);
+                                                    // Update each equipment's line_total to reflect the global less percentage
+                                                    foreach ($equipmentIds as $id) {
+                                                        $baseUnitPrice = (float) ($get("unit_price_{$id}") ?? 0);
+                                                        $quantity = (float) ($get("quantity_{$id}") ?? 0);
+                                                        $baseSubTotal = $baseUnitPrice * $quantity;
                                             
-                                                            $chargePercentage = (float) ($get("charge_percentage_{$id}") ?? 0);
-                                                            $chargeAmount = $subTotal * ($chargePercentage / 100);
-                                                            $set("charge_amount_{$id}", $chargeAmount);
+                                                        // Calculate less_amount for this equipment (proportional to its base subtotal)
+                                                        $itemLessAmount = $baseSubTotal * ((float) $state / 100);
+                                                        $set("less_amount_{$id}", number_format($itemLessAmount, 2, '.', ''));
                                             
-                                                            $lineTotal = $subTotal - $lessAmount + $chargeAmount;
-                                                            $set("line_total_{$id}", number_format($lineTotal, 2, '.', ''));
-                                                        }
+                                                        $chargeAmount = (float) ($get("charge_amount_{$id}") ?? 0);
+                                                        $vatOnEquipment = $get('vatToggle');
+                                                        $displayUnitPrice = $vatOnEquipment ? $baseUnitPrice * 1.12 : $baseUnitPrice;
+                                                        $displaySubTotal = $quantity * $displayUnitPrice;
                                             
-                                                        // Update overall subtotal and total
-                                                        $overallSub = 0;
-                                                        $overallTotal = 0;
-                                                        $globalLessAmount = 0;
-                                                        foreach ($equipmentIds as $id) {
-                                                            $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
-                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
-                                                            $globalLessAmount += (float) ($get("less_amount_{$id}") ?? 0);
-                                                        }
-                                                        $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
-                                                        $set('total', number_format($overallTotal, 2, '.', ''));
-                                                        $set('global_less_amount' ,number_format($globalLessAmount, 2, '.', ''));
+                                                        $lineTotal = $displaySubTotal + $chargeAmount - $itemLessAmount;
+                                                        $set("line_total_{$id}", number_format($lineTotal, 2, '.', ''));
                                                     }
+                                            
+                                                    // Update total
+                                                    $vatAmount = (float) ($get('vatAmount') ?? 0);
+                                                    $globalChargeAmount = (float) ($get('global_charge_amount') ?? 0);
+                                            
+                                                    $total = $subTotal
+                                                        + $vatAmount
+                                                        + $globalChargeAmount
+                                                        - $lessAmount;
+                                                    $set('total', number_format($total, 2, '.', ''));
                                                 }),
 
                                             Forms\Components\TextInput::make('global_less_amount')
@@ -1582,41 +1582,42 @@ class EquipmentRelationManager extends RelationManager
                                                 ->default('0.00')
                                                 ->reactive()
                                                 ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
-                                                    if ($get('applyToAll')) {
-                                                        foreach ($equipmentIds as $id) {
-                                                            $set("charge_percentage_{$id}", $state);
+                                                    $subTotal = (float) ($get('subTotal') ?? 0);
                                             
-                                                            // Recalculate for each equipment
-                                                            $quantity = (float) ($get("quantity_{$id}") ?? 0);
-                                                            $unitPrice = (float) ($get("unit_price_{$id}") ?? 0);
-                                                            $subTotal = $quantity * $unitPrice;
+                                                    // Update each equipment's charge_amount and line_total to reflect the global charge percentage
+                                                    foreach ($equipmentIds as $id) {
+                                                        $baseUnitPrice = (float) ($get("unit_price_{$id}") ?? 0);
+                                                        $quantity = (float) ($get("quantity_{$id}") ?? 0);
+                                                        $baseSubTotal = $baseUnitPrice * $quantity;
                                             
-                                                            $lessPercentage = (float) ($get("less_percentage_{$id}") ?? 0);
-                                                            $lessAmount = $subTotal * ($lessPercentage / 100);
-                                                            $set("less_amount_{$id}", $lessAmount);
+                                                        // Calculate charge_amount for this equipment (proportional to its base subtotal)
+                                                        $itemChargeAmount = $baseSubTotal * ((float) $state / 100);
+                                                        $set("charge_amount_{$id}", number_format($itemChargeAmount, 2, '.', ''));
                                             
-                                                            $chargePercentage = (float) $state;
-                                                            $chargeAmount = $subTotal * ($chargePercentage / 100);
-                                                            $set("charge_amount_{$id}", $chargeAmount);
+                                                        $lessAmount = (float) ($get("less_amount_{$id}") ?? 0);
+                                                        $vatOnEquipment = $get('vatToggle');
+                                                        $displayUnitPrice = $vatOnEquipment ? $baseUnitPrice * 1.12 : $baseUnitPrice;
+                                                        $displaySubTotal = $quantity * $displayUnitPrice;
                                             
-                                                            $lineTotal = $subTotal - $lessAmount + $chargeAmount;
-                                                            $set("line_total_{$id}", number_format($lineTotal, 2, '.', ''));
-                                                        }
-                                            
-                                                        // Update overall subtotal and total
-                                                        $overallSub = 0;
-                                                        $overallTotal = 0;
-                                                        $globalChargeAmount = 0;
-                                                        foreach ($equipmentIds as $id) {
-                                                            $overallSub += (float) ($get("equipment_subtotal_{$id}") ?? 0);
-                                                            $overallTotal += (float) ($get("line_total_{$id}") ?? 0);
-                                                            $globalChargeAmount += (float) ($get("charge_amount_{$id}") ?? 0);
-                                                        }
-                                                        $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                                        $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
-                                                        $set('total', number_format($overallTotal, 2, '.', ''));
-                                                        $set('global_charge_amount', number_format($globalChargeAmount, 2, '.', ''));
+                                                        $lineTotal = $displaySubTotal + $itemChargeAmount - $lessAmount;
+                                                        $set("line_total_{$id}", number_format($lineTotal, 2, '.', ''));
                                                     }
+                                            
+                                                    // Update summary fields
+                                                    $vatAmount = (float) ($get('vatAmount') ?? 0);
+                                                    $globalLessAmount = (float) ($get('global_less_amount') ?? 0);
+                                            
+                                                    $totalChargeAmount = 0;
+                                                    foreach ($equipmentIds as $id) {
+                                                        $totalChargeAmount += (float) ($get("charge_amount_{$id}") ?? 0);
+                                                    }
+                                                    $set('global_charge_amount', number_format($totalChargeAmount, 2, '.', ''));
+                                            
+                                                    $total = $subTotal
+                                                        + $vatAmount
+                                                        + $totalChargeAmount
+                                                        - $globalLessAmount;
+                                                    $set('total', number_format($total, 2, '.', ''));
                                                 }),
 
                                             Forms\Components\TextInput::make('global_charge_amount')
@@ -1644,6 +1645,71 @@ class EquipmentRelationManager extends RelationManager
                                                 }),
                                             ])->columns(4)
                                         ])->visible(fn (callable $get) => $get('applyToAll')),
+                                ]),
+
+                                // Apply EWT
+                                Forms\Components\Grid::make(2)
+                                ->schema([
+                                    Forms\Components\Toggle::make('applyEwt')
+                                        ->label('Apply EWT')
+                                        ->columnSpan(2)
+                                        ->reactive(),
+                                    Forms\Components\Group::make([
+                                        Forms\Components\Fieldset::make('Less')
+                                        ->schema([
+                                            Forms\Components\TextInput::make('ewt_percentage')
+                                                ->columnSpan(1)
+                                                ->label('EWT (%)')
+                                                ->numeric()
+                                                ->default('0.00')
+                                                ->reactive()
+                                                ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                    $subTotal = (float) ($get('subTotal') ?? 0);
+                                                    $ewtAmount = $subTotal * ((float) $state / 100);
+                                                    $set('ewt_amount', number_format($ewtAmount, 2, '.', ''));
+                                            
+                                                    // Update total
+                                                    $vatAmount = (float) ($get('vatAmount') ?? 0);
+                                                    $globalChargeAmount = (float) ($get('global_charge_amount') ?? 0);
+                                                    $globalLessAmount = (float) ($get('global_less_amount') ?? 0);
+                                            
+                                                    $total = $subTotal
+                                                        + $vatAmount
+                                                        + $globalChargeAmount
+                                                        - $globalLessAmount
+                                                        - $ewtAmount;
+                                                    $set('total', number_format($total, 2, '.', ''));
+                                                }),
+
+                                            Forms\Components\TextInput::make('ewt_amount')
+                                                ->columnSpan(1)
+                                                ->label('EWT Amount')
+                                                ->numeric()
+                                                ->default('0.00')
+                                                ->reactive()
+                                                ->afterStateHydrated(function (callable $set, callable $get) {
+                                                    $subTotal = (float) ($get('subTotal') ?? 0);
+                                                    $ewtPercentage = (float) ($get('ewt_percentage') ?? 0);
+                                                    $ewtAmount = $subTotal * ($ewtPercentage / 100);
+                                                    $set('ewt_amount', number_format($ewtAmount, 2, '.', ''));
+                                                })
+                                                ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                    // When EWT amount is changed directly, update the total
+                                                    $ewtAmount = (float) $state;
+                                                    $subTotal = (float) ($get('subTotal') ?? 0);
+                                                    $vatAmount = (float) ($get('vatAmount') ?? 0);
+                                                    $globalChargeAmount = (float) ($get('global_charge_amount') ?? 0);
+                                                    $globalLessAmount = (float) ($get('global_less_amount') ?? 0);
+                                            
+                                                    $total = $subTotal
+                                                        + $vatAmount
+                                                        + $globalChargeAmount
+                                                        - $globalLessAmount
+                                                        - $ewtAmount;
+                                                    $set('total', number_format($total, 2, '.', ''));
+                                                }),
+                                            ])->columns(4)
+                                        ])->visible(fn (callable $get) => $get('applyEwt')),
                                 ]),
                                 Forms\Components\Textarea::make('comments')
                                 ->label('Comments')
@@ -1735,7 +1801,8 @@ class EquipmentRelationManager extends RelationManager
                                     $total = $overallSub
                                         + ($state ? 0 : ($overallSub * 0.12))
                                         + $totalChargeAmount
-                                        - $totalLessAmount;
+                                        - $totalLessAmount
+                                        - $get('ewt_amount');
                                     $set('total', number_format($total, 2, '.', ''));
                                 }),
                                 Forms\Components\TextInput::make('vatAmount')
@@ -1777,6 +1844,9 @@ class EquipmentRelationManager extends RelationManager
                             'global_charge_type'  => $data['global_charge_type'] ?? null,
                             'global_charge_percentage'  => $data['global_charge_percentage'] ?? null,
                             'global_charge_amount'  => $data['global_charge_amount'] ?? null,
+                            'applyEwt'  => $data['applyEwt'] ?? false,
+                            'ewt_percentage'  => $data['ewt_percentage'] ?? null,
+                            'ewt_amount'  => $data['ewt_amount'] ?? null,
                         ]);
                 
                         // 2. Loop through each equipment and create invoice items

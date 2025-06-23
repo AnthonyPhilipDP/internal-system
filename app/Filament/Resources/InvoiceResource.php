@@ -713,37 +713,43 @@ class InvoiceResource extends Resource
                                     ->default('0.00')
                                     ->reactive()
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                        if ($get('applyToAll')) {
-                                            $items = $get('items') ?? [];
-                                            $overallSub = 0;
-                                            $overallTotal = 0;
-                                            $globalLessAmount = 0;
-                                            foreach ($items as $index => $item) {
-                                                $set("items.{$index}.less_percentage", $state);
+                                        $items = $get('items') ?? [];
+                                        $subTotal = (float) ($get('subTotal') ?? 0);
                                 
-                                                // Recalculate for each item
-                                                $quantity = (float) ($item['quantity'] ?? 0);
-                                                $unitPrice = (float) ($item['unit_price'] ?? 0);
-                                                $subTotal = $quantity * $unitPrice;
-                                                $lessAmount = $subTotal * ((float) $state / 100);
-                                                $set("items.{$index}.less_amount", number_format($lessAmount, 2, '.', ''));
+                                        // Update each item's less_amount and line_total to reflect the global less percentage
+                                        foreach ($items as $index => $item) {
+                                            $baseUnitPrice = (float) ($item['unit_price'] ?? 0);
+                                            $quantity = (float) ($item['quantity'] ?? 0);
+                                            $baseSubTotal = $baseUnitPrice * $quantity;
                                 
-                                                $chargePercentage = (float) ($item['charge_percentage'] ?? 0);
-                                                $chargeAmount = $subTotal * ($chargePercentage / 100);
-                                                $set("items.{$index}.charge_amount", number_format($chargeAmount, 2, '.', ''));
+                                            // Calculate less_amount for this item (proportional to its base subtotal)
+                                            $itemLessAmount = $baseSubTotal * ((float) $state / 100);
+                                            $set("items.{$index}.less_amount", number_format($itemLessAmount, 2, '.', ''));
                                 
-                                                $lineTotal = $subTotal - $lessAmount + $chargeAmount;
-                                                $set("items.{$index}.line_total", number_format($lineTotal, 2, '.', ''));
+                                            $chargeAmount = (float) ($item['charge_amount'] ?? 0);
+                                            $vatOnEquipment = $get('vatToggle');
+                                            $displayUnitPrice = $vatOnEquipment ? $baseUnitPrice * 1.12 : $baseUnitPrice;
+                                            $displaySubTotal = $quantity * $displayUnitPrice;
                                 
-                                                $overallSub += (float) ($item['equipment_subtotal'] ?? 0);
-                                                $overallTotal += $lineTotal;
-                                                $globalLessAmount += $lessAmount;
-                                            }
-                                            $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                            $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
-                                            $set('total', number_format($overallTotal, 2, '.', ''));
-                                            $set('global_less_amount', number_format($globalLessAmount, 2, '.', ''));
+                                            $lineTotal = $displaySubTotal + $chargeAmount - $itemLessAmount;
+                                            $set("items.{$index}.line_total", number_format($lineTotal, 2, '.', ''));
                                         }
+                                
+                                        // Update summary fields
+                                        $vatAmount = (float) ($get('vatAmount') ?? 0);
+                                        $globalChargeAmount = (float) ($get('global_charge_amount') ?? 0);
+                                
+                                        $totalLessAmount = 0;
+                                        foreach ($items as $index => $item) {
+                                            $totalLessAmount += (float) ($get("items.{$index}.less_amount") ?? 0);
+                                        }
+                                        $set('global_less_amount', number_format($totalLessAmount, 2, '.', ''));
+                                
+                                        $total = $subTotal
+                                            + $vatAmount
+                                            + $globalChargeAmount
+                                            - $totalLessAmount;
+                                        $set('total', number_format($total, 2, '.', ''));
                                     }),
 
                                 Components\TextInput::make('global_less_amount')
@@ -825,39 +831,43 @@ class InvoiceResource extends Resource
                                     ->default('0.00')
                                     ->reactive()
                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                        if ($get('applyToAll')) {
-                                            $items = $get('items') ?? [];
-                                            $overallSub = 0;
-                                            $overallTotal = 0;
-                                            $globalChargeAmount = 0;
-                                            foreach ($items as $index => $item) {
-                                                $set("items.{$index}.charge_percentage", $state);
+                                        $items = $get('items') ?? [];
+                                        $subTotal = (float) ($get('subTotal') ?? 0);
                                 
-                                                // Recalculate for each item
-                                                $quantity = (float) ($item['quantity'] ?? 0);
-                                                $unitPrice = (float) ($item['unit_price'] ?? 0);
-                                                $subTotal = $quantity * $unitPrice;
+                                        // Update each item's charge_amount and line_total to reflect the global charge percentage
+                                        foreach ($items as $index => $item) {
+                                            $baseUnitPrice = (float) ($item['unit_price'] ?? 0);
+                                            $quantity = (float) ($item['quantity'] ?? 0);
+                                            $baseSubTotal = $baseUnitPrice * $quantity;
                                 
-                                                $lessPercentage = (float) ($item['less_percentage'] ?? 0);
-                                                $lessAmount = $subTotal * ($lessPercentage / 100);
-                                                $set("items.{$index}.less_amount", number_format($lessAmount, 2, '.', ''));
+                                            // Calculate charge_amount for this item (proportional to its base subtotal)
+                                            $itemChargeAmount = $baseSubTotal * ((float) $state / 100);
+                                            $set("items.{$index}.charge_amount", number_format($itemChargeAmount, 2, '.', ''));
                                 
-                                                $chargePercentage = (float) $state;
-                                                $chargeAmount = $subTotal * ($chargePercentage / 100);
-                                                $set("items.{$index}.charge_amount", number_format($chargeAmount, 2, '.', ''));
+                                            $lessAmount = (float) ($item['less_amount'] ?? 0);
+                                            $vatOnEquipment = $get('vatToggle');
+                                            $displayUnitPrice = $vatOnEquipment ? $baseUnitPrice * 1.12 : $baseUnitPrice;
+                                            $displaySubTotal = $quantity * $displayUnitPrice;
                                 
-                                                $lineTotal = $subTotal - $lessAmount + $chargeAmount;
-                                                $set("items.{$index}.line_total", number_format($lineTotal, 2, '.', ''));
-                                
-                                                $overallSub += (float) ($item['equipment_subtotal'] ?? 0);
-                                                $overallTotal += $lineTotal;
-                                                $globalChargeAmount += $chargeAmount;
-                                            }
-                                            $set('subTotal', number_format($overallSub, 2, '.', ''));
-                                            $set('vatAmount', number_format($overallSub * 0.12, 2, '.', ''));
-                                            $set('total', number_format($overallTotal, 2, '.', ''));
-                                            $set('global_charge_amount', number_format($globalChargeAmount, 2, '.', ''));
+                                            $lineTotal = $displaySubTotal + $itemChargeAmount - $lessAmount;
+                                            $set("items.{$index}.line_total", number_format($lineTotal, 2, '.', ''));
                                         }
+                                
+                                        // Update summary fields
+                                        $vatAmount = (float) ($get('vatAmount') ?? 0);
+                                        $globalLessAmount = (float) ($get('global_less_amount') ?? 0);
+                                
+                                        $totalChargeAmount = 0;
+                                        foreach ($items as $index => $item) {
+                                            $totalChargeAmount += (float) ($get("items.{$index}.charge_amount") ?? 0);
+                                        }
+                                        $set('global_charge_amount', number_format($totalChargeAmount, 2, '.', ''));
+                                
+                                        $total = $subTotal
+                                            + $vatAmount
+                                            + $totalChargeAmount
+                                            - $globalLessAmount;
+                                        $set('total', number_format($total, 2, '.', ''));
                                     }),
 
                                 Components\TextInput::make('global_charge_amount')
@@ -888,6 +898,69 @@ class InvoiceResource extends Resource
                                     }),
                             ])->columns(4)
                         ])->visible(fn (callable $get) => $get('applyToAll')),
+                    ]),
+                    Components\Grid::make(2)
+                    ->schema([
+                        Components\Toggle::make('applyEwt')
+                            ->label('Apply EWT')
+                            ->columnSpan(2)
+                            ->reactive(),
+                        Components\Group::make([
+                            Components\Fieldset::make('Less')
+                            ->schema([
+                                Components\TextInput::make('ewt_percentage')
+                                    ->columnSpan(1)
+                                    ->label('Less (%)')
+                                    ->numeric()
+                                    ->default('0.00')
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        $subTotal = (float) ($get('subTotal') ?? 0);
+                                        $ewtAmount = $subTotal * ((float) $state / 100);
+                                        $set('ewt_amount', number_format($ewtAmount, 2, '.', ''));
+                                
+                                        // Update total
+                                        $vatAmount = (float) ($get('vatAmount') ?? 0);
+                                        $globalChargeAmount = (float) ($get('global_charge_amount') ?? 0);
+                                        $globalLessAmount = (float) ($get('global_less_amount') ?? 0);
+                                
+                                        $total = $subTotal
+                                            + $vatAmount
+                                            + $globalChargeAmount
+                                            - $globalLessAmount
+                                            - $ewtAmount;
+                                        $set('total', number_format($total, 2, '.', ''));
+                                    }),
+
+                                Components\TextInput::make('ewt_amount')
+                                    ->columnSpan(1)
+                                    ->label('Less Amount')
+                                    ->numeric()
+                                    ->default('0.00')
+                                    ->reactive()
+                                    ->afterStateHydrated(function (callable $set, callable $get) {
+                                        $subTotal = (float) ($get('subTotal') ?? 0);
+                                        $ewtPercentage = (float) ($get('ewt_percentage') ?? 0);
+                                        $ewtAmount = $subTotal * ($ewtPercentage / 100);
+                                        $set('ewt_amount', number_format($ewtAmount, 2, '.', ''));
+                                    })
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        // When EWT amount is changed directly, update the total
+                                        $ewtAmount = (float) $state;
+                                        $subTotal = (float) ($get('subTotal') ?? 0);
+                                        $vatAmount = (float) ($get('vatAmount') ?? 0);
+                                        $globalChargeAmount = (float) ($get('global_charge_amount') ?? 0);
+                                        $globalLessAmount = (float) ($get('global_less_amount') ?? 0);
+                                
+                                        $total = $subTotal
+                                            + $vatAmount
+                                            + $globalChargeAmount
+                                            - $globalLessAmount
+                                            - $ewtAmount;
+                                        $set('total', number_format($total, 2, '.', ''));
+                                    }),
+                                ])->columns(4)
+                            ])->visible(fn (callable $get) => $get('applyEwt')),
                     ]),
                     Components\Textarea::make('comments')
                         ->label('Comments')
@@ -981,7 +1054,8 @@ class InvoiceResource extends Resource
                             $total = $overallSub
                                 + ($state ? 0 : ($overallSub * 0.12))
                                 + $totalChargeAmount
-                                - $totalLessAmount;
+                                - $totalLessAmount
+                                - $get('ewt_amount');
                             $set('total', number_format($total, 2, '.', ''));
                         }),
                     Components\TextInput::make('vatAmount')
