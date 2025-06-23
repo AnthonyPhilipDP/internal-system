@@ -43,6 +43,7 @@ return new class extends Migration
             $table->boolean('applyEwt')->default(false);
             $table->string('ewt_percentage')->nullable();
             $table->string('ewt_amount')->nullable();
+            $table->boolean('showEwt')->default(false);
             
             $table->boolean('vatToggle')->default(false); // Vat Inclusive
             $table->string('vatAmount')->nullable();

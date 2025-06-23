@@ -161,6 +161,12 @@
             <span>12% VAT</span>
             <span>{{ $invoice['vatToggle'] ? 'VAT EXEMPTED' : $invoice['vatAmount'] }}</span>
           </div>
+          @if ($invoice->showEwt && $invoice->ewt_amount > 0)
+            <div class="flex flex-row justify-between gap-x-8">
+              <span>Less: EWT</span>
+              <span>{{ $invoice->ewt_amount ?? $invoice->ewt_amount }}</span>
+            </div>
+          @endif
         </div>
         <div class="flex flex-row justify-between">
           <span></span>

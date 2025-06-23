@@ -1158,6 +1158,9 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('comments')
                     ->wrap()
                     ->default('No Comment'),
+
+                Tables\Columns\ToggleColumn::make('showEwt')
+                    ->label('Show EWT')
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
