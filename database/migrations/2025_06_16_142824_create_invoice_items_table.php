@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('item_number')->nullable();
             $table->integer('quantity')->default(1);
             $table->string('unit_price')->nullable();
+            $table->string('equipment_subtotal')->nullable();
             $table->string('less_type')->nullable();
             $table->string('less_percentage')->nullable();
             $table->string('less_amount')->nullable();
