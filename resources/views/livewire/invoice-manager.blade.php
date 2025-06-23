@@ -49,19 +49,37 @@
         <div class="flex flex-col">
           <div class="grid grid-cols-3 gap-x-6">
             <div class="flex flex-col col-span-1 text-end">
-              <span>Less Breakdown:</span>
-              <span>Charges Breakdown:</span>
-              <span>Remarks Breakdown:</span>
+              @if ($invoice->global_less_percentage > 0 || $invoice->global_less_amount > 0)
+                <span>Less Breakdown:</span>
+              @endif
+              @if ($invoice->global_charge_percentage > 0 || $invoice->global_charge_amount > 0)
+                <span>Charges Breakdown:</span>
+              @endif
+              @if (!empty($invoice->comments))
+                <span>Remarks Breakdown:</span>
+              @endif
             </div>
             <div class="flex flex-col col-span-1">
-              <span>{{ $invoice->global_less_percentage . '% ' }}{{ $invoice->global_less_type . ' for all items' }}</span>
-              <span>{{ $invoice->global_charge_percentage . '% ' }}{{ $invoice->global_charge_type . ' for all items' }}</span>
-              <span>{{ $invoice->comments }}</span>
+              @if ($invoice->global_less_percentage > 0 || $invoice->global_less_amount > 0)
+                <span>{{ $invoice->global_less_percentage . '% ' }}{{ $invoice->global_less_type . ' for all items' }}</span>
+              @endif
+              @if ($invoice->global_charge_percentage > 0 || $invoice->global_charge_amount > 0)
+                <span>{{ $invoice->global_charge_percentage . '% ' }}{{ $invoice->global_charge_type . ' for all items' }}</span>
+              @endif
+              @if (!empty($invoice->comments))
+                <span>{{ $invoice->comments }}</span>
+              @endif
             </div>
             <div class="flex flex-col col-span-1 text-end">
-              <span>{{ $invoice->global_less_amount }}</span>
-              <span>{{ $invoice->global_charge_amount }}</span>
-              <span></span>
+              @if ($invoice->global_less_percentage > 0 || $invoice->global_less_amount > 0)
+                <span>{{ $invoice->global_less_amount }}</span>
+              @endif
+              @if ($invoice->global_charge_percentage > 0 || $invoice->global_charge_amount > 0)
+                <span>{{ $invoice->global_charge_amount }}</span>
+              @endif
+              @if (!empty($invoice->comments))
+                <span></span>
+              @endif
             </div>
           </div>
         </div>
