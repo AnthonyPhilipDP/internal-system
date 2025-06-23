@@ -2,8 +2,9 @@
 
 namespace App\Filament\Resources\InvoiceResource\Pages;
 
-use App\Filament\Resources\InvoiceResource;
 use Filament\Actions;
+use Filament\Support\Enums\MaxWidth;
+use App\Filament\Resources\InvoiceResource;
 use Filament\Resources\Pages\ManageRecords;
 
 class ManageInvoices extends ManageRecords
@@ -13,7 +14,8 @@ class ManageInvoices extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->modalWidth(MaxWidth::ScreenTwoExtraLarge ),
         ];
     }
 }
