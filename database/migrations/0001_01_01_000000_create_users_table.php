@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('username')->unique()->nullable();
             $table->string('email')->unique()->nullable();
             $table->tinyInteger('level')->default(1);
+            $table->boolean('has_invoice_access')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

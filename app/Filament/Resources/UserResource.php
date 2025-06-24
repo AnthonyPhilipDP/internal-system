@@ -36,33 +36,6 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                // Section::make([
-                //     Grid::make()->schema([
-                //         FileUpload::make('avatarUrl')
-                //             ->label('Avatar')
-                //             ->avatar()
-                //             ->directory('avatars'),
-                //         Forms\Components\TextInput::make('name')
-                //             ->required()
-                //             ->placeholder('Juan Dela Cruz')
-                //             ->maxLength(255),
-                //         Forms\Components\TextInput::make('username')
-                //             ->nullable()
-                //             ->placeholder('Anything you like ^_^')
-                //             ->maxLength(255),
-                //         Forms\Components\Select::make('level')
-                //             ->label('User Level')
-                //             ->required()
-                //             ->options(User::LEVEL)
-                //             ->default(User::EMPLOYEE),
-                //         Forms\Components\TextInput::make('password')
-                //             ->password()
-                //             ->placeholder('Enter your desired password')
-                //             ->required()
-                //             ->revealable()
-                //             ->maxLength(255),
-                //     ])->columns(3)
-                // ]),
                 Wizard::make([
                     Wizard\Step::make('Credentials')
                         ->schema([
@@ -84,8 +57,13 @@ class UserResource extends Resource
                             Forms\Components\Select::make('level')
                             ->label('User Level')
                             ->required()
+                            ->native(false)
                             ->options(User::LEVEL)
                             ->default(User::EMPLOYEE),
+                            Forms\Components\Toggle::make('has_invoice_access')
+                            ->label('Invoice Access')
+                            ->helperText('Turn on to allow this user to access the invoice management system')
+                            ->default(false),
                         ])
                         ->icon('heroicon-o-finger-print')
                         ->completedIcon('heroicon-m-finger-print'),
@@ -130,6 +108,8 @@ class UserResource extends Resource
                         };
                     })
                     ->sortable(),
+                Tables\Columns\ToggleColumn::make('has_invoice_access')
+                    ->label('Invoice Access'),
                 // Tables\Columns\TextColumn::make('email_verified_at')
                 //     ->alignCenter()
                 //     ->dateTime()
@@ -151,7 +131,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
+                    // Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make()
                         ->modalIcon('heroicon-o-user-minus')
