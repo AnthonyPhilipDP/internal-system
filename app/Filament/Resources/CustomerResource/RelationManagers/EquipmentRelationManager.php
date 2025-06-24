@@ -1854,11 +1854,11 @@ class EquipmentRelationManager extends RelationManager
                             $id = $record->id;
                             InvoiceItem::create([
                                 'invoice_id'        => $invoice->id,
-                                'invoice_id'        => $invoice->id,
+                                'transaction_id'    => $data["transaction_id_{$id}"] ?? null,
                                 'item_number'       => $data["item_number_{$id}"] ?? null,
                                 'quantity'          => $data["quantity_{$id}"] ?? 1,
-                                'quantity'          => $data["quantity_{$id}"] ?? 1,
                                 'unit_price'        => $data["unit_price_{$id}"] ?? 0,
+                                'equipment_subtotal'=> $data["equipment_subtotal_{$id}"] ?? 1,
                                 'less_type'         => $data["less_type_{$id}"] ?? null,
                                 'less_percentage'   => $data["less_percentage_{$id}"] ?? 0,
                                 'less_amount'       => $data["less_amount_{$id}"] ?? null,
