@@ -168,97 +168,97 @@ class InvoiceResource extends Resource
                                             ->dehydrated(),
                                         Components\TextInput::make("equipment_id")
                                             ->label('Equipment ID')
-                                            // ->formatStateUsing(function ($record) {
-                                            //     $transaction_id = $record->transaction_id;
-                                            //     $id = Equipment::where('transaction_id', $transaction_id)->first();
-                                            //     return $id ? $id->equipment_id : 'Unknown';
-                                            // })
+                                            ->formatStateUsing(function ($record) {
+                                                $transaction_id = $record->transaction_id;
+                                                $id = Equipment::where('transaction_id', $transaction_id)->first();
+                                                return $id ? $id->equipment_id : 'Unknown';
+                                            })
                                             ->columnSpan(2)
                                             ->disabled(),
                                         Components\TextInput::make("service")
                                             ->label('Service')
                                             ->columnSpan(3)
-                                            // ->formatStateUsing(function ($record) {
-                                            //     $services = [
-                                            //         'calibration' => 'Calibration',
-                                            //         'cal and realign' => 'Calibration and Realign',
-                                            //         'cal and repair' => 'Calibration and Repair',
-                                            //         'repair' => 'Repair',
-                                            //         'diagnostic' => 'Diagnostic',
-                                            //         'N/A' => 'Not Available',
-                                            //     ];
+                                            ->formatStateUsing(function ($record) {
+                                                $services = [
+                                                    'calibration' => 'Calibration',
+                                                    'cal and realign' => 'Calibration and Realign',
+                                                    'cal and repair' => 'Calibration and Repair',
+                                                    'repair' => 'Repair',
+                                                    'diagnostic' => 'Diagnostic',
+                                                    'N/A' => 'Not Available',
+                                                ];
                                         
-                                            //     $transaction_id = $record->transaction_id;
-                                            //     $equipment = Equipment::where('transaction_id', $transaction_id)->first();
+                                                $transaction_id = $record->transaction_id;
+                                                $equipment = Equipment::where('transaction_id', $transaction_id)->first();
                                         
-                                            //     if ($equipment && isset($services[$equipment->service])) {
-                                            //         return $services[$equipment->service];
-                                            //     }
+                                                if ($equipment && isset($services[$equipment->service])) {
+                                                    return $services[$equipment->service];
+                                                }
                                         
-                                            //     return 'N/A';
-                                            // })
+                                                return 'N/A';
+                                            })
                                             ->disabled(),
                                         Components\TextInput::make("status")
                                             ->label('Status')
                                             ->columnSpan(2)
-                                            // ->formatStateUsing(function ($record) {
-                                            //     $statuses = [
-                                            //         'completed' => 'Completed',
-                                            //         'delivered' => 'Delivered',
-                                            //         'picked-up' => 'Picked-up',
-                                            //         'repair' => 'Repair',
-                                            //         'pending' => 'Pending',
-                                            //         'on-hold' => 'On-hold',
-                                            //         'incoming' => 'Incoming',
-                                            //         'returned' => 'Returned',
-                                            //         'on-site' => 'On-site',
-                                            //         'for sale' => 'For sale',
-                                            //     ];
+                                            ->formatStateUsing(function ($record) {
+                                                $statuses = [
+                                                    'completed' => 'Completed',
+                                                    'delivered' => 'Delivered',
+                                                    'picked-up' => 'Picked-up',
+                                                    'repair' => 'Repair',
+                                                    'pending' => 'Pending',
+                                                    'on-hold' => 'On-hold',
+                                                    'incoming' => 'Incoming',
+                                                    'returned' => 'Returned',
+                                                    'on-site' => 'On-site',
+                                                    'for sale' => 'For sale',
+                                                ];
                                         
-                                            //     $transaction_id = $record->transaction_id;
-                                            //     $equipment = Equipment::where('transaction_id', $transaction_id)->first();
+                                                $transaction_id = $record->transaction_id;
+                                                $equipment = Equipment::where('transaction_id', $transaction_id)->first();
                                         
-                                            //     if ($equipment && isset($statuses[$equipment->status])) {
-                                            //         return $statuses[$equipment->status];
-                                            //     }
+                                                if ($equipment && isset($statuses[$equipment->status])) {
+                                                    return $statuses[$equipment->status];
+                                                }
                                         
-                                            //     return 'N/A';
-                                            // })
+                                                return 'N/A';
+                                            })
                                             ->disabled(),
                                         Components\TextInput::make("make")
                                             ->label('Make')
-                                            // ->formatStateUsing(function ($record) {
-                                            //     $transaction_id = $record->transaction_id;
-                                            //     $id = Equipment::where('transaction_id', $transaction_id)->first();
-                                            //     return $id ? $id->make : 'Unknown';
-                                            // })
+                                            ->formatStateUsing(function ($record) {
+                                                $transaction_id = $record->transaction_id;
+                                                $id = Equipment::where('transaction_id', $transaction_id)->first();
+                                                return $id ? $id->make : 'Unknown';
+                                            })
                                             ->columnSpan(2)
                                             ->disabled(),
                                         Components\TextInput::make("model")
                                             ->label('Model')
-                                            // ->formatStateUsing(function ($record) {
-                                            //     $transaction_id = $record->transaction_id;
-                                            //     $id = Equipment::where('transaction_id', $transaction_id)->first();
-                                            //     return $id ? $id->model : 'Unknown';
-                                            // })
+                                            ->formatStateUsing(function ($record) {
+                                                $transaction_id = $record->transaction_id;
+                                                $id = Equipment::where('transaction_id', $transaction_id)->first();
+                                                return $id ? $id->model : 'Unknown';
+                                            })
                                             ->columnSpan(2)
                                             ->disabled(),
                                         Components\TextInput::make("description")
                                             ->label('Description')
-                                            // ->formatStateUsing(function ($record) {
-                                            //     $transaction_id = $record->transaction_id;
-                                            //     $id = Equipment::where('transaction_id', $transaction_id)->first();
-                                            //     return $id ? $id->description : 'Unknown';
-                                            // })
+                                            ->formatStateUsing(function ($record) {
+                                                $transaction_id = $record->transaction_id;
+                                                $id = Equipment::where('transaction_id', $transaction_id)->first();
+                                                return $id ? $id->description : 'Unknown';
+                                            })
                                             ->columnSpan(2)
                                             ->disabled(),
                                         Components\TextInput::make("serial")
                                             ->label('Serial')
-                                            // ->formatStateUsing(function ($record) {
-                                            //     $transaction_id = $record->transaction_id;
-                                            //     $id = Equipment::where('transaction_id', $transaction_id)->first();
-                                            //     return $id ? $id->serial : 'Unknown';
-                                            // })
+                                            ->formatStateUsing(function ($record) {
+                                                $transaction_id = $record->transaction_id;
+                                                $id = Equipment::where('transaction_id', $transaction_id)->first();
+                                                return $id ? $id->serial : 'Unknown';
+                                            })
                                             ->columnSpan(2)
                                             ->disabled(),
                                         Components\TextInput::make("transaction_id")
@@ -268,11 +268,11 @@ class InvoiceResource extends Resource
                                             ->dehydrated(),
                                         Components\TextInput::make("code_range")
                                             ->label('Code | Range')
-                                            // ->formatStateUsing(function ($record) {
-                                            //     $transaction_id = $record->transaction_id;
-                                            //     $id = Equipment::where('transaction_id', $transaction_id)->first();
-                                            //     return $id ? $id->code_range : 'Unknown';
-                                            // })
+                                            ->formatStateUsing(function ($record) {
+                                                $transaction_id = $record->transaction_id;
+                                                $id = Equipment::where('transaction_id', $transaction_id)->first();
+                                                return $id ? $id->code_range : 'Unknown';
+                                            })
                                             ->columnSpan(6)
                                             ->disabled(),
                                         ])
@@ -1170,7 +1170,7 @@ class InvoiceResource extends Resource
                     Tables\Actions\EditAction::make()
                         ->modalWidth(MaxWidth::ScreenTwoExtraLarge )
                         ->modalHeading(fn ($record) => (Customer::where('customer_id', $record?->customer_id)->first()?->name ?? 'Unknown'))
-                        ->modalDescription('Edit Invoice'),
+                        ->modalDescription('For precise computation and to avoid errors, kindly enter information in a step-by-step manner, following the form from top to bottom.'),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),

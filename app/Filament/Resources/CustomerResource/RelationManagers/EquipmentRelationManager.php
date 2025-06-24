@@ -734,7 +734,7 @@ class EquipmentRelationManager extends RelationManager
                     ->color('info')
                     ->requiresConfirmation()
                     ->modalHeading(fn ($records) => ('Generate Invoice for ' . $records->first()->customer->name))
-                    ->modalSubheading('Review and adjust the details before generating the invoice.')
+                    ->modalSubheading('For precise computation and to avoid errors, kindly enter information in a step-by-step manner, following the form from top to bottom.')
                     ->modalButton('Generate')
                     ->modalIcon('bi-envelope-paper')
                     ->icon('bi-envelope-paper')
