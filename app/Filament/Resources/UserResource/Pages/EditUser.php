@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use Filament\Actions;
+use Filament\Support\Enums\MaxWidth;
 use App\Filament\Resources\UserResource;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -33,5 +34,10 @@ class EditUser extends EditRecord
             ->success()
             ->title('Updated Succesfully')
             ->body('The User data has been modified and saved successfully.');
+    }
+
+    public function getMaxContentWidth(): MaxWidth
+    {
+        return MaxWidth::FourExtraLarge;
     }
 }

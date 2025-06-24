@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
-use App\Filament\Resources\UserResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Enums\MaxWidth;
+use App\Filament\Resources\UserResource;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
 
 class CreateUser extends CreateRecord
 {
@@ -29,5 +30,10 @@ class CreateUser extends CreateRecord
             ->icon('heroicon-o-user-plus')
             ->title('Employee Registration Completed')
             ->body('The employee account has been created successfully.');
+    }
+
+    public function getMaxContentWidth(): MaxWidth
+    {
+        return MaxWidth::FourExtraLarge;
     }
 }
