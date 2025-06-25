@@ -48,7 +48,6 @@ class EquipmentRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-        dd($record);
         return $form
             ->schema([
                 Tabs::make('Tabs')
