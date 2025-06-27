@@ -370,13 +370,23 @@ class PriceQuoteResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('customer_id')
+                    ->label('Customer')
+                    ->color('primary')
+                    ->formatStateUsing(function ($state) {
+                        $customer = Customer::where('customer_id', $state)->first();
+                        return $customer ? $customer->name : 'Unknown';
+                    }),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('printPriceQuote')
+                ->label('Print Price Quote')
+                ->url(fn ($record) => route('price-quote-manager', ['price_quote_id' => $record->id]))
+                ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

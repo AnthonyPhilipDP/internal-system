@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Index;
+use App\Livewire\PriceQuote;
 use App\Livewire\Certificate;
 use App\Livewire\ReleaseNotes;
 use App\Livewire\EquipmentLabel;
@@ -19,3 +20,4 @@ Route::get('/calibration-recall', CalibrationRecall::class)->name('recallCalibra
 Route::get('/equipment/ncf-report/{reportId}', NonConformityReport::class)->name('ncfReport');
 Route::get('/equipment/download-pdf/{reportId}', [NonConformityReport::class, 'downloadPdf'])->name('downloadPdf');
 Route::get('/invoice-manager/{invoice_id}', InvoiceManager::class)->name('invoice-manager');
+Route::get('/price-quote-manager/{price_quote_id}', PriceQuote::class)->name('price-quote-manager');
