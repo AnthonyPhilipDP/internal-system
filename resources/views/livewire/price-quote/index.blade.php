@@ -1,4 +1,18 @@
 <div>
+  <button wire:loading.attr="disabled" wire:click="downloadFiles"
+    class="absolute top-4 left-4 bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
+    <span wire:loading.remove wire:target="downloadFiles">
+      <svg class="h-5 w-5 mr-2 inline" viewBox="0 0 24 24">
+        {{ svg('css-software-download') }}
+      </svg>
+    </span>
+    <div wire:loading>
+      <svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24">
+        {{ svg('css-spinner') }}
+      </svg>
+    </div>
+    <span>Download</span>
+  </button>
   <div class="relative w-[8.5in] bg-cover bg-no-repeat mx-auto border">
     <div style="font-family: 'Times New Roman', Times, serif;">
       <div class="absolute top-[45px] inset-0 flex flex-col items-center tracking-normal -space-y-1">

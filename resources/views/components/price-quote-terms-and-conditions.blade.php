@@ -1,5 +1,5 @@
 {{-- Price Quote Terms & Conditions --}}
-<div class="relative w-[8.5in] h-[11in] bg-cover bg-no-repeat mx-auto border break-before-page">
+<div class="relative w-[8.5in] h-[11in] bg-cover bg-no-repeat mx-auto border">
   <div class="border-2 border-gray-500 text-[10px] mx-12 mt-12 mb-4 p-1 flex flex-col leading-tight text-justify">
     <span class="italic text-[13px]">PMSi Terms & Conditions:</span>
 
