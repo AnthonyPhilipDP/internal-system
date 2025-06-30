@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             // Customer Information / Heading
             $table->unsignedBigInteger('customer_id')->nullable();
-            $table->string('contact_person_identity')->nullable();
             $table->string('contact_person')->nullable();
             $table->string('carbon_copy')->nullable();
             $table->string('subject')->nullable();

@@ -15,6 +15,24 @@ class PriceQuote extends Model
         'id',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($price_quote) {
+            // Only set if not already set
+            if (empty($price_quote->price_quote_number)) {
+                do {
+                    $max = self::max('price_quote_number');
+                    $next = $max ? $max + 1 : 18900;
+                    $exists = self::where('price_quote_number', $next)->exists();
+                } while ($exists);
+
+                $price_quote->price_quote_number = $next;
+            }
+        });
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

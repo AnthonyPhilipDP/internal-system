@@ -11,7 +11,7 @@
 
 <body>
   <div>
-    <div class="relative bg-cover bg-no-repeat mx-auto border">
+    <div class="relative bg-cover bg-no-repeat mx-auto border border-white">
       <div style="font-family: 'Times New Roman', Times, serif;">
         <div class="absolute inset-0 flex flex-col items-center tracking-normal -space-y-1">
           <div class="flex">
@@ -76,11 +76,7 @@
               {{ $customer->name }}
             </div>
             <div class="font-bold">
-              @if ($priceQuote->contact_person_identity === 'female')
-                Ms. {{ $priceQuote->contact_person }}
-              @else
-                Mr. {{ $priceQuote->contact_person }}
-              @endif
+              {{ $priceQuote->contact_person }}
             </div>
             <div>
               @if ($priceQuote->carbon_copy)
@@ -174,7 +170,7 @@
       </div>
 
       {{-- Letter Initial Information --}}
-      <div class="text-sm space-y-3">
+      <div class="text-sm space-y-3 mt-2">
         <div>
           {{ $priceQuote->salutation }}
         </div>
@@ -215,7 +211,9 @@
             @foreach ($equipmentList as $item)
               <tr class="text-xs text-center bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                 <td class="bg-gray-50 px-2 py-1">
-                  {{ $item->item_number }}
+                  @if ($item->item_number)
+                    {{ $item->item_number }}
+                  @endif
                 </td>
                 <td class="px-2 py-1">
                   {{ $item->make }}
@@ -224,16 +222,30 @@
                   {{ $item->model }}
                 </td>
                 <td class="px-2 py-1 text-left">
-                  {{ $item->description }}
+                  @if (!$item->item_number)
+                    <span class="text-blue-500">
+                      {{ $item->description }}
+                    </span>
+                  @else
+                    <span>
+                      {{ $item->description }}
+                    </span>
+                  @endif
                 </td>
                 <td class="bg-gray-50 px-2 py-1">
-                  {{ $item->quantity }}
+                  @if ($item->item_number)
+                    {{ $item->quantity }}
+                  @endif
                 </td>
                 <td class="px-2 py-1">
-                  {{ $item->unit_price }}
+                  @if ($item->item_number)
+                    {{ $item->unit_price }}
+                  @endif
                 </td>
                 <td class="bg-gray-50 px-2 py-1">
-                  {{ $item->line_total }}
+                  @if ($item->item_number)
+                    {{ $item->line_total }}
+                  @endif
                 </td>
               </tr>
             @endforeach
@@ -242,7 +254,7 @@
               <td class="py-1"></td>
               <td class="py-1"></td>
               <td class="py-1"></td>
-              <td scope="row" class="py-1">Total Unity Quoted</td>
+              <td scope="row" class="py-1">Total Quantity Quoted</td>
               <td class="py-1">{{ $equipmentList->sum('quantity') }}</td>
               <td scope="row" class="py-1">Sub-Total</td>
               <td class="bg-gray-50 py-1">₱ {{ $priceQuote->subtotal }}</td>
@@ -266,42 +278,6 @@
               <td class="bg-gray-50 px-2 py-1">₱ {{ $priceQuote->total }}</td>
             </tr>
           </tbody>
-
-          {{-- <tfoot class="text-xs text-center">
-            <tr class="font-semibold text-gray-700 uppercase dark:text-white" style="page-break-inside: avoid;">
-              <td class="px-2 py-1"></td>
-              <td class="px-2 py-1"></td>
-              <td class="px-2 py-1"></td>
-              <td class="px-2 py-1"></td>
-              <td class="px-2 py-1"></td>
-              <td scope="row" class="px-2 py-1">Total PHP</td>
-              <td class="bg-gray-50 px-2 py-1">₱ {{ $priceQuote->total }}</td>
-            </tr>
-          </tfoot> --}}
-
-          {{-- <tfoot class="text-xs text-center">
-            <tr class="font-semibold text-gray-700 uppercase dark:text-white">
-              <td class="py-1"></td>
-              <td class="py-1"></td>
-              <td class="py-1"></td>
-              <td scope="row" class="py-1">Total Unity Quoted</td>
-              <td class="py-1">{{ $equipmentList->sum('quantity') }}</td>
-              <td scope="row" class="py-1">Sub-Total</td>
-              <td class="bg-gray-50 py-1">₱ {{ $priceQuote->subtotal }}</td>
-            </tr>
-          </tfoot> --}}
-
-          {{-- <tfoot class="text-xs text-center">
-            <tr class="font-semibold text-gray-700 uppercase dark:text-white">
-              <td class="py-1"></td>
-              <td class="py-1"></td>
-              <td class="py-1"></td>
-              <td class="py-1"></td>
-              <td class="py-1"></td>
-              <td scope="row" class="py-1">12% VAT</td>
-              <td class="bg-gray-50 py-1">₱ {{ $priceQuote->vat_amount }}</td>
-            </tr>
-          </tfoot> --}}
         </table>
         {{-- Note, still under the table --}}
         <div class="w-full mt-[-44px]" style="page-break-inside: avoid;">
@@ -317,7 +293,7 @@
   </div>
 
   {{-- Price Quote Terms & Conditions --}}
-  <div class="relative bg-cover bg-no-repeat mx-auto border" style="page-break-before: always;">
+  <div class="relative bg-cover bg-no-repeat mx-auto" style="page-break-before: always;">
     <div class="border-2 border-gray-500 text-[10px] mb-4 p-1 flex flex-col leading-tight text-justify">
       <span class="italic text-[13px]">PMSi Terms & Conditions:</span>
 

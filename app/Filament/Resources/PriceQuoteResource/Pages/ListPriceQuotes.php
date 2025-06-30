@@ -13,7 +13,8 @@ class ListPriceQuotes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->icon('bi-file-earmark-spreadsheet'),
         ];
     }
 }

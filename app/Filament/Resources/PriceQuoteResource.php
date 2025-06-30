@@ -13,15 +13,18 @@ use App\Models\ContactPerson;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PriceQuoteResource\Pages;
 use App\Filament\Resources\PriceQuoteResource\RelationManagers;
 
 class PriceQuoteResource extends Resource
 {
+    protected static ?string $navigationGroup = 'PMSi';
+
     protected static ?string $model = PriceQuote::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'bi-file-earmark-spreadsheet';
 
     public static function form(Form $form): Form
     {
@@ -66,14 +69,13 @@ class PriceQuoteResource extends Resource
                                         ->where('isActive', true)
                                         ->first();
                                     if ($contact_person) {
-                                        $set('contact_person_identity', $contact_person->identity);
-                                        $set('contact_person', $contact_person->name);
+                                        $prefix = $contact_person->identity === 'female' ? 'Ms.' : 'Mr.';
+                                        $set('contact_person', "{$prefix} {$contact_person->name}");
                                         $set('customer_fax', $contact_person->contact1);
                                         $set('customer_email', $contact_person->email);
                                         $set('customer_mobile', $contact_person->contact2);
 
                                         // Set salutation here as well
-                                        $prefix = $contact_person->identity === 'female' ? 'Ms.' : 'Mr.';
                                         $set('salutation', "Dear {$prefix} {$contact_person->name}:");
                                     }
                                 } else {
@@ -82,20 +84,9 @@ class PriceQuoteResource extends Resource
                                 }
                             }),
 
-                        Forms\Components\Select::make('contact_person_identity')
-                            ->label('Prefix')
-                            ->inlineLabel(false)
-                            ->native(false)
-                            ->options([
-                                'male' => 'Mr.',
-                                'female' => 'Ms.',
-                            ])
-                            ->columnSpan(2)
-                            ->required(),
                         Forms\Components\Select::make('contact_person')
                             ->label('Attention')
-                            ->inlineLabel(false)
-                            ->columnSpan(3)
+                            ->columnSpan(5)
                             ->markAsRequired(false)
                             ->required()
                             ->native(false)
@@ -111,22 +102,21 @@ class PriceQuoteResource extends Resource
                                 }
                                 return ContactPerson::where('customer_id', $customer->id)
                                     ->where('isActive', true)
-                                    ->pluck('name', 'name')
+                                    ->get()
+                                    ->mapWithKeys(function ($person) {
+                                        $prefix = $person->identity === 'female' ? 'Ms.' : 'Mr.';
+                                        $label = "{$prefix} {$person->name}";
+                                        return [$label => $label];
+                                    })
                                     ->toArray();
                             })
                             ->afterStateUpdated(function ($state, callable $get, callable $set) {
                                 $customer_id = $get('customer_id');
-                                $customer = Customer::where('customer_id', $customer_id)->first();
-                                if (!$customer || !$state) {
-                                    $set('contact_person_identity', null);
-                                    return;
-                                }
                                 $contactPerson = ContactPerson::where('customer_id', $customer->id)
                                     ->where('name', $state)
                                     ->where('isActive', true)
                                     ->first();
                                 if ($contactPerson) {
-                                    $set('contact_person_identity', $contactPerson->identity);
                                     $set('customer_fax', $contactPerson->contact1);
                                     $set('customer_email', $contactPerson->email);
                                     $set('customer_mobile', $contactPerson->contact2);
@@ -135,20 +125,41 @@ class PriceQuoteResource extends Resource
                                     $prefix = $contactPerson->identity === 'female' ? 'Ms.' : 'Mr.';
                                     $set('salutation', "Dear {$prefix} {$contactPerson->name}:");
                                 } else {
-                                    $set('contact_person_identity', null);
                                     $set('salutation', null);
                                 }
                             }),
-                        Forms\Components\TextInput::make('carbon_copy')
+                        Forms\Components\Select::make('carbon_copy')
                             ->label('CC')
+                            ->native(false)
+                            ->options(function (callable $get) {
+                                $customer_id = $get('customer_id');
+                                if (!$customer_id) {
+                                    return [];
+                                }
+                                $customer = Customer::where('customer_id', $customer_id)->first();
+                                if (!$customer) {
+                                    return [];
+                                }
+                                return ContactPerson::where('customer_id', $customer->id)
+                                    ->where('isActive', true)
+                                    ->get()
+                                    ->mapWithKeys(function ($person) {
+                                        $prefix = $person->identity === 'female' ? 'Ms.' : 'Mr.';
+                                        $label = "{$prefix} {$person->name}";
+                                        return [$label => $label];
+                                    })
+                                    ->toArray();
+                            })
                             ->columnSpan(5),
                         Forms\Components\TextInput::make('subject')
                             ->label('RE')
+                            ->default('Price Quotation')
                             ->columnSpan(5)
                             ->required(),
                         Forms\Components\TextInput::make('salutation')
                             ->label('Salutation')
                             ->columnSpan(2)
+                            ->autocomplete(false)
                             ->inlineLabel(false)
                             ->required(),
                         Forms\Components\Textarea::make('introduction')
@@ -171,21 +182,29 @@ class PriceQuoteResource extends Resource
                             Forms\Components\TextInput::make('price_quote_number')
                                 ->label('PQ Number')
                                 ->prefix('20-')
-                                ->required(),
+                                ->default(fn () => (PriceQuote::max('price_quote_number') ?? 18900) + 1)
+                                ->disabled(),
                         ])->columns(2),
                         Forms\Components\TextInput::make('customer_ref')
+                            ->autocomplete(false)
                             ->label('Customer Reference'),
                         Forms\Components\TextInput::make('customer_fax')
+                            ->autocomplete(false)
                             ->label('Customer Fax'),
                         Forms\Components\TextInput::make('pmsi_fax')
+                            ->autocomplete(false)
                             ->label('PMSI Fax')
                             ->default('(046) 889-0673'),
                         Forms\Components\TextInput::make('customer_email')
+                            ->autocomplete(false)
+                            ->autocomplete(false)
                             ->label('Customer Email'),
                         Forms\Components\TextInput::make('customer_mobile')
+                            ->autocomplete(false)
                             ->label('Customer Mobile'),
                         Forms\Components\TextInput::make('quote_period')
                             ->label('Quote Period')
+                            ->readOnly()
                             ->default(function () {
                                 $start = now();
                                 $end = now()->copy()->addDays(30);
@@ -195,28 +214,35 @@ class PriceQuoteResource extends Resource
                 ])->columns(2),
                 Forms\Components\Repeater::make('equipment_list')
                 ->label('Equipment Information')
+                ->helperText('Kindly fill out the blue shaded fields manually.')
                 ->addActionLabel('Add another row')
                 ->relationship()
                 ->schema([
                     Forms\Components\TextInput::make('item_number')
-                        ->disabled()
-                        ->dehydrated()
-                        ->default(1)
-                        ->required(),
+                        ->extraAttributes([
+                            'style' => 'background-color: #f5f9ff'
+                        ])
+                        ->label('Item #')
+                        ->numeric()
+                        ->columnSpan(1),
                     Forms\Components\TextInput::make('make')
                         ->disabled()
                         ->dehydrated()
-                        ->required(),
+                        ->columnSpan(2),
                     Forms\Components\TextInput::make('model')
                         ->disabled()
                         ->dehydrated()
-                        ->required(),
+                        ->columnSpan(2),
                     Forms\Components\TextInput::make('description')
-                        ->disabled()
-                        ->dehydrated()
-                        ->required(),
+                        ->required()
+                        ->columnSpan(3),
                     Forms\Components\TextInput::make('quantity')
-                        ->default(1)
+                        ->numeric()
+                        ->extraAttributes([
+                            'style' => 'background-color: #f5f9ff'
+                        ])
+                        ->columnSpan(2)
+                        ->default(0)
                         ->required()
                         ->reactive()
                         ->live(debounce: 500)
@@ -240,6 +266,11 @@ class PriceQuoteResource extends Resource
                         }),
                     Forms\Components\TextInput::make('unit_price')
                         ->label('Unit Price')
+                        ->extraAttributes([
+                            'style' => 'background-color: #f5f9ff'
+                        ])
+                        ->numeric()
+                        ->columnSpan(2)
                         ->default("0.00")
                         ->required()
                         ->reactive()
@@ -264,16 +295,13 @@ class PriceQuoteResource extends Resource
                         }),
                     Forms\Components\TextInput::make('line_total')
                         ->required()
+                        ->columnSpan(2)
                         ->label('Extended Price')
                         ->readOnly()
                         ->default("0.00"),
-                    Forms\Components\Textarea::make('comments')
-                        ->columnSpan(2)
-                        ->rows(1)
-                        ->autosize()
-                        ->nullable(),
                     Forms\Components\Select::make('transaction_id')
                         ->label('Search')
+                        ->columnSpan(2)
                         ->getSearchResultsUsing(function (string $search) {
                             return Equipment::query()
                                 ->where('transaction_id', 'like', "%{$search}%")
@@ -298,15 +326,8 @@ class PriceQuoteResource extends Resource
                                 $set('description', null);
                             }
                         }),
-                ])->columns(10)
-                ->columnSpanFull()
-                // For auto-incrementing item numbers
-                ->afterStateUpdated(function ($state, callable $set) {
-                    $counter = 1;
-                    foreach ($state as $index => $item) {
-                        $set("equipment_list.{$index}.item_number", $counter++);
-                    }
-                }),
+                ])->columns(16)
+                ->columnSpanFull(),
                 Forms\Components\Section::make('Price Summary')
                 ->compact()
                 ->columns(4)
@@ -370,6 +391,11 @@ class PriceQuoteResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('price_quote_date')
+                    ->label('Date')
+                    ->date('M d, Y'),
+                Tables\Columns\TextColumn::make('price_quote_number')
+                    ->label('PQ #'),
                 Tables\Columns\TextColumn::make('customer_id')
                     ->label('Customer')
                     ->color('primary')
@@ -377,6 +403,37 @@ class PriceQuoteResource extends Resource
                         $customer = Customer::where('customer_id', $state)->first();
                         return $customer ? $customer->name : 'Unknown';
                     }),
+                Tables\Columns\TextColumn::make('contact_person')
+                    ->label('Contact Person'),
+                Tables\Columns\TextColumn::make('carbon_copy')
+                    ->label('CC')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('customer_ref')
+                    ->label('Customer Ref'),
+                Tables\Columns\TextColumn::make('customer_fax')
+                    ->label('Customer Fax'),
+                Tables\Columns\TextColumn::make('customer_email')
+                    ->label('Customer Email'),
+                Tables\Columns\TextColumn::make('customer_mobile')
+                    ->label('Customer Mobile'),
+                Tables\Columns\TextColumn::make('quote_period')
+                    ->label('Quote Period'),
+                Tables\Columns\TextColumn::make('subtotal')
+                    ->label('Subtotal'),
+                Tables\Columns\IconColumn::make('vat')
+                    ->label('VAT')
+                    ->icon(fn (string $state): string => match ($state) {
+                        '1' => 'heroicon-o-check-circle',
+                        '0' => 'heroicon-o-x-circle',
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        '1' => 'success',
+                        '0' => 'warning',
+                    }),
+                Tables\Columns\TextColumn::make('vat_amount')
+                    ->label('VAT Amount'),
+                Tables\Columns\TextColumn::make('total')
+                    ->label('Total'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
@@ -384,10 +441,13 @@ class PriceQuoteResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('printPriceQuote')
-                ->label('Print Price Quote')
+                ->label('Print')
+                ->tooltip('Print Price Quote')
+                ->icon('bi-printer-fill')
+                ->color('info')
                 ->url(fn ($record) => route('price-quote-manager', ['price_quote_id' => $record->id]))
                 ->openUrlInNewTab(),
-            ])
+            ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
