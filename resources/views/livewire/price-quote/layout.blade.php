@@ -237,10 +237,26 @@
                 </td>
               </tr>
             @endforeach
-          </tbody>
-
-          <tfoot class="text-xs text-center">
-            <tr class="font-semibold text-gray-700 uppercase dark:text-white">
+            {{-- Table Footer --}}
+            <tr class="font-semibold text-gray-700 uppercase dark:text-white text-xs text-center">
+              <td class="py-1"></td>
+              <td class="py-1"></td>
+              <td class="py-1"></td>
+              <td scope="row" class="py-1">Total Unity Quoted</td>
+              <td class="py-1">{{ $equipmentList->sum('quantity') }}</td>
+              <td scope="row" class="py-1">Sub-Total</td>
+              <td class="bg-gray-50 py-1">₱ {{ $priceQuote->subtotal }}</td>
+            </tr>
+            <tr class="font-semibold text-gray-700 uppercase dark:text-white text-xs text-center">
+              <td class="py-1"></td>
+              <td class="py-1"></td>
+              <td class="py-1"></td>
+              <td class="py-1"></td>
+              <td class="py-1"></td>
+              <td scope="row" class="py-1">12% VAT</td>
+              <td class="bg-gray-50 py-1">₱ {{ $priceQuote->vat_amount }}</td>
+            </tr>
+            <tr class="font-semibold text-gray-700 uppercase dark:text-white text-xs text-center">
               <td class="px-2 py-1"></td>
               <td class="px-2 py-1"></td>
               <td class="px-2 py-1"></td>
@@ -249,9 +265,21 @@
               <td scope="row" class="px-2 py-1">Total PHP</td>
               <td class="bg-gray-50 px-2 py-1">₱ {{ $priceQuote->total }}</td>
             </tr>
-          </tfoot>
+          </tbody>
 
-          <tfoot class="text-xs text-center">
+          {{-- <tfoot class="text-xs text-center">
+            <tr class="font-semibold text-gray-700 uppercase dark:text-white" style="page-break-inside: avoid;">
+              <td class="px-2 py-1"></td>
+              <td class="px-2 py-1"></td>
+              <td class="px-2 py-1"></td>
+              <td class="px-2 py-1"></td>
+              <td class="px-2 py-1"></td>
+              <td scope="row" class="px-2 py-1">Total PHP</td>
+              <td class="bg-gray-50 px-2 py-1">₱ {{ $priceQuote->total }}</td>
+            </tr>
+          </tfoot> --}}
+
+          {{-- <tfoot class="text-xs text-center">
             <tr class="font-semibold text-gray-700 uppercase dark:text-white">
               <td class="py-1"></td>
               <td class="py-1"></td>
@@ -261,9 +289,9 @@
               <td scope="row" class="py-1">Sub-Total</td>
               <td class="bg-gray-50 py-1">₱ {{ $priceQuote->subtotal }}</td>
             </tr>
-          </tfoot>
+          </tfoot> --}}
 
-          <tfoot class="text-xs text-center">
+          {{-- <tfoot class="text-xs text-center">
             <tr class="font-semibold text-gray-700 uppercase dark:text-white">
               <td class="py-1"></td>
               <td class="py-1"></td>
@@ -273,7 +301,7 @@
               <td scope="row" class="py-1">12% VAT</td>
               <td class="bg-gray-50 py-1">₱ {{ $priceQuote->vat_amount }}</td>
             </tr>
-          </tfoot>
+          </tfoot> --}}
         </table>
         {{-- Note, still under the table --}}
         <div class="w-full mt-[-44px]" style="page-break-inside: avoid;">
