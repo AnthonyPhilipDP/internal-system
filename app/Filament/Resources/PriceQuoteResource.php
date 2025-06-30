@@ -11,9 +11,11 @@ use App\Models\PriceQuote;
 use Filament\Tables\Table;
 use App\Models\ContactPerson;
 use Filament\Resources\Resource;
+use App\Models\PotentialCustomer;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
+use App\Models\PotentialCustomerContactPerson;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PriceQuoteResource\Pages;
 use App\Filament\Resources\PriceQuoteResource\RelationManagers;
@@ -36,38 +38,89 @@ class PriceQuoteResource extends Resource
                 ->schema([
                     Forms\Components\Group::make()
                     ->schema([
+                        Forms\Components\ToggleButtons::make('use_actual_customer')
+                        ->label('Choose Customer')
+                            ->options([
+                                '0' => 'Potential Customer',
+                                '1' => 'Actual Customer',
+                            ])
+                            ->icons([
+                                '0' => 'bi-person-exclamation',
+                                '1' => 'bi-person-check',
+                            ])
+                            ->default(0)
+                            ->inline()
+                            ->columnSpan(5),
                         Forms\Components\Select::make('customer_id')
                             ->label('To')
                             ->columnSpan(5)
                             ->required()
                             ->searchable()
                             ->reactive()
-                            ->options(function () {
-                                return Customer::query()
-                                    ->latest('created_at')
-                                    ->pluck('name', 'customer_id')
-                                    ->toArray();
+                            ->options(function (callable $get) {
+                                $useActual = $get('use_actual_customer');
+                                if ($useActual == '0') {
+                                    // Potential Customer
+                                    return PotentialCustomer::query()
+                                        ->latest('created_at')
+                                        ->pluck('name', 'customer_id')
+                                        ->toArray();
+                                } else {
+                                    // Actual Customer
+                                    return Customer::query()
+                                        ->latest('created_at')
+                                        ->pluck('name', 'customer_id')
+                                        ->toArray();
+                                }
                             })
-                            ->getSearchResultsUsing(function (string $search) {
-                                return Customer::query()
-                                    ->where(function ($query) use ($search) {
-                                        $query->where('name', 'like', "%{$search}%")
-                                            ->orWhere('nickname', 'like', "%{$search}%")
-                                            ->orWhere('customer_id', 'like', "%{$search}%");
-                                    })
-                                    ->pluck('name', 'customer_id')
-                                    ->toArray();
+                            ->getSearchResultsUsing(function (string $search, callable $get) {
+                                $useActual = $get('use_actual_customer');
+                                if ($useActual == '0') {
+                                    return PotentialCustomer::query()
+                                        ->where(function ($query) use ($search) {
+                                            $query->where('name', 'like', "%{$search}%")
+                                                ->orWhere('nickname', 'like', "%{$search}%")
+                                                ->orWhere('customer_id', 'like', "%{$search}%");
+                                        })
+                                        ->pluck('name', 'customer_id')
+                                        ->toArray();
+                                } else {
+                                    return Customer::query()
+                                        ->where(function ($query) use ($search) {
+                                            $query->where('name', 'like', "%{$search}%")
+                                                ->orWhere('nickname', 'like', "%{$search}%")
+                                                ->orWhere('customer_id', 'like', "%{$search}%");
+                                        })
+                                        ->pluck('name', 'customer_id')
+                                        ->toArray();
+                                }
                             })
-                            ->getOptionLabelUsing(function ($value) {
-                                $customer = Customer::where('customer_id', $value)->first();
-                                return $customer ? $customer->name : null;
+                            ->getOptionLabelUsing(function ($value, callable $get) {
+                                $useActual = $get('use_actual_customer');
+                                if ($useActual == '0') {
+                                    $customer = PotentialCustomer::find($value);
+                                    return $customer ? $customer->name : null;
+                                } else {
+                                    $customer = Customer::where('customer_id', $value)->first();
+                                    return $customer ? $customer->name : null;
+                                }
                             })
                             ->afterStateUpdated(function (?string $state, callable $get, callable $set): void {
+                                $useActual = $get('use_actual_customer');
                                 if ($state) {
-                                    $customer_id = Customer::where('customer_id', $state)->first()?->id;
-                                    $contact_person = ContactPerson::where('customer_id', $customer_id)
-                                        ->where('isActive', true)
-                                        ->first();
+                                    if ($useActual == '0') {
+                                        $customer_id = PotentialCustomer::where('customer_id', $state)->first()?->id;
+                                        $contact_person = PotentialCustomerContactPerson::where('potential_customer_id', $customer_id)
+                                            ->where('isActive', true)
+                                            ->first();
+                                    }
+                                    else {
+                                        $customer_id = Customer::where('customer_id', $state)->first()?->id;
+                                        $contact_person = ContactPerson::where('customer_id', $customer_id)
+                                            ->where('isActive', true)
+                                            ->first();
+                                    }
+
                                     if ($contact_person) {
                                         $prefix = $contact_person->identity === 'female' ? 'Ms.' : 'Mr.';
                                         $set('contact_person', "{$prefix} {$contact_person->name}");
@@ -133,12 +186,27 @@ class PriceQuoteResource extends Resource
                             ->native(false)
                             ->options(function (callable $get) {
                                 $customer_id = $get('customer_id');
+                                $useActual = $get('use_actual_customer');
                                 if (!$customer_id) {
                                     return [];
+                                }
+                                if ($useActual == '0') {
+                                    $customer = PotentialCustomer::where('customer_id', $customer_id)->first();
                                 }
                                 $customer = Customer::where('customer_id', $customer_id)->first();
                                 if (!$customer) {
                                     return [];
+                                }
+                                if ($useActual == '0') {
+                                    return PotentialCustomerContactPerson::where('potential_customer_id', $customer->id)
+                                        ->where('isActive', true)
+                                        ->get()
+                                        ->mapWithKeys(function ($person) {
+                                            $prefix = $person->identity === 'female' ? 'Ms.' : 'Mr.';
+                                            $label = "{$prefix} {$person->name}";
+                                            return [$label => $label];
+                                        })
+                                        ->toArray();
                                 }
                                 return ContactPerson::where('customer_id', $customer->id)
                                     ->where('isActive', true)
@@ -165,7 +233,7 @@ class PriceQuoteResource extends Resource
                         Forms\Components\Textarea::make('introduction')
                             ->label('Message')
                             ->columnSpan(3)
-                            ->rows(4)
+                            ->rows(3)
                             ->autosize()
                             ->inlineLabel(false)
                             ->default('Price quoted is for IN-HOUSE (PMSi Facility) calibration only and does not include cost for repair or realignment if required. Unless otherwise specified in this price quote.')
