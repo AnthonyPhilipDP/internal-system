@@ -452,51 +452,33 @@ class CustomerResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('customer_id')
                     ->label('Customer ID')
-                    ->copyable()
-                    ->copyMessage('Customer ID No. copied')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nickname')
                     ->label('Nickname')
-                    ->copyable()
-                    ->copyMessage('Customer ID No. copied')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Customer Name')
                     ->weight(FontWeight::Bold)
                     ->color('primary')
-                    // ->wrap()
                     ->words(3)
-                    ->searchable()
-                    // ->copyable()
-                    ->copyMessage('Customer Name copied'),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('address')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('mobile1')
                     ->label('Mobile')
                     ->icon('heroicon-o-device-phone-mobile')
                     ->iconColor('primary')
-                    ->copyable()
-                    ->copyMessage('Mobile No. copied')
                     ->html(),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('telephone1')
                     ->label('Telephone')
                     ->icon('heroicon-o-phone')
                     ->iconColor('primary')
-                    ->copyable()
-                    ->copyMessage('Telephone No. copied')
                     ->html(),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->icon('heroicon-m-envelope')
                     ->iconColor('primary')
-                    ->copyable()
-                    ->copyMessage('Email address copied')
-                    ->copyMessageDuration(1500)
-                    // ->wrap()
                     ->words(2)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('website')
@@ -506,48 +488,41 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('sec')
                     ->label('SEC Reg No.')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('vat')
                     ->label('VAT'),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('withHoldingTax')
                     ->label('With Holding Tax')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('businessNature')
                     ->label('Nature of Business')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('qualifyingSystem')
                     ->label('Qualifying System')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('certifyingBody')
                     ->label('Certifying Body')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('dateCertified')
                     ->label('Date Certified')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('payment'),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('status'),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('remarks')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('businessStyle')
                     ->label('Business System')
                     ->toggleable(isToggledHiddenByDefault: true),
-                    // ->searchable(),
                 Tables\Columns\TextColumn::make('tin')
                     ->label('TIN'),
-                    // ->searchable(),
+                Tables\Columns\TextColumn::make('old_telephone')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Old Telephone'),
+                Tables\Columns\TextColumn::make('old_fax')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Old Fax'),
                 Tables\Columns\TextColumn::make('createdDate')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Date Created'),
-                    // ->searchable(),
             ])->defaultSort('id', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
@@ -682,8 +657,8 @@ class CustomerResource extends Resource
                         $customerData = $records->load(['equipment', 'activeContactPerson'])->map(function ($customer) {
                             return [
                                 'name' => $customer->name,
-                                'telephone1' => $customer->telephone1 ?? null,
-                                'telephone2' => $customer->telephone2 ?? null,
+                                'telephone1' => $customer->telephones['telephone1'] ?? null,
+                                'telephone2' => $customer->telephones['telephone2'] ?? null,
                                 'mobile1' => $customer->mobile1 ?? null,
                                 'mobile2' => $customer->mobile2 ?? null,
                                 'email' => $customer->email,
@@ -776,18 +751,16 @@ class CustomerResource extends Resource
                         ->schema([
                             Infolists\Components\TextEntry::make('id')
                                 ->label('Client ID')
-                                ->copyable(),
+                                ,
                             Infolists\Components\TextEntry::make('name')
                                 ->label('Client Name')
-                                ->copyable(),
+                                ,
                             Infolists\Components\TextEntry::make('address')
                                 ->label('Address')
-                                ->copyable(),
+                                ,
                                 Infolists\Components\TextEntry::make('display_date')
                                 ->label('Date Added')
-                                ->default('Not Available')
-                                ->copyable()
-                                ->copyableState(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('d/m/Y') : 'Not Available'),
+                                ->default('Not Available'),
                             Infolists\Components\TextEntry::make('status')
                                 ->label('Status')
                                 ->formatStateUsing(fn ($state): string => match ((string) $state) {
@@ -814,50 +787,26 @@ class CustomerResource extends Resource
                             Infolists\Components\TextEntry::make('activeContactPerson.name')
                                 ->label('Contact Person')
                                 ->listWithLineBreaks()
-                                ->copyable()
-                                ->copyMessage('Copied!')
-                                ->copyMessageDuration(1500)
-                                ->color('primary')
-                                ->tooltip('Click what you want to copy'),
+                                ->color('primary'),
                             Infolists\Components\TextEntry::make('activeContactPerson.department')
                                 ->label('Department')
                                 ->listWithLineBreaks()
-                                ->copyable()
-                                ->copyMessage('Copied!')
-                                ->copyMessageDuration(1500)
-                                ->limit(16)
-                                ->tooltip('Click what you want to copy'),
+                                ->limit(16),
                             Infolists\Components\TextEntry::make('activeContactPerson.position')
                                 ->label('Position')
-                                ->listWithLineBreaks()
-                                ->copyable()
-                                ->copyMessage('Copied!')
-                                ->copyMessageDuration(1500)
-                                ->tooltip('Click what you want to copy'),
+                                ->listWithLineBreaks(),
                             Infolists\Components\TextEntry::make('activeContactPerson.contact1')
                                 ->label('Primary Contact')
-                                ->listWithLineBreaks()
-                                ->copyable()
-                                ->copyMessage('Copied!')
-                                ->copyMessageDuration(1500)
-                                ->tooltip('Click what you want to copy'),
+                                ->listWithLineBreaks(),
                             Infolists\Components\TextEntry::make('activeContactPerson.contact2')
                                 ->label('Alternative Contact')
                                 ->listWithLineBreaks()
-                                ->copyable()
-                                ->copyMessage('Copied!')
-                                ->copyMessageDuration(1500)
-                                ->limit(16)
-                                ->tooltip('Click what you want to copy'),
+                                ->limit(16),
                             Infolists\Components\TextEntry::make('activeContactPerson.email')
                                 ->label('Email')
                                 ->listWithLineBreaks()
-                                ->copyable()
-                                ->copyMessage('Copied!')
-                                ->copyMessageDuration(1500)
                                 ->color('info')
-                                ->limit(16)
-                                ->tooltip('Click what you want to copy'),
+                                ->limit(16),
                             Infolists\Components\TextEntry::make('activeContactPerson.isActive')
                                 ->label('Status')
                                 ->listWithLineBreaks()
