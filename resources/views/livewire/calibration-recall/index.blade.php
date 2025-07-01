@@ -71,7 +71,7 @@
                 $firstTelephone = explode('<br>', $customer['telephone'])[0];
               @endphp
               <p class="text-sm font-semibold text-gray-700">
-                Telephone: {{ $firstTelephone }}
+                Fax: {{ $customer['contact_persons'][0]['contact2'] }}
               </p>
             @endif
             @if (!empty($customer['mobile']))
@@ -80,7 +80,7 @@
                 $firstMobile = explode('<br>', $customer['mobile'])[0];
               @endphp
               <p class="text-sm font-semibold text-gray-700">
-                Mobile: {{ $firstMobile }}
+                Tel: {{ $customer['contact_persons'][0]['contact1'] }}
               </p>
             @endif
             @if (!empty($customer['email']))

@@ -474,7 +474,7 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make('address')
                     ->toggleable(isToggledHiddenByDefault: true),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('formatted_mobile')
+                Tables\Columns\TextColumn::make('mobile1')
                     ->label('Mobile')
                     ->icon('heroicon-o-device-phone-mobile')
                     ->iconColor('primary')
@@ -482,7 +482,7 @@ class CustomerResource extends Resource
                     ->copyMessage('Mobile No. copied')
                     ->html(),
                     // ->searchable(),
-                Tables\Columns\TextColumn::make('formatted_telephone')
+                Tables\Columns\TextColumn::make('telephone1')
                     ->label('Telephone')
                     ->icon('heroicon-o-phone')
                     ->iconColor('primary')
@@ -682,8 +682,10 @@ class CustomerResource extends Resource
                         $customerData = $records->load(['equipment', 'activeContactPerson'])->map(function ($customer) {
                             return [
                                 'name' => $customer->name,
-                                'telephone' => $customer->formatted_telephone,
-                                'mobile' => $customer->formatted_mobile,
+                                'telephone1' => $customer->telephone1 ?? null,
+                                'telephone2' => $customer->telephone2 ?? null,
+                                'mobile1' => $customer->mobile1 ?? null,
+                                'mobile2' => $customer->mobile2 ?? null,
                                 'email' => $customer->email,
                                 'contact_persons' => $customer->activeContactPerson->map(function ($contactPerson) {
                                     return [
