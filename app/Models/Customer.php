@@ -88,4 +88,24 @@ class Customer extends Model
         'othersForVat' => 'boolean',
         'othersForPayment' => 'boolean',
     ];
+
+    public function getTelephonesAttribute()
+    // This will be an array
+    // Example usage:
+    // $customer->telephones['telephone1'];
+    // $customer->telephones['telephone2'];
+    {
+        if (!empty($this->telephone1) || !empty($this->telephone2)) {
+            return [
+                
+                'telephone1' => $this->telephone1,
+                'telephone2' => $this->telephone2,
+            ];
+        } else {
+            return [
+                'telephone1' => $this->old_telephone,
+                'telephone2' => $this->old_fax,
+            ];
+        }
+    }
 }

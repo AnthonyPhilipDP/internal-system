@@ -55,30 +55,25 @@
         <div class="flex justify-between mb-4">
           <div class="flex flex-col gap-1 w-[60%]">
             @if (!empty($customer['contact_persons']))
-              @if ($customer['contact_persons'][0]['identity'] == 'male')
+              @if ($customer['contact_persons'][0]['identity'] === 'male')
                 <p class="text-sm font-semibold text-gray-700 truncate capitalize">Mr.
                   {{ $customer['contact_persons'][0]['name'] }}</p>
-              @else
+              @elseif ($customer['contact_persons'][0]['identity'] === 'female')
                 <p class="text-sm font-semibold text-gray-700 truncate capitalize">Ms.
+                  {{ $customer['contact_persons'][0]['name'] }}</p>
+              @else
+                <p class="text-sm font-semibold text-gray-700 truncate capitalize">
                   {{ $customer['contact_persons'][0]['name'] }}</p>
               @endif
             @endif
             <p class="text-sm font-bold text-gray-700 truncate">Client: <span
                 class="uppercase">{{ $customer['name'] }}</span></p>
-            @if (!empty($customer['telephone']))
-              @php
-                // Extract the first telephone number before any <br> tag
-                $firstTelephone = explode('<br>', $customer['telephone'])[0];
-              @endphp
+            @if (!empty($customer['contact_persons'][0]['contact2']))
               <p class="text-sm font-semibold text-gray-700">
                 Fax: {{ $customer['contact_persons'][0]['contact2'] }}
               </p>
             @endif
-            @if (!empty($customer['mobile']))
-              @php
-                // Extract the first telephone number before any <br> tag
-                $firstMobile = explode('<br>', $customer['mobile'])[0];
-              @endphp
+            @if (!empty($customer['contact_persons'][0]['contact1']))
               <p class="text-sm font-semibold text-gray-700">
                 Tel: {{ $customer['contact_persons'][0]['contact1'] }}
               </p>

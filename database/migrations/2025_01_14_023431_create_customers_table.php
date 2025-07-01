@@ -40,10 +40,10 @@ return new class extends Migration
             //Contact Details
             $table->string('mobile1')->nullable();
             $table->string('areaCodeTelephone1')->nullable();
-            $table->string('telephone1')->nullable(); //imported
+            $table->string('telephone1')->nullable();
             $table->string('mobile2')->nullable();
             $table->string('areaCodeTelephone2')->nullable();
-            $table->string('telephone2')->nullable(); //imported
+            $table->string('telephone2')->nullable();
             $table->string('email')->nullable(); //imported
             $table->string('website')->nullable(); //imported
             $table->string('status')->nullable(); //imported
@@ -53,6 +53,8 @@ return new class extends Migration
             //Other Imported Data
             $table->string('createdDate')->nullable(); //imported
             //Identifier if the customer is imported
+            $table->string('old_telephone')->nullable(); //imported
+            $table->string('old_fax')->nullable(); //imported
             $table->boolean('isCustomerImported')->default(false); 
             //Timestamps
             $table->timestamps();
