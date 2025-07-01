@@ -164,7 +164,7 @@ class Customer extends Model
     }
 
     public function contactPerson() {
-        return $this->hasMany(ContactPerson::class);
+        return $this->hasMany(ContactPerson::class, 'customer_id', 'customer_id');
     }
 
     public function deliveryPerson() {
@@ -172,7 +172,7 @@ class Customer extends Model
     }
 
     public function activeContactPerson() {
-        return $this->hasMany(ContactPerson::class)->where('isActive', true);
+        return $this->hasMany(ContactPerson::class, 'customer_id', 'customer_id')->where('isActive', true);
     }
 
     protected $casts = [

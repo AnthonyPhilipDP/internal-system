@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('contact_people', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
+            $table->unsignedBigInteger('customer_id')->nullable();
             $table->string('identity')->nullable();
             $table->string('name')->nullable();
             $table->string('department')->nullable();
@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('contact2')->nullable();
             $table->string('email')->nullable();
             $table->boolean('isActive')->default(true);
+            $table->boolean('isContactImported')->default(false);
             $table->timestamps();
         });
     }

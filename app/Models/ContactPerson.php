@@ -17,11 +17,12 @@ class ContactPerson extends Model
 
     protected $casts = [
         'isActive' => 'boolean',
+        'isContactImported' => 'boolean',
     ];
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
     }
 
     public function scopeActive($query)
