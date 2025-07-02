@@ -84,7 +84,6 @@ class CalibrationRecall extends Component
             foreach ($this->customerData as $customer) {
                 $filename = $customer['name'] . ' ' . $monthName . '-' . $this->filteredYear . '.html';
                 $filePath = $storageFolder . '/' . $filename;
-
                 $html = view('livewire.calibration-recall.layout', ['customer' => $customer])->render();
                 file_put_contents($filePath, $html);
 
@@ -92,14 +91,27 @@ class CalibrationRecall extends Component
                 $pdfFilename = $customer['name'] . ' ' . $monthName . '-' . $this->filteredYear . '.pdf';
                 $pdfPath = $storageFolder . '/' . $pdfFilename;
 
+                $footer = '
+                    <div style="width: calc(100% - 128px); margin: 0 auto;">
+                        <hr style="border: 1px solid #1f2937; margin-bottom: 4px; width: 100%;">
+                        <div
+                            style="display: table; width: 100%; font-size: 11px; font-weight: 500; color: #1f2937; font-family: \'Times New Roman\', Times, serif;">
+                            <span style="display: table-cell; text-align: left;">DCN 5-5.10.4.4-3 rev.1</span>
+                            <span style="display: table-cell; text-align: right;">
+                            Page <span class="pageNumber"></span> of <span class="totalPages"></span>
+                            </span>
+                        </div>
+                    </div>
+                ';
+
                 \Spatie\Browsershot\Browsershot::html($html)
                     ->showBackground()
+                    ->showBrowserHeaderAndFooter()
+                    ->hideHeader()
                     ->format('Letter')
-                    ->disableCaptureURLs()
-                    ->ignoreHttpsErrors()
-                    ->margins(0, 0, 0, 0)
-                    ->timeout(900)
-                    ->scale(1)
+                    ->margins(48, 64, 48, 64, 'px')
+                    ->footerHtml($footer)
+                    ->timeout(30)
                     ->save($pdfPath);
             }
 

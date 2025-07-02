@@ -9,18 +9,16 @@
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body style="margin:0; padding:0;">
-  <div style="width:100vw; min-height:100vh;">
+<body>
+  <div>
     @php
-      // Chunk the equipment into pages of 9 items each
-      $equipmentChunks = collect($customer['equipment'])->chunk(9);
+      $person = !empty($customer['contact_persons']) ? $customer['contact_persons'][0] : null;
+      $equipmentCount = count($customer['equipment']);
     @endphp
-
-    @foreach ($equipmentChunks as $chunkIndex => $equipmentChunk)
-      <div
-        class="border relative w-[8.5in] h-[11in] bg-white px-12 print:page-break pt-[180px] bg-cover bg-no-repeat mx-auto">
-        <div class="absolute top-[45px] inset-0 flex flex-col items-center tracking-normal -space-y-1"
-          style="font-family: 'Times New Roman', Times, serif;">
+    <div class="relative bg-cover bg-no-repeat mx-auto border border-white page-break">
+      {{-- Header --}}
+      <div style="font-family: 'Times New Roman', Times, serif;">
+        <div class="absolute inset-0 flex flex-col items-center tracking-normal -space-y-1">
           <div class="flex">
             <h1 class="text-[26px] text-center font-bold">Precision Measurement Specialists, <span
                 class="italic text-red-500">i</span>nc.</h1>
@@ -43,40 +41,30 @@
               www.pmsi-cal.com</p>
           </div>
         </div>
-        <div class="absolute top-[54px] left-12 w-28 h-28">
+        <div class="absolute w-28 h-28">
           <img src="https://i.ibb.co/fdh0S6YF/pmsi-logo-copyright.png" alt="PMSi Logo (copyright)">
         </div>
-        <!-- Customer Details -->
-        <div class="flex justify-between mb-4">
+      </div>
+      {{-- Heading --}}
+      <div class="mt-[150px] flex flex-row text-sm">
+        <div class="flex justify-between mb-4 w-full">
           <div class="flex flex-col gap-1 w-[60%]">
-            @if (!empty($customer['contact_persons']))
-              @if ($customer['contact_persons'][0]['identity'] == 'male')
-                <p class="text-sm font-semibold text-gray-700 truncate capitalize">Mr.
-                  {{ $customer['contact_persons'][0]['name'] }}</p>
+            @if ($person)
+              @if ($person['identity'] === 'male')
+                <p class="text-sm font-bold text-gray-700 truncate capitalize">Mr. {{ $person['name'] }}</p>
+              @elseif ($person['identity'] === 'female')
+                <p class="text-sm font-bold text-gray-700 truncate capitalize">Ms. {{ $person['name'] }}</p>
               @else
-                <p class="text-sm font-semibold text-gray-700 truncate capitalize">Ms.
-                  {{ $customer['contact_persons'][0]['name'] }}</p>
+                <p class="text-sm font-bold text-gray-700 truncate capitalize">{{ $person['name'] }}</p>
               @endif
             @endif
             <p class="text-sm font-bold text-gray-700 truncate">Client: <span
                 class="uppercase">{{ $customer['name'] }}</span></p>
-            @if (!empty($customer['telephone']))
-              @php
-                // Extract the first telephone number before any <br> tag
-                $firstTelephone = explode('<br>', $customer['telephone'])[0];
-              @endphp
-              <p class="text-sm font-semibold text-gray-700">
-                Telephone: {{ $firstTelephone }}
-              </p>
+            @if (!empty($person['contact2']))
+              <p class="text-sm font-semibold text-gray-700">Fax: {{ $person['contact2'] }}</p>
             @endif
-            @if (!empty($customer['mobile']))
-              @php
-                // Extract the first telephone number before any <br> tag
-                $firstMobile = explode('<br>', $customer['mobile'])[0];
-              @endphp
-              <p class="text-sm font-semibold text-gray-700">
-                Mobile: {{ $firstMobile }}
-              </p>
+            @if (!empty($person['contact1']))
+              <p class="text-sm font-semibold text-gray-700">Tel: {{ $person['contact1'] }}</p>
             @endif
             @if (!empty($customer['email']))
               <p class="text-sm font-semibold text-gray-700">Email: {{ $customer['email'] }}</p>
@@ -86,167 +74,138 @@
             <div class="items-center">
               <div class="text-3xl font-bold text-gray-700 text-center">Calibration Recall</div>
               <div
-                class="mt-4 text-lg text-center font-bold text-gray-800 border border-red-400 bg-yellow-300 py-4 px-12">
-                DUE: {{ \Carbon\Carbon::parse($equipmentChunk->first()['calibrationDue'])->format('F Y') }}
+                class="mt-4 text-lg text-center font-bold text-gray-800 border border-red-400 bg-yellow-300 py-4 px-6">
+                DUE: {{ \Carbon\Carbon::parse($customer['equipment'][0]['calibrationDue'])->format('F Y') }}
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Equipment Table -->
-        <hr class="border-gray-800 my-2">
-        @if ($chunkIndex === 0)
-          <p class="text-xs text-gray-800 my-2 text-justify">
-            @if (!empty($customer['contact_persons']))
-              @if ($customer['contact_persons'][0]['identity'] == 'male')
-                Dear Sir,
-              @else
-                Dear Madam,
-              @endif
-            @else
-              Dear Sir/Madam:
-            @endif
-            <br><br>
-            Please take note that the following list of <span class="underline italic">equipment will come due</span>
-            for calibration service. Please contact our office at your convenience to schedule calibration service of
-            this equipment.
-          </p>
+      <hr class="border-gray-800 my-2">
+
+      {{-- Salutation --}}
+      <p class="text-xs text-gray-800 my-2 text-justify">
+        @if ($person)
+          @if ($person['identity'] === 'male')
+            Dear Sir:
+          @elseif ($person['identity'] === 'female')
+            Dear Madam:
+          @else
+            Dear Sir/Madam:
+          @endif
         @endif
-        <div class="border-b border-white rounded-lg overflow-x-auto">
-          <table class="min-w-full divide-y divide-white table-fixed w-full">
-            @if ($equipmentChunks->count() > 1)
-              <caption class="caption-bottom text-xs text-gray-500 font-mono mt-2">
-                Number of equipment in this page: {{ $equipmentChunk->count() }}
-              </caption>
-            @endif
-            <thead class="bg-gray-200">
-              <tr>
-                <th scope="col"
-                  class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 pl-4 pr-2 text-left">
-                  Cal Due
-                </th>
-                <th scope="col"
-                  class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
-                  Equipment ID
-                </th>
-                <th scope="col"
-                  class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
-                  Make
-                </th>
-                <th scope="col"
-                  class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
-                  Model
-                </th>
-                <th scope="col"
-                  class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-24 min-w-24 px-2 text-left">
-                  Description
-                </th>
-                <th scope="col"
-                  class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left">
-                  Serial No.
-                </th>
-                <th scope="col"
-                  class="py-2 text-[10px] font-medium text-black uppercase tracking-wider max-w-16 min-w-16 px-2 text-left pl-2 pr-4">
-                  Owner
-                </th>
+        <br><br>
+        {{-- Introduction --}}
+        Please take note that the following list of <span class="underline italic">equipment will come due</span>
+        for calibration service. Please contact our office at your convenience to schedule calibration service of
+        this equipment.
+      </p>
+
+      {{-- Equipment List --}}
+      <div class="border-b border-white">
+        <table class="w-full text-sm mt-4 text-left text-gray-700 dark:text-gray-400 table-fixed">
+          <thead class="text-[11px] text-center text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="bg-gray-100 px-2 py-1">
+                Cal Due
+              </th>
+              <th scope="col" class="px-2 py-1">
+                Equipment ID
+              </th>
+              <th scope="col" class="bg-gray-100 px-2 py-1">
+                Make
+              </th>
+              <th scope="col" class="px-2 py-1">
+                Model
+              </th>
+              <th scope="col" class="bg-gray-100 px-2 py-1">
+                Description
+              </th>
+              <th scope="col" class="px-2 py-1">
+                Serial No.
+              </th>
+              <th scope="col" class="bg-gray-100 px-2 py-1">
+                Owner
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($customer['equipment'] as $equipment)
+              <tr class="text-xs text-center bg-white border-b border-gray-200">
+                <td class="bg-gray-50 px-2 py-1">
+                  @if ($equipment['calibrationDue'])
+                    {{ \Carbon\Carbon::parse($equipment['calibrationDue'])->format('d-M-Y') }}
+                  @endif
+                </td>
+                <td class="px-2 py-1">
+                  {{ $equipment['equipment_id'] }}
+                </td>
+                <td class="bg-gray-50 px-2 py-1">
+                  {{ $equipment['make'] }}
+                </td>
+                <td class="px-2 py-1">
+                  {{ $equipment['model'] }}
+                </td>
+                <td class="bg-gray-50 px-2 py-1">
+                  {{ $equipment['description'] }}
+                </td>
+                <td class="px-2 py-1">
+                  {{ $equipment['serial'] }}
+                </td>
+                <td class="bg-gray-50 px-2 py-1">
+                  @if ($equipment['isClientExclusive'])
+                    <span>{{ $equipment['exclusive_name'] }}</span>
+                  @else
+                    Not Applicable
+                  @endif
+                </td>
               </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200 text-left">
-              @foreach ($equipmentChunk as $equipment)
-                <tr class="items-center">
-                  <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 pl-4 pr-2">
-                    @if ($equipment['calibrationDue'])
-                      {{ \Carbon\Carbon::parse($equipment['calibrationDue'])->format('d-M-Y') }}
-                    @endif
-                  </td>
-                  <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
-                    {{ $equipment['equipment_id'] }}
-                  </td>
-                  <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
-                    {{ $equipment['make'] }}
-                  </td>
-                  <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
-                    {{ $equipment['model'] }}
-                  </td>
-                  <td class="py-1 text-[10px] text-gray-800 max-w-24 min-w-24 px-2">
-                    {{ $equipment['description'] }}
-                  </td>
-                  <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 px-2">
-                    {{ $equipment['serial'] }}
-                  </td>
-                  <td class="py-1 text-[10px] text-gray-800 max-w-16 min-w-16 pl-2 pr-4"
-                    style="display: inline-block; max-width: 18ch; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                    @if ($equipment['isClientExclusive'])
-                      <span class="">{{ $equipment['exclusive_name'] }}</span>
-                    @else
-                      Not Applicable
-                    @endif
-                  </td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+
+      {{-- Table footer --}}
+      <div>
+        <p class="text-xs mt-2 text-gray-700 text-center">
+          Total number of equipment{{ $equipmentCount > 1 ? 's' : '' }}:
+          <span class="font-semibold">{{ $equipmentCount }}</span>
+        </p>
+      </div>
+
+      {{-- Letter Body --}}
+      <div class="space-y-2 text-xs text-gray-800 my-4 text-justify break-inside-avoid">
+        <div class="pb-2">
+          We at PMS<span class="text-red-500 italic">i</span> are committed to provide an impartial high-quality
+          calibration, maintenance and repair service of test and measurement equipment. We offer an OEM level of
+          service & expertise at a competitive rate.
         </div>
-
-        @if ($chunkIndex === $equipmentChunks->count() - 1)
-          <div>
-            @if (count($customer['equipment']) > 1)
-              <p class="text-xs mt-2 text-gray-700 text-center">
-                Total number of equipments: <span class="font-semibold">{{ count($customer['equipment']) }}</span>
-              </p>
-            @else
-              <p class="text-xs mt-2 text-gray-700 text-center">
-                Total number of equipment: <span class="font-semibold">{{ count($customer['equipment']) }}</span>
-              </p>
-            @endif
-          </div>
-          <!-- Letter Content -->
-          <div class="space-y-2 text-xs text-gray-800 my-2 absolute bottom-12 left-12 right-12 text-justify">
-            <div class="pb-2">
-              We at PMS<span class="text-red-500 italic">i</span> are committed to provide an impartial high-quality
-              calibration, maintenance and repair service of test and measurement equipment. We offer an OEM level of
-              service & expertise at a competitive rate.
-            </div>
-            <div class="pb-2">
-              For other capabilities, questions, or a quote, please contact us at <span
-                class="font-semibold italic">(046) 889-0673</span> or <span class="font-semibold italic">(0997) 410
-                6031</span>.<br>
-              You may also email us at <span class="font-semibold italic">info@pmsi-cal.com</span> or <span
-                class="font-semibold italic">pmsical@yahoo.com</span>.
-            </div>
-            <div class="pb-4">
-              Please disregard this reminder if recalled equipment has been attended to.
-            </div>
-            <div class="pb-4">
-              Best Regards,
-            </div>
-            <div>
-              <span class="font-semibold">Elvia N. Mendez</span><br>
-              <span class="underline">PMS<span class="text-red-500 italic">i</span></span>
-            </div>
-          </div>
-        @endif
-
-        <!-- Continued Message -->
-        @if ($chunkIndex < $equipmentChunks->count() - 1)
-          <div class="text-center text-sm text-gray-500 mt-4">
-            (Continued on the next page)
-          </div>
-        @endif
-
-        <!-- Footer -->
-        <hr class="absolute left-12 right-12 bottom-12 border-gray-800 mb-1">
-        <div class="absolute bottom-9 left-12 text-left text-[11px] font-[500] text-gray-800"
-          style="font-family: 'Times New Roman', Times, serif;">
-          DCN 5-5.10.4.4-3 rev.1
+        <div class="pb-2">
+          For other capabilities, questions, or a quote, please contact us at <span class="font-semibold italic">(046)
+            889-0673</span> or <span class="font-semibold italic">(0997) 410
+            6031</span>.<br>
+          You may also email us at <span class="font-semibold italic">info@pmsi-cal.com</span> or <span
+            class="font-semibold italic">pmsical@yahoo.com</span>.
         </div>
-        <div class="absolute bottom-9 right-12 text-right text-[11px] font-[500] text-gray-800"
-          style="font-family: 'Times New Roman', Times, serif;">
-          Page {{ $chunkIndex + 1 }} of {{ $equipmentChunks->count() }}
+        <div class="pb-4">
+          Please disregard this reminder if recalled equipment has been attended to.
+        </div>
+        <div class="pb-4">
+          Best Regards,
+        </div>
+        <div>
+          <span class="font-semibold">Elvia N. Mendez</span><br>
+          <span class="underline">PMS<span class="text-red-500 italic">i</span></span>
         </div>
       </div>
-    @endforeach
-  </div>
+      <div style="page-break-after: always;"></div>
+      <style>
+        .page-break {
+          page-break-after: always;
+        }
+      </style>
+    </div>
 </body>
 
 </html>
