@@ -12,7 +12,9 @@ use Filament\Tables\Table;
 use App\Models\ContactPerson;
 use Filament\Resources\Resource;
 use App\Models\PotentialCustomer;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Support\Enums\Alignment;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
 use App\Models\PotentialCustomerContactPerson;
@@ -542,12 +544,48 @@ class PriceQuoteResource extends Resource
                     ->label('VAT Amount'),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total'),
-            ])
+            ])->defaultSort('id', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('replicateWithEquipment')
+                    ->label('Replicate')
+                    ->icon('heroicon-o-document-duplicate')
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->modalSubmitActionLabel('Replicate')
+                    ->modalHeading('Replicate Price Quote')
+                    ->modalDescription('This will replicate the price quote with new price quote number')
+                    ->modalIcon('heroicon-o-document-duplicate')
+                    ->modalIconColor('info')
+                    ->action(function (PriceQuote $record) {
+                        // Replicate the PriceQuote
+                        $newQuote = $record->replicate();
+                        $maxNumber = PriceQuote::max('price_quote_number') ?? 18900;
+                        $newQuote->price_quote_number = $maxNumber + 1;
+                        $newQuote->save();
+
+                        // Replicate related equipment
+                        foreach ($record->equipment_list as $equipment) {
+                            $newEquipment = $equipment->replicate();
+                            $newEquipment->price_quote_id = $newQuote->id;
+                            $newEquipment->save();
+                        }
+
+                        Notification::make()
+                            ->success()
+                            ->icon('heroicon-o-document-duplicate')
+                            ->title('Price Quotation Replicated')
+                            ->body('The price quotation and its equipment have been replicated successfully with a new price quote number.')
+                            ->send();
+                    })
+                ])
+                ->icon('heroicon-o-ellipsis-horizontal-circle')
+                ->tooltip('Options')
+                ->color('danger'),
                 Tables\Actions\Action::make('printPriceQuote')
                 ->label('Print')
                 ->tooltip('Print Price Quote')
