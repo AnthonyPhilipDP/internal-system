@@ -17,6 +17,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
+use App\Services\PotentialCustomerTransferService;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PotentialCustomerResource\Pages;
 use App\Filament\Resources\PotentialCustomerResource\RelationManagers;
@@ -499,10 +500,30 @@ class PotentialCustomerResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
-                        ->color('info'),
+                    // Tables\Actions\ViewAction::make()
+                    //     ->color('info'),
                     Tables\Actions\EditAction::make()
                         ->color('warning'),
+                    Tables\Actions\Action::make('transferToActualCustomer')
+                        ->label('Transfer')
+                        ->color('info')
+                        ->icon('bi-person-up')
+                        ->requiresConfirmation()
+                        ->modalHeading('Transfer to Actual Customer')
+                        ->modalDescription('Are you sure you want to transfer this potential customer to actual customer? This action cannot be undone.')
+                        ->modalIcon('bi-person-up')
+                        ->modalSubmitActionLabel('Transfer it')
+                        ->action(function (PotentialCustomer $record) {
+                            $service = new PotentialCustomerTransferService();
+                            $service->transfer($record);
+
+                            Notification::make()
+                                ->success()
+                                ->icon('bi-person-check')
+                                ->title('Transferred')
+                                ->body('Potential customer has been transferred to actual customers.')
+                                ->send();
+                        }),
                     Tables\Actions\DeleteAction::make()
                         ->modalIcon('heroicon-o-user-minus')
                         ->modalHeading(fn (PotentialCustomer $record) => 'Remove ' . $record->name)
@@ -528,6 +549,10 @@ class PotentialCustomerResource extends Resource
                                 ->body('The customer has been permanently removed.'),
                         ),
                     Tables\Actions\RestoreAction::make()
+                        ->after(function (PotentialCustomer $record) {
+                            $record->transferred_at = null;
+                            $record->save();
+                        })
                         ->color('primary')
                         ->modalIcon('heroicon-o-user-plus')
                         ->modalHeading(fn (PotentialCustomer $record) => 'Bring ' . $record->name . ' back')

@@ -51,6 +51,7 @@ return new class extends Migration
             $table->boolean('othersForPayment')->default(false);
             $table->string('otherPayment')->nullable();
             //Timestamps
+            $table->timestamp('transferred_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
