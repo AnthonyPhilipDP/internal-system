@@ -115,14 +115,22 @@ class PriceQuoteResource extends Resource
                                             ->first();
                                     }
                                     else {
-                                        $customer_id = Customer::where('customer_id', $state)->first()?->id;
+                                        $customer_id = Customer::where('customer_id', $state)->first()?->customer_id;
                                         $contact_person = ContactPerson::where('customer_id', $customer_id)
                                             ->where('isActive', true)
                                             ->first();
                                     }
 
                                     if ($contact_person) {
-                                        $prefix = $contact_person->identity === 'female' ? 'Ms.' : 'Mr.';
+                                        if($contact_person->identity === 'female') {
+                                            $prefix = 'Ms.';
+                                        }
+                                        elseif($contact_person->identity === 'male') {
+                                            $prefix = 'Mr.';
+                                        }
+                                        else {
+                                            $prefix = null;
+                                        }
                                         $set('contact_person', "{$prefix} {$contact_person->name}");
                                         $set('customer_fax', $contact_person->contact1);
                                         $set('customer_email', $contact_person->email);
@@ -153,11 +161,19 @@ class PriceQuoteResource extends Resource
                                 if (!$customer) {
                                     return [];
                                 }
-                                return ContactPerson::where('customer_id', $customer->id)
+                                return ContactPerson::where('customer_id', $customer_id)
                                     ->where('isActive', true)
                                     ->get()
                                     ->mapWithKeys(function ($person) {
-                                        $prefix = $person->identity === 'female' ? 'Ms.' : 'Mr.';
+                                        if($person->identity === 'female') {
+                                            $prefix = 'Ms.';
+                                        }
+                                        elseif($person->identity === 'male') {
+                                            $prefix = 'Mr.';
+                                        }
+                                        else {
+                                            $prefix = null;
+                                        }
                                         $label = "{$prefix} {$person->name}";
                                         return [$label => $label];
                                     })
@@ -165,7 +181,7 @@ class PriceQuoteResource extends Resource
                             })
                             ->afterStateUpdated(function ($state, callable $get, callable $set) {
                                 $customer_id = $get('customer_id');
-                                $contactPerson = ContactPerson::where('customer_id', $customer->id)
+                                $contactPerson = ContactPerson::where('customer_id', $customer_id)
                                     ->where('name', $state)
                                     ->where('isActive', true)
                                     ->first();
@@ -175,7 +191,15 @@ class PriceQuoteResource extends Resource
                                     $set('customer_mobile', $contactPerson->contact2);
 
                                     // Set salutation
-                                    $prefix = $contactPerson->identity === 'female' ? 'Ms.' : 'Mr.';
+                                    if($contactPerson->identity === 'female') {
+                                        $prefix = 'Ms.';
+                                    }
+                                    elseif($contactPerson->identity === 'male') {
+                                        $prefix = 'Mr.';
+                                    }
+                                    else {
+                                        $prefix = null;
+                                    }
                                     $set('salutation', "Dear {$prefix} {$contactPerson->name}:");
                                 } else {
                                     $set('salutation', null);
@@ -202,17 +226,33 @@ class PriceQuoteResource extends Resource
                                         ->where('isActive', true)
                                         ->get()
                                         ->mapWithKeys(function ($person) {
-                                            $prefix = $person->identity === 'female' ? 'Ms.' : 'Mr.';
+                                            if($person->identity === 'female') {
+                                                $prefix = 'Ms.';
+                                            }
+                                            elseif($person->identity === 'male') {
+                                                $prefix = 'Mr.';
+                                            }
+                                            else {
+                                                $prefix = null;
+                                            }
                                             $label = "{$prefix} {$person->name}";
                                             return [$label => $label];
                                         })
                                         ->toArray();
                                 }
-                                return ContactPerson::where('customer_id', $customer->id)
+                                return ContactPerson::where('customer_id', $customer_id)
                                     ->where('isActive', true)
                                     ->get()
                                     ->mapWithKeys(function ($person) {
-                                        $prefix = $person->identity === 'female' ? 'Ms.' : 'Mr.';
+                                        if($person->identity === 'female') {
+                                            $prefix = 'Ms.';
+                                        }
+                                        elseif($person->identity === 'male') {
+                                            $prefix = 'Mr.';
+                                        }
+                                        else {
+                                            $prefix = null;
+                                        }
                                         $label = "{$prefix} {$person->name}";
                                         return [$label => $label];
                                     })
