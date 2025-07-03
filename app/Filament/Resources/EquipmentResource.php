@@ -43,6 +43,8 @@ class EquipmentResource extends Resource
     
     protected static ?string $navigationGroup = 'PMSi';
 
+    protected static ?int $navigationSort = 5;
+
     protected static ?string $navigationIcon = 'heroicon-o-cube';
 
     protected static ?string $recordTitleAttribute = 'transaction_id';

@@ -41,6 +41,8 @@ class CustomerResource extends Resource
 
     protected static ?string $navigationGroup = 'PMSi';
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $navigationIcon = 'bi-person-check';
 
     public static function getGloballySearchableAttributes(): array

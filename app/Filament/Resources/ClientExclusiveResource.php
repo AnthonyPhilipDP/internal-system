@@ -22,6 +22,8 @@ class ClientExclusiveResource extends Resource
 
     protected static ?string $navigationGroup = 'PMSi';
 
+    protected static ?int $navigationSort = 4;
+
     public static function form(Form $form): Form
     {
         return $form

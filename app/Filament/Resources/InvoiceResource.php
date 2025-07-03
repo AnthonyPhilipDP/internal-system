@@ -23,6 +23,8 @@ use App\Filament\Resources\InvoiceResource\RelationManagers;
 class InvoiceResource extends Resource
 {
     protected static ?string $navigationGroup = 'PMSi';
+
+    protected static ?int $navigationSort = 7;
     
     protected static ?string $model = Invoice::class;
 

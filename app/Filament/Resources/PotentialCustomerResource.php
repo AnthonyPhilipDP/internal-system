@@ -26,6 +26,10 @@ class PotentialCustomerResource extends Resource
 {
     protected static ?string $model = PotentialCustomer::class;
 
+    protected static ?string $navigationGroup = 'PMSi';
+
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $navigationIcon = 'bi-person-exclamation';
 
     public static function form(Form $form): Form

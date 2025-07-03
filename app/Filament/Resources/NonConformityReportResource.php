@@ -23,6 +23,8 @@ class NonConformityReportResource extends Resource
 
     protected static ?string $navigationGroup = 'PMSi';
 
+    protected static ?int $navigationSort = 6;
+
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
     public static function form(Form $form): Form

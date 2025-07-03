@@ -26,6 +26,8 @@ class CapabilityResource extends Resource
 
     protected static ?string $navigationGroup = 'PMSi';
 
+    protected static ?int $navigationSort = 9;
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Form $form): Form
