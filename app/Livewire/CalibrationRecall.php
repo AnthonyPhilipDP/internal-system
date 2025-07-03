@@ -111,7 +111,7 @@ class CalibrationRecall extends Component
                     ->format('Letter')
                     ->margins(48, 64, 48, 64, 'px')
                     ->footerHtml($footer)
-                    ->timeout(30)
+                    ->timeout(1200)
                     ->save($pdfPath);
             }
 
