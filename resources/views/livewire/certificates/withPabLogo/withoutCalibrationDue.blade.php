@@ -261,7 +261,8 @@
           </div>
           <div class="flex flex-col items-center">
             <p class="text-xs font-normal text-black">&emsp;</p>
-            <p class="text-xs font-normal text-black overline">&emsp;Reviewed by: J. Tenorio&emsp;</p>
+            <p class="text-xs font-normal text-black overline">&emsp;Reviewed by: {{ $equipment['reviewedBy'] }}&emsp;
+            </p>
           </div>
         </div>
       </div>
@@ -287,8 +288,8 @@
   </style>
 </div>
 
-{{-- <script>
-    window.onload = function() {
-        window.print();
-    };
-</script> --}}
+<script>
+  window.onload = function() {
+    window.print();
+  };
+</script>

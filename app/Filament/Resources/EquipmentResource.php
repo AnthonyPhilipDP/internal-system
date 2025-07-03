@@ -1003,6 +1003,11 @@ class EquipmentResource extends Resource
                     ->color('info')
                     ->modalWidth(MaxWidth::Large)
                     ->form([
+                        Forms\Components\TextInput::make('reviewedBy')
+                            ->label('Reviewed By')
+                            ->autofocus(false)
+                            ->autocomplete(false)
+                            ->default('J. Tenorio'),
                         Forms\Components\Group::make([
                             Forms\Components\Toggle::make('withPabLogo')
                                 ->onIcon('heroicon-m-bolt')
@@ -1050,6 +1055,7 @@ class EquipmentResource extends Resource
                                 'exclusive_id' => $record->exclusive_id,
                                 'exclusive_name' => $exclusiveRecord->name ?? null,
                                 'exclusive_address' => $exclusiveRecord->address ?? null,
+                                'reviewedBy' => $data['reviewedBy'],
                             ];
                         })->toArray();
                 
