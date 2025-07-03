@@ -1,4 +1,5 @@
 <div class="px-32 flex flex-col justify-center gap-y-12 my-12">
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <button wire:loading.attr="disabled" wire:click="downloadFiles"
     class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 mx-auto">
     <span wire:loading.remove wire:target="downloadFiles">
@@ -262,4 +263,31 @@
       <div class="w-[30%]"></div>
     </div>
   </div>
+  <script>
+    document.addEventListener('livewire:init', () => {
+      // Success notification
+      Livewire.on('download-complete', () => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Download started!',
+          showConfirmButton: false,
+          timer: 3500
+        });
+      });
+
+      // Error notification
+      Livewire.on('download-error', (message) => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Download failed: ' + message,
+          showConfirmButton: false,
+          timer: 5000
+        });
+      });
+    });
+  </script>
 </div>

@@ -42,7 +42,12 @@ class PriceQuote extends Component
         }
                 
         try {
-            $filename = 'price-quote-test.html';
+            $price_quote_number =  $this->priceQuote->price_quote_number;
+            $customer_id = $this->customer->customer_id;
+            $nickname = $this->customer->nickname;
+
+            $filename = $price_quote_number . '(' . $customer_id . ').html';
+
             $filePath = $storageFolder . '/' . $filename;
 
             $html = view('livewire.price-quote.layout', ['priceQuote' => $this->priceQuote, 'customer' => $this->customer, 'equipmentList' => $this->equipmentList])->render();
@@ -50,7 +55,8 @@ class PriceQuote extends Component
 
             
             // Convert the saved HTML file to PDF
-            $pdfFilename = 'price-quote-test.pdf';
+            $nickname ? $pdfFilename = $price_quote_number . '(' . $nickname . ').pdf' : $pdfFilename = $price_quote_number . '(' . $customer_id . ').pdf';
+
             $pdfPath = $storageFolder . '/' . $pdfFilename;
             
             $footer = '
@@ -63,7 +69,6 @@ class PriceQuote extends Component
                 </div>
             ';
 
-
             Browsershot::html($html)
                 ->showBackground()
                 ->showBrowserHeaderAndFooter()
@@ -71,20 +76,12 @@ class PriceQuote extends Component
                 ->format('Letter')
                 ->margins(48, 64, 48, 64, 'px')
                 ->footerHtml($footer)
-
                 ->save($pdfPath);
-            // Browsershot::html($html)
-            //     ->showBackground()
-            //     ->format('Letter')
-            //     ->margins(48, 64, 48, 64, 'px')
-            //     ->timeout(30)
-            //     ->scale(1)
-            //     ->footerView('livewire.price-quote.footer')
-            //     ->save($pdfPath);
 
+            $this->dispatch('download-complete');
             return response()->download($pdfPath)->deleteFileAfterSend(true);
         } catch (Exception $e) {
-            dd($e);
+            $this->dispatch('download-error', $e->getMessage());
         }
     }
 
