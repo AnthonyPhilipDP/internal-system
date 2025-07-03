@@ -1048,8 +1048,8 @@ class EquipmentResource extends Resource
                                 'withCalibrationDue' => $data['withCalibrationDue'],
                                 'isClientExclusive' => $record->isClientExclusive,
                                 'exclusive_id' => $record->exclusive_id,
-                                'exclusive_name' => $exclusiveRecord->name,
-                                'exclusive_address' => $exclusiveRecord->address,
+                                'exclusive_name' => $exclusiveRecord->name ?? null,
+                                'exclusive_address' => $exclusiveRecord->address ?? null,
                             ];
                         })->toArray();
                 
