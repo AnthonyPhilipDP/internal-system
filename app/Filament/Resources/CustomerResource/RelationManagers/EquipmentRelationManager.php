@@ -429,6 +429,11 @@ class EquipmentRelationManager extends RelationManager
                     ->label('Transaction ID')
                     ->alignCenter()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('poNoCalibration')
+                    ->label('PO No.')
+                    ->alignCenter()
+                    ->searchable(isIndividual: true)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('equipment_id')
                     ->label('Equipment ID')
                     ->alignCenter()
