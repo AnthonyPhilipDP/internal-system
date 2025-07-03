@@ -114,12 +114,14 @@ class PriceQuoteResource extends Resource
                                 if ($state) {
                                     if ($useActual == '0') {
                                         $customer_id = PotentialCustomer::where('customer_id', $state)->first()?->id;
+                                        $vatValue = PotentialCustomer::where('customer_id', $customer_id)->value('vatExempt');
                                         $contact_person = PotentialCustomerContactPerson::where('potential_customer_id', $customer_id)
                                             ->where('isActive', true)
                                             ->first();
                                     }
                                     else {
                                         $customer_id = Customer::where('customer_id', $state)->first()?->customer_id;
+                                        $vatValue = Customer::where('customer_id', $customer_id)->value('vatExempt');
                                         $contact_person = ContactPerson::where('customer_id', $customer_id)
                                             ->where('isActive', true)
                                             ->first();
@@ -147,6 +149,8 @@ class PriceQuoteResource extends Resource
                                     $set('contact_person', '');
                                     $set('salutation', null);
                                 }
+
+                                $set('vat', !$vatValue);
                             }),
 
                         Forms\Components\Select::make('contact_person')
@@ -465,7 +469,6 @@ class PriceQuoteResource extends Resource
                         ->columnSpan(1)
                         ->inline(false)
                         ->required()
-                        ->default(true)
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $get, callable $set) {
                             $subtotal = floatval($get('subtotal') ?? 0);

@@ -1746,6 +1746,10 @@ class EquipmentRelationManager extends RelationManager
                                 Forms\Components\Toggle::make('vatToggle')
                                 ->label('VAT')
                                 ->reactive()
+                                ->default(function () use ($records) {
+                                    $customer = $records->first()->customer ?? null;
+                                    return $customer ? !$customer->vatExempt : false;
+                                })
                                 ->columnSpan(1)
                                 ->inline(false)
                                 ->afterStateUpdated(function ($state, callable $set, callable $get) use ($equipmentIds) {
