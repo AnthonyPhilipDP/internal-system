@@ -1120,7 +1120,7 @@ class EquipmentResource extends Resource
         $writer = new PngWriter();
         $result = $writer->write($qrCode);
 
-        $fileName = 'qrcodes/equipment_' . $equipment->id . '.png';
+        $fileName = 'qrcodes/equipment_' . $equipment->transaction_id . '.png';
         Storage::disk('public')->put($fileName, $result->getString());
     }
 }
