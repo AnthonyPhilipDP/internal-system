@@ -155,8 +155,8 @@ class EquipmentResource extends Resource
                                         ->onColor('success')
                                         ->offColor('danger')
                                         ->label('Client Exclusive')
-                                        ->onIcon('heroicon-m-bolt')
-                                        ->offIcon('heroicon-m-bolt-slash')
+                                        ->onIcon('bi-people-fill')
+                                        ->offIcon('bi-people-fill')
                                         ->default(false)
                                         ->reactive()
                                         ->columnSpan(4),
@@ -326,7 +326,7 @@ class EquipmentResource extends Resource
                                 Forms\Components\Toggle::make('sameToggle')
                                     ->visibleOn('create')
                                     ->label('Generate New Receipt')
-                                    ->helperText('Toggle this button to create a new acknowledgment receipt number')
+                                    ->helperText('Toggle this button on to create a new acknowledgment receipt number')
                                     ->onIcon('heroicon-m-squares-plus')
                                     ->offIcon('heroicon-m-squares-2x2')
                                     ->onColor('primary')
@@ -371,7 +371,7 @@ class EquipmentResource extends Resource
                                 // end of ar_id for create
                                 // start of ar_id for edit
                                 Forms\Components\TextInput::make('ar_id')
-                                    ->label('Acknowledgement Receipt No.')
+                                    ->label('Acknowledgment Receipt No.')
                                     ->prefix('401 -')
                                     ->maxLength(255)
                                     ->readonly(fn (callable $get) => !$get('enableEditing') && !blank($get('ar_id')))
@@ -401,7 +401,7 @@ class EquipmentResource extends Resource
                                     ->label('Enable Editing')
                                     ->onIcon('heroicon-m-lock-open')
                                     ->offIcon('heroicon-m-lock-closed')
-                                    ->helperText('Toggle this button to edit the Acknowledgement Receipt No.')
+                                    ->helperText('Toggle this button on to edit the Acknowledgement Receipt No.')
                                     ->onColor('success')
                                     ->offColor('danger')
                                     ->reactive()
