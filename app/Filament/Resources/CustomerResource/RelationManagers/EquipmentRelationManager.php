@@ -22,6 +22,7 @@ use Filament\Support\Colors\Color;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Group;
 use Filament\Support\Enums\MaxWidth;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Section;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -733,6 +734,7 @@ class EquipmentRelationManager extends RelationManager
                             ->send();
                     }),
                 Tables\Actions\BulkAction::make('generateInvoice')
+                    ->visible(fn () => (optional(Auth::user())->isEmployee() || optional(Auth::user())->isAdmin()) && optional(Auth::user())->has_invoice_access)
                     ->label('Generate Invoice')
                     ->closeModalByClickingAway(false)
                     ->color('info')
