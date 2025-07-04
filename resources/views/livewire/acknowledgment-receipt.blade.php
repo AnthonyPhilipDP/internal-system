@@ -18,8 +18,10 @@
             <p class="text-xs font-semibold text-gray-700">Attention of:
               @if ($activeContactPerson->identity == 'male')
                 <span class="uppercase">Mr. {{ $activeContactPerson->name }}</span>
-              @else
+              @elseif ($activeContactPerson->identity == 'female')
                 <span class="uppercase">Ms. {{ $activeContactPerson->name }}</span>
+              @else
+                <span class="uppercase">{{ $activeContactPerson->name }}</span>
               @endif
             </p>
           @endif
@@ -67,89 +69,80 @@
         Acknowledgment Receipt
       </div>
 
-      <div class="border-b border-white rounded-lg overflow-x-auto">
-        <table class="min-w-full divide-y divide-white table-auto">
+      <div class="border-b border-white">
+        <table class="w-full text-sm mt-4 text-left text-gray-700 dark:text-gray-400 table-fixed">
           @if ($equipmentChunks->count() > 1)
             <caption class="caption-bottom text-xs text-gray-500 font-mono mt-4">
               Number of equipment in this page: {{ $equipmentChunk->count() }}
             </caption>
           @endif
-          <thead class="bg-gray-700 text-center">
+          <thead class="text-[11px] text-center text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col"
-                class="px-6 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+              <th scope="col" class="bg-gray-100 px-2 py-1">
                 Transaction
               </th>
-              <th scope="col"
-                class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+              <th scope="col" class="px-2 py-1">
                 Make
               </th>
-              <th scope="col"
-                class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+              <th scope="col" class="bg-gray-100 px-2 py-1">
                 Model
               </th>
-              <th scope="col"
-                class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+              <th scope="col" class="px-2 py-1">
                 Description
               </th>
-              <th scope="col"
-                class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+              <th scope="col" class="bg-gray-100 px-2 py-1">
                 Equipment ID
               </th>
-              <th scope="col"
-                class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+              <th scope="col" class="px-2 py-1">
                 Serial
               </th>
-              <th scope="col"
-                class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+              <th scope="col" class="bg-gray-100 px-2 py-1">
                 Inspection
               </th>
-              <th scope="col"
-                class="px-2 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+              <th scope="col" class="px-2 py-1">
                 Accessories
               </th>
-              <th scope="col"
-                class="px-6 py-1 text-[10px] font-medium text-white uppercase tracking-wider w-2/18 text-nowrap">
+              <th scope="col" class="bg-gray-100 px-2 py-1">
                 Gate Pass
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200 text-left">
+          <tbody>
             @foreach ($equipmentChunk as $record)
-              <tr>
-                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words text-center">
+              <tr class="text-[10px] text-center bg-white border-b border-gray-200">
+                <td class="px-1 py-0.5 text-[10px] bg-gray-50 break-words">
                   {{ $record->transaction_id }}
                 </td>
-                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
+                <td class="px-1 py-0.5 text-[10px] break-words">
                   {{ $record->make }}
                 </td>
-                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
+                <td class="px-1 py-0.5 text-[10px] bg-gray-50 break-words">
                   {{ $record->model }}
                 </td>
-                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
+                <td class="px-1 py-0.5 text-[10px] break-words">
                   {{ $record->description }}
                 </td>
-                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
+                <td class="px-1 py-0.5 text-[10px] bg-gray-50 break-words">
                   {{ $record->equipment_id }}
                 </td>
-                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words">
+                <td class="px-1 py-0.5 text-[10px] break-words">
                   {{ $record->serial }}
                 </td>
-                <td class="px-1 py-0.5 text-[10px] text-gray-800 capitalize">
+                <td class="px-1 py-0.5 text-[10px] bg-gray-50 capitalize">
                   @if (is_array($record->inspection))
                     {!! implode(', ', $record->inspection) !!}
                   @else
                     {{ $record->inspection }}
                   @endif
                 </td>
-                <td class="px-1 py-0.5 text-[10px] text-gray-800  break-words capitalize">
+                <td class="px-1 py-0.5 text-[10px] break-words capitalize">
                   @if (isset($record->accessory) && $record->accessory->pluck('name')->filter()->isNotEmpty())
                     {!! implode(', ', $record->accessory->pluck('name')->toArray()) !!}
                   @else
                     <span class="text-yellow-600">No Accessory</span>
                   @endif
                 </td>
-                <td class="px-1 py-0.5 text-[10px] text-gray-800 break-words">
+                <td class="px-1 py-0.5 text-[10px] bg-gray-50 break-words">
                   {{ $record->gatePass }}
                 </td>
               </tr>
