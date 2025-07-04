@@ -30,9 +30,9 @@ class Equipment extends Model
         return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
     }
 
-    public function worksheet(){
-        return $this->belongsTo(Worksheet::class);
-    }
+    // public function worksheet(){
+    //     return $this->belongsTo(Worksheet::class);
+    // }
 
     public function accessory() {
         return $this->hasMany(Accessory::class);

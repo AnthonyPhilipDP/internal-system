@@ -33,9 +33,11 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
+use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\EquipmentResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EquipmentResource\RelationManagers;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class EquipmentResource extends Resource
 {
@@ -465,11 +467,23 @@ class EquipmentResource extends Resource
                             Section::make('')->schema([
                                 Forms\Components\Select::make('worksheet')
                                     ->label('Worksheet')
-                                    ->relationship('worksheet', 'name')
-                                    ->getOptionLabelFromRecordUsing(function ($record) {
-                                        return "{$record->name} Rev. {$record->revision}";
+                                    ->options(function () {
+                                        // Get the directory from env or fallback
+                                        $directory = env('WORKSHEETS_PATH', storage_path('app/public/worksheets/'));
+                                        // Get all files in the directory
+                                        $files = glob($directory . '*.*');
+                                        // Extract base names without extension
+                                        $options = [];
+                                        foreach ($files as $file) {
+                                            if (is_file($file)) {
+                                                $base = pathinfo($file, PATHINFO_FILENAME);
+                                                $options[$base] = $base;
+                                            }
+                                        }
+                                        // Remove duplicates (in case both .xls and .xlsx exist for same base)
+                                        return array_unique($options);
                                     })
-                                    ->searchable(['name', 'id'])
+                                    ->searchable()
                                     ->preload()
                                     ->prefixIcon('heroicon-o-document-check')
                                     ->prefixIconColor('primary'),
@@ -786,7 +800,7 @@ class EquipmentResource extends Resource
                     ->words(3)
                     ->alignCenter()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('worksheet.name')
+                Tables\Columns\TextColumn::make('worksheet')
                     ->label('Worksheet')
                     ->default('No worksheet yet!')
                     ->alignCenter()
@@ -945,6 +959,203 @@ class EquipmentResource extends Resource
                                 ->success()
                                 ->send();
                         }),
+                    Tables\Actions\Action::make('downloadWorksheet')
+                        ->label('Download WS')
+                        ->icon('heroicon-m-arrow-down-tray')
+                        ->color('info')
+                        ->infolist([
+                            TextEntry::make('customer.name')
+                                ->Label('')
+                                ->alignCenter(),
+                            TextEntry::make('exclusive')
+                                ->Label('')
+                                ->default('N/A')
+                                ->alignCenter(),
+                            TextEntry::make('equipment_id')
+                                ->label('')
+                                ->alignCenter(),
+                            TextEntry::make('make')
+                                ->label('')
+                                ->alignCenter(),
+                            TextEntry::make('model')
+                                ->label('')
+                                ->alignCenter(),
+                            TextEntry::make('description')
+                                ->label('')
+                                ->alignCenter(),
+                            TextEntry::make('serial')
+                                ->label('')
+                                ->alignCenter(),
+                            TextEntry::make('inDate')
+                                ->label('')
+                                ->alignCenter(),
+                            TextEntry::make('transaction_id')
+                                ->label('')
+                                ->alignCenter()
+                                ->formatStateUsing(function ($record) {
+                                    return "40-{$record->transaction_id}";
+                                }),
+                            TextEntry::make('calibrationInterval')
+                                ->label('')
+                                ->alignCenter(),
+                            TextEntry::make('decisionRule')
+                                ->label('')
+                                ->alignCenter()
+                                ->formatStateUsing(function ($state) {
+                                    switch ($state) {
+                                        case 'default':
+                                            return 'Simple Calibration';
+                                        case 'rule1':
+                                            return 'Binary Statement for Simple Acceptance Rule ( w = 0 )';
+                                        case 'rule2':
+                                            return 'Binary Statement with Guard Band( w = U )';
+                                        case 'rule3':
+                                            return 'Non-binary Statement with Guard Band( w = U )';
+                                    }
+                                }),
+                        ])
+                        ->requiresConfirmation()
+                        ->modalHeading('Download Worksheet')
+                        ->modalSubheading('You can copy the text below to paste it on the downloaded worksheet')
+                        ->modalIcon('heroicon-o-arrow-down-tray')
+                        ->modalSubmitAction(false)
+                        ->extraModalFooterActions([
+                            Tables\Actions\Action::make('download')
+                                ->label('Download Worksheet')
+                                ->color('info')
+                                ->requiresConfirmation()
+                                ->modalHeading('Download Worksheet')
+                                ->modalSubheading('Confirm the download of the worksheet')
+                                ->modalIcon('heroicon-o-arrow-down-tray')
+                                // This is the code if worksheet is based on a database
+                                // ->action(function ($record) {
+                                //     $worksheet = $record->worksheet;
+                                //     $filePath = \App\Models\Worksheet::where('file_name', $worksheet)->value('file');
+                                //     $fileName = \App\Models\Worksheet::where('file_name', $worksheet)->value('file_name');
+    
+                                //     // dd($worksheet, $filePath);
+    
+                                //     if (!$worksheet || !$filePath) {
+                                //         Notification::make()
+                                //             ->title('No Worksheet')
+                                //             ->body('No worksheet file is attached to this equipment.')
+                                //             ->danger()
+                                //             ->send();
+                                //         return;
+                                //     }
+                            
+                                //     // Return a download response
+                                //     return response()->download(
+                                //         storage_path('app/public/' . $filePath),
+                                //         $fileName
+                                //     );
+                                // }),
+                                // This is the code if worksheet is based on a directory
+                                ->action(function ($record) {
+                                    $baseName = $record->worksheet;
+                                    // $directory = storage_path('app/public/worksheets/');
+                                    $directory = env('WORKSHEETS_PATH');
+                                
+                                    if (empty($baseName)) {
+                                        Notification::make()
+                                            ->title('No Worksheet')
+                                            ->body('No worksheet file is attached to this equipment.')
+                                            ->danger()
+                                            ->send();
+                                        return;
+                                    }
+        
+                                    $files = glob($directory . $baseName . '.*');
+                                    $matchingFile = null;
+        
+                                    foreach ($files as $file) {
+                                        if (is_file($file)) {
+                                            $matchingFile = $file;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if ($matchingFile) {
+                                        return response()->download($matchingFile, basename($matchingFile));
+                                    }
+        
+                                    Notification::make()
+                                        ->title('No Worksheet')
+                                        ->body('Worksheet file does not exist.')
+                                        ->danger()
+                                        ->send();
+                                    return;
+        
+                                }),
+                        ]),
+                    Tables\Actions\Action::make('uploadExcel')
+                        ->label('Upload Data from WS')
+                        ->icon('heroicon-m-arrow-up-tray')
+                        ->color('info')
+                        ->form([
+                            Forms\Components\FileUpload::make('excel_file')
+                                ->fetchFileInformation(false)
+                                ->panelAspectRatio('2:1')
+                                ->label('Upload Data from Excel File')
+                                ->acceptedFileTypes([
+                                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                    'application/vnd.ms-excel'
+                                ])
+                                ->disk('public')
+                                ->directory('temp-uploads')
+                        ])
+                        ->action(function (Equipment $record, array $data) {
+                            try {
+                                // Load the uploaded Excel file
+                                $filePath = Storage::disk('public')->path($data['excel_file']);
+                                $spreadsheet = IOFactory::load($filePath);
+                                
+                                // Get the specific worksheet
+                                $sheet = $spreadsheet->getSheetByName('IS update');
+                                
+                                // Extract data from specific cells
+                                $updateData = [
+                                    'calibrationProcedure' => $sheet->getCell('B14')->getCalculatedValue(),
+                                    'code_range' => $sheet->getCell('B15')->getCalculatedValue(),
+                                    'reference' => $sheet->getCell('B16')->getCalculatedValue(),
+                                    'standardsUsed' => $sheet->getCell('B17')->getCalculatedValue(),
+                                    'validation' => $sheet->getCell('B18')->getCalculatedValue(),
+                                    'validatedBy' => $sheet->getCell('B19')->getCalculatedValue(),
+                                    'temperature' => $sheet->getCell('B20')->getCalculatedValue(),
+                                    'humidity' => $sheet->getCell('B21')->getCalculatedValue(),
+                                ];
+    
+                                // Update the equipment record
+                                $record->update($updateData);
+    
+                                // Delete the temporary file
+                                Storage::disk('public')->delete($data['excel_file']);
+    
+                                Notification::make()
+                                    ->title('Worksheet Processed Successfully')
+                                    ->body('The worksheet data has been saved as equipment details')
+                                    ->success()
+                                    ->send();
+    
+                            } catch (\Exception $e) {
+                                // Clean up the file in case of error
+                                if (isset($data['excel_file'])) {
+                                    Storage::disk('public')->delete($data['excel_file']);
+                                }
+    
+                                Notification::make()
+                                    ->title('Error Processing Excel')
+                                    ->body('There was an error processing the Excel file: ' . $e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
+                        })
+                        // ->slideOver()
+                        ->requiresConfirmation()
+                        ->modalIcon('heroicon-o-arrow-up-on-square-stack')
+                        ->modalHeading(fn (Equipment $record) => 'Upload Worksheet for Equipment #' . $record->transaction_id)
+                        ->modalDescription('Upload worksheet to update equipment details')
+                        ->modalSubmitActionLabel('Upload and Process'), 
                     Tables\Actions\DeleteAction::make()
                         ->label('Delete')
                         ->modalIcon('heroicon-o-trash')

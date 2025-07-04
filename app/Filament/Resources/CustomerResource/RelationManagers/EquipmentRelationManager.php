@@ -522,95 +522,135 @@ class EquipmentRelationManager extends RelationManager
                             ->modalButton('Replicate')
                             ->color('info'),
                             
-                    Tables\Actions\Action::make('downloadWorksheet')
-                        ->label('Download WS')
-                        ->icon('heroicon-m-arrow-down-tray')
-                        ->color('info')
-                        ->infolist([
-                            TextEntry::make('customer.name')
-                                ->Label('')
-                                ->alignCenter(),
-                            TextEntry::make('exclusive')
-                                ->Label('')
-                                ->default('N/A')
-                                ->alignCenter(),
-                            TextEntry::make('equipment_id')
-                                ->label('')
-                                ->alignCenter(),
-                            TextEntry::make('make')
-                                ->label('')
-                                ->alignCenter(),
-                            TextEntry::make('model')
-                                ->label('')
-                                ->alignCenter(),
-                            TextEntry::make('description')
-                                ->label('')
-                                ->alignCenter(),
-                            TextEntry::make('serial')
-                                ->label('')
-                                ->alignCenter(),
-                            TextEntry::make('inDate')
-                                ->label('')
-                                ->alignCenter(),
-                            TextEntry::make('transaction_id')
-                                ->label('')
-                                ->alignCenter()
-                                ->formatStateUsing(function ($record) {
-                                    return "40-{$record->transaction_id}";
-                                }),
-                            TextEntry::make('calibrationInterval')
-                                ->label('')
-                                ->alignCenter(),
-                            TextEntry::make('decisionRule')
-                                ->label('')
-                                ->alignCenter()
-                                ->formatStateUsing(function ($state) {
-                                    switch ($state) {
-                                        case 'default':
-                                            return 'Simple Calibration';
-                                        case 'rule1':
-                                            return 'Binary Statement for Simple Acceptance Rule ( w = 0 )';
-                                        case 'rule2':
-                                            return 'Binary Statement with Guard Band( w = U )';
-                                        case 'rule3':
-                                            return 'Non-binary Statement with Guard Band( w = U )';
-                                    }
-                                }),
-                        ])
-                        ->requiresConfirmation()
-                        ->modalHeading('Download Worksheet')
-                        ->modalSubheading('You can copy the text below to paste it on the downloaded worksheet')
-                        ->modalIcon('heroicon-o-arrow-down-tray')
-                        ->modalSubmitAction(false)
-                        ->extraModalFooterActions([
-                            Tables\Actions\Action::make('download')
-                                ->label('Download Worksheet')
-                                ->color('info')
-                                ->requiresConfirmation()
-                                ->modalHeading('Download Worksheet')
-                                ->modalSubheading('Confirm the download of the worksheet')
-                                ->modalIcon('heroicon-o-arrow-down-tray')
-                                ->action(function ($record) {
-                                    $worksheetId = $record->worksheet_id;
-                                    $worksheet = Worksheet::find($worksheetId);
+                        Tables\Actions\Action::make('downloadWorksheet')
+                            ->label('Download WS')
+                            ->icon('heroicon-m-arrow-down-tray')
+                            ->color('info')
+                            ->infolist([
+                                TextEntry::make('customer.name')
+                                    ->Label('')
+                                    ->alignCenter(),
+                                TextEntry::make('exclusive')
+                                    ->Label('')
+                                    ->default('N/A')
+                                    ->alignCenter(),
+                                TextEntry::make('equipment_id')
+                                    ->label('')
+                                    ->alignCenter(),
+                                TextEntry::make('make')
+                                    ->label('')
+                                    ->alignCenter(),
+                                TextEntry::make('model')
+                                    ->label('')
+                                    ->alignCenter(),
+                                TextEntry::make('description')
+                                    ->label('')
+                                    ->alignCenter(),
+                                TextEntry::make('serial')
+                                    ->label('')
+                                    ->alignCenter(),
+                                TextEntry::make('inDate')
+                                    ->label('')
+                                    ->alignCenter(),
+                                TextEntry::make('transaction_id')
+                                    ->label('')
+                                    ->alignCenter()
+                                    ->formatStateUsing(function ($record) {
+                                        return "40-{$record->transaction_id}";
+                                    }),
+                                TextEntry::make('calibrationInterval')
+                                    ->label('')
+                                    ->alignCenter(),
+                                TextEntry::make('decisionRule')
+                                    ->label('')
+                                    ->alignCenter()
+                                    ->formatStateUsing(function ($state) {
+                                        switch ($state) {
+                                            case 'default':
+                                                return 'Simple Calibration';
+                                            case 'rule1':
+                                                return 'Binary Statement for Simple Acceptance Rule ( w = 0 )';
+                                            case 'rule2':
+                                                return 'Binary Statement with Guard Band( w = U )';
+                                            case 'rule3':
+                                                return 'Non-binary Statement with Guard Band( w = U )';
+                                        }
+                                    }),
+                            ])
+                            ->requiresConfirmation()
+                            ->modalHeading('Download Worksheet')
+                            ->modalSubheading('You can copy the text below to paste it on the downloaded worksheet')
+                            ->modalIcon('heroicon-o-arrow-down-tray')
+                            ->modalSubmitAction(false)
+                            ->extraModalFooterActions([
+                                Tables\Actions\Action::make('download')
+                                    ->label('Download Worksheet')
+                                    ->color('info')
+                                    ->requiresConfirmation()
+                                    ->modalHeading('Download Worksheet')
+                                    ->modalSubheading('Confirm the download of the worksheet')
+                                    ->modalIcon('heroicon-o-arrow-down-tray')
+                                    // This is the code if worksheet is based on a database
+                                    // ->action(function ($record) {
+                                    //     $worksheet = $record->worksheet;
+                                    //     $filePath = \App\Models\Worksheet::where('file_name', $worksheet)->value('file');
+                                    //     $fileName = \App\Models\Worksheet::where('file_name', $worksheet)->value('file_name');
+        
+                                    //     // dd($worksheet, $filePath);
+        
+                                    //     if (!$worksheet || !$filePath) {
+                                    //         Notification::make()
+                                    //             ->title('No Worksheet')
+                                    //             ->body('No worksheet file is attached to this equipment.')
+                                    //             ->danger()
+                                    //             ->send();
+                                    //         return;
+                                    //     }
                                 
-                                    if ($worksheet) {
-                                        $filePath = Storage::disk('public')->path($worksheet->file);
-                                
-                                        // Generate the download file name
-                                        $fileName = '40-' . $record->transaction_id . '.' . pathinfo($filePath, PATHINFO_EXTENSION);
-                                
-                                        // Return the file for download
-                                        return response()->download($filePath, $fileName);
-                                    } else {
+                                    //     // Return a download response
+                                    //     return response()->download(
+                                    //         storage_path('app/public/' . $filePath),
+                                    //         $fileName
+                                    //     );
+                                    // }),
+                                    // This is the code if worksheet is based on a directory
+                                    ->action(function ($record) {
+                                        $baseName = $record->worksheet;
+                                        // $directory = storage_path('app/public/worksheets/');
+                                        $directory = env('WORKSHEETS_PATH');
+                                    
+                                        if (empty($baseName)) {
+                                            Notification::make()
+                                                ->title('No Worksheet')
+                                                ->body('No worksheet file is attached to this equipment.')
+                                                ->danger()
+                                                ->send();
+                                            return;
+                                        }
+            
+                                        $files = glob($directory . $baseName . '.*');
+                                        $matchingFile = null;
+            
+                                        foreach ($files as $file) {
+                                            if (is_file($file)) {
+                                                $matchingFile = $file;
+                                                break;
+                                            }
+                                        }
+                                        
+                                        if ($matchingFile) {
+                                            return response()->download($matchingFile, basename($matchingFile));
+                                        }
+            
                                         Notification::make()
-                                            ->title('No file available')
-                                            ->body('Please include a worksheet file for this equipment first.')
+                                            ->title('No Worksheet')
+                                            ->body('Worksheet file does not exist.')
                                             ->danger()
                                             ->send();
-                                    }
-                                }),
-                        ]),
+                                        return;
+            
+                                    }),
+                            ]),
                     Tables\Actions\Action::make('uploadExcel')
                         ->label('Upload Data from WS')
                         ->icon('heroicon-m-arrow-up-tray')
