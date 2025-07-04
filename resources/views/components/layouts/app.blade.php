@@ -20,13 +20,11 @@
   <title>{{ config('app.name') ?? 'PMSi - Internal' }}</title>
 </head>
 
-<body class="flex flex-col min-h-screen">
+<body class="min-h-screen">
   {{-- @include('layouts.partials.tutorial') --}}
-  <main class="flex-grow">
-    @include('components.layouts.partials.header')
-    {{ $slot }}
-  </main>
-  @include('components.layouts.partials.footer')
+  <x-layouts.partials.header />
+  {{ $slot }}
+  <x-layouts.partials.footer />
   @filamentScripts
 </body>
 <script>
