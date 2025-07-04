@@ -940,6 +940,7 @@ class EquipmentResource extends Resource
                                 'calibrationProcedure',
                                 'code_range',
                                 'reference',
+                                'worksheet'
                             ];
 
                             $newEquipment = new Equipment();
