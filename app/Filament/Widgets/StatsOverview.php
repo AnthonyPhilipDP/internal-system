@@ -29,12 +29,23 @@ class StatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        return [
-            Stat::make('Employees', User::where('level', 2)->count()),
-            Stat::make('Clients', Customer::count()),
-            Stat::make('Total Equipments', Equipment::count()),
-            Stat::make('Pending Equipments', Equipment::where('status', 'pending')->count()),
-            Stat::make('Last Acknowledgment Receipt ID', Equipment::whereNotNull('ar_id')->latest('created_at')->value('ar_id')),
-        ];
+        $stats = [];
+
+        $userLevel = auth()->user()->level;
+
+        // If the user is an admin (level 1), show the employee count stat
+        if ($userLevel == 1) {
+            $stats[] = Stat::make('Employees', User::where('level', 2)->count());
+        }
+
+        $stats[] = Stat::make('Clients', Customer::count());
+        $stats[] = Stat::make('Total Equipments', Equipment::count());
+        $stats[] = Stat::make('Pending Equipments', Equipment::where('status', 'pending')->count());
+        $stats[] = Stat::make('Incoming Equipments', Equipment::where('status', 'incoming')->count());
+        $stats[] = Stat::make('Repair Equipments', Equipment::where('status', 'repair')->count());
+        $stats[] = Stat::make('Last Acknowledgment Receipt ID', Equipment::whereNotNull('ar_id')->latest('created_at')->value('ar_id'));
+
+        return $stats;
+
     }
 }
