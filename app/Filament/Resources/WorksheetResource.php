@@ -26,7 +26,7 @@ class WorksheetResource extends Resource
 {
     protected static ?string $model = Worksheet::class;
 
-    protected static ?int $navigationSort = 8;
+    // protected static ?int $navigationSort = 8;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
 

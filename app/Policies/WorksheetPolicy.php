@@ -13,7 +13,7 @@ class WorksheetPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -21,7 +21,7 @@ class WorksheetPolicy
      */
     public function view(User $user, Worksheet $worksheet): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -29,7 +29,7 @@ class WorksheetPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->isEmployee();
+        return false;
     }
 
     /**
@@ -37,7 +37,7 @@ class WorksheetPolicy
      */
     public function update(User $user, Worksheet $worksheet): bool
     {
-        return $user->isAdmin() || $user->isEmployee();
+        return false;
     }
 
     /**
@@ -45,7 +45,7 @@ class WorksheetPolicy
      */
     public function delete(User $user, Worksheet $worksheet): bool
     {
-        return $user->isAdmin();
+        return false;
     }
 
     /**
@@ -53,7 +53,7 @@ class WorksheetPolicy
      */
     public function restore(User $user, Worksheet $worksheet): bool
     {
-        return $user->isAdmin();
+        return false;
     }
 
     /**
@@ -61,6 +61,6 @@ class WorksheetPolicy
      */
     public function forceDelete(User $user, Worksheet $worksheet): bool
     {
-        return $user->isAdmin();
+        return false;
     }
 }
