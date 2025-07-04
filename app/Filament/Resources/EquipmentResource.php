@@ -1278,10 +1278,12 @@ class EquipmentResource extends Resource
                 ->label('Print Label')
                 ->action(function ($records) {
                     $equipmentData = $records->map(function ($record) {
+                        $customer_name = Customer::where('customer_id', $record->customer_id)->value('name');
                         return [
                             'id' => $record->id,
                             'transaction_id' => $record->transaction_id,
                             'customer_id' => $record->customer_id,
+                            'customer_name' => $customer_name,
                             'equipment_id' => $record->equipment_id,
                             'inDate' => $record->inDate,
                             'has_accessory' => $record->accessory()->exists(),

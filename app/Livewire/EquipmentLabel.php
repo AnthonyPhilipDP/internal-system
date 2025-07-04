@@ -17,7 +17,6 @@ class EquipmentLabel extends Component
         // Fetch customer names based on customer_id
         $equipmentData = array_map(function ($equipment) {
             $customer = Customer::find($equipment['customer_id']);
-            $equipment['customer_name'] = $customer->name;
 
             return $equipment;
         }, $equipmentData);
